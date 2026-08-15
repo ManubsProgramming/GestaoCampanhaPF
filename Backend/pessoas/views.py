@@ -61,8 +61,22 @@ class PessoaViewSet(viewsets.ModelViewSet):
             .all()
         )
 
-        data_inicio = self.request.query_params.get("data_inicio")
-        data_fim = self.request.query_params.get("data_fim")
+        usuario = self.request.user
+
+        # Cadastrador só enxerga os próprios cadastros.
+        # Administrador continua enxergando todos.
+        if usuario.tipo == "CADASTRADOR":
+            queryset = queryset.filter(
+                cadastrada_por=usuario
+            )
+
+        data_inicio = self.request.query_params.get(
+            "data_inicio"
+        )
+
+        data_fim = self.request.query_params.get(
+            "data_fim"
+        )
 
         if data_inicio:
             queryset = queryset.filter(
@@ -86,7 +100,9 @@ class PessoaViewSet(viewsets.ModelViewSet):
             acao="CRIACAO",
             entidade="Pessoa",
             entidade_id=pessoa.id,
-            descricao=f"Pessoa {pessoa.nome_completo} cadastrada.",
+            descricao=(
+                f"Pessoa {pessoa.nome_completo} cadastrada."
+            ),
         )
 
     def perform_update(self, serializer):
@@ -97,7 +113,9 @@ class PessoaViewSet(viewsets.ModelViewSet):
             acao="ALTERACAO",
             entidade="Pessoa",
             entidade_id=pessoa.id,
-            descricao=f"Cadastro de {pessoa.nome_completo} alterado.",
+            descricao=(
+                f"Cadastro de {pessoa.nome_completo} alterado."
+            ),
         )
 
     def perform_destroy(self, instance):

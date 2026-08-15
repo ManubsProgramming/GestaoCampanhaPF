@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Count
+from django.utils import timezone
+
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -18,21 +20,40 @@ class DashboardView(APIView):
         # Somente pessoas efetivamente cadastradas no sistema
         pessoas = Pessoa.objects.all()
 
-        # Cards principais
+        # ---------------------------------
+        # CARDS PRINCIPAIS
+        # ---------------------------------
+
         total_pessoas = pessoas.count()
+
+        hoje = timezone.localdate()
+
+        cadastros_hoje = pessoas.filter(
+            criado_em__date=hoje
+        ).count()
 
         total_cadastradores = Usuario.objects.filter(
             tipo="CADASTRADOR",
             ativo=True,
         ).count()
 
-        total_localidades = Localidade.objects.filter(
-            pessoas__isnull=False
-        ).distinct().count()
+        total_localidades = (
+            Localidade.objects
+            .filter(
+                pessoas__isnull=False
+            )
+            .distinct()
+            .count()
+        )
 
-        total_ruas = Rua.objects.filter(
-            pessoas__isnull=False
-        ).distinct().count()
+        total_ruas = (
+            Rua.objects
+            .filter(
+                pessoas__isnull=False
+            )
+            .distinct()
+            .count()
+        )
 
         # ---------------------------------
         # REFERÊNCIA OFICIAL DO MUNICÍPIO
@@ -40,49 +61,80 @@ class DashboardView(APIView):
 
         populacao_estimada_municipio = 33291
 
-        percentual_cobertura = round(
-            (total_pessoas / populacao_estimada_municipio) * 100,
-            2,
-        )
+        if populacao_estimada_municipio > 0:
+            percentual_cobertura = round(
+                (
+                    total_pessoas
+                    / populacao_estimada_municipio
+                ) * 100,
+                2,
+            )
+        else:
+            percentual_cobertura = 0
 
-        # Cadastros por localidade
+        # ---------------------------------
+        # CADASTROS POR LOCALIDADE
+        # ---------------------------------
+
         cadastros_por_localidade = (
             Localidade.objects
-            .annotate(total=Count("pessoas"))
-            .filter(total__gt=0)
+            .annotate(
+                total=Count("pessoas")
+            )
+            .filter(
+                total__gt=0
+            )
             .values(
                 "id",
                 "nome",
                 "tipo",
                 "total",
             )
-            .order_by("-total")
+            .order_by(
+                "-total"
+            )
         )
 
-        # Cadastros por rua
+        # ---------------------------------
+        # CADASTROS POR RUA
+        # ---------------------------------
+
         cadastros_por_rua = (
             Rua.objects
-            .annotate(total=Count("pessoas"))
-            .filter(total__gt=0)
+            .annotate(
+                total=Count("pessoas")
+            )
+            .filter(
+                total__gt=0
+            )
             .values(
                 "id",
                 "nome",
                 "localidade__nome",
                 "total",
             )
-            .order_by("-total")[:10]
+            .order_by(
+                "-total"
+            )[:10]
         )
 
-        # Ranking de cadastradores
+        # ---------------------------------
+        # RANKING DE CADASTRADORES
+        # ---------------------------------
+
         ranking_usuarios = (
             Usuario.objects
-            .filter(tipo="CADASTRADOR")
+            .filter(
+                tipo="CADASTRADOR"
+            )
             .annotate(
                 total_cadastros=Count(
                     "pessoas_cadastradas"
                 )
             )
-            .filter(total_cadastros__gt=0)
+            .filter(
+                total_cadastros__gt=0
+            )
             .values(
                 "id",
                 "username",
@@ -90,12 +142,19 @@ class DashboardView(APIView):
                 "last_name",
                 "total_cadastros",
             )
-            .order_by("-total_cadastros")[:10]
+            .order_by(
+                "-total_cadastros"
+            )[:10]
         )
+
+        # ---------------------------------
+        # RESPOSTA
+        # ---------------------------------
 
         dados = {
             "resumo": {
                 "total_pessoas_cadastradas": total_pessoas,
+                "cadastros_hoje": cadastros_hoje,
                 "total_usuarios_cadastradores": total_cadastradores,
                 "total_localidades_com_cadastros": total_localidades,
                 "total_ruas_com_cadastros": total_ruas,
