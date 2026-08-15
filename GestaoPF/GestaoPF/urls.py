@@ -42,4 +42,21 @@ urlpatterns = [
         "api/painel/",
         include("painel.urls"),
     ),
+
+    path(
+    "api/",
+    include("regioes.urls"),
+     ),
+    path(
+    "api/",
+    include("pessoas.urls"),
+     ),
+     path(
+    "api/",
+    include("usuarios.urls"),
+     ),
+     path(
+    "api/relatorios/",
+    include("relatorios.urls"),
+    ),
 ]

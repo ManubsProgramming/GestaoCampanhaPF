@@ -34,6 +34,17 @@ class DashboardView(APIView):
             pessoas__isnull=False
         ).distinct().count()
 
+        # ---------------------------------
+        # REFERÊNCIA OFICIAL DO MUNICÍPIO
+        # ---------------------------------
+
+        populacao_estimada_municipio = 33291
+
+        percentual_cobertura = round(
+            (total_pessoas / populacao_estimada_municipio) * 100,
+            2,
+        )
+
         # Cadastros por localidade
         cadastros_por_localidade = (
             Localidade.objects
@@ -67,7 +78,9 @@ class DashboardView(APIView):
             Usuario.objects
             .filter(tipo="CADASTRADOR")
             .annotate(
-                total_cadastros=Count("pessoas_cadastradas")
+                total_cadastros=Count(
+                    "pessoas_cadastradas"
+                )
             )
             .filter(total_cadastros__gt=0)
             .values(
@@ -86,6 +99,20 @@ class DashboardView(APIView):
                 "total_usuarios_cadastradores": total_cadastradores,
                 "total_localidades_com_cadastros": total_localidades,
                 "total_ruas_com_cadastros": total_ruas,
+            },
+
+            "referencia_municipio": {
+                "municipio": "Presidente Figueiredo",
+                "populacao_estimada": populacao_estimada_municipio,
+                "ano_referencia": 2025,
+                "fonte": "IBGE",
+                "percentual_cobertura_cadastros": percentual_cobertura,
+                "observacao": (
+                    "Indicador comparativo entre pessoas cadastradas "
+                    "no sistema e a estimativa oficial do município. "
+                    "Não representa população de bairros, comunidades "
+                    "ou ruas."
+                ),
             },
 
             "cadastros_por_localidade": list(

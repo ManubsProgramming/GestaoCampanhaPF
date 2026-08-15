@@ -10,6 +10,8 @@ class RegistroAuditoria(models.Model):
         CRIACAO = "CRIACAO", "Criação"
         ALTERACAO = "ALTERACAO", "Alteração"
         EXCLUSAO = "EXCLUSAO", "Exclusão"
+        ATIVACAO = "ATIVACAO", "Ativação"
+        DESATIVACAO = "DESATIVACAO", "Desativação"
         CONSULTA = "CONSULTA", "Consulta"
 
     usuario = models.ForeignKey(
@@ -59,4 +61,9 @@ class RegistroAuditoria(models.Model):
 
     def __str__(self):
         usuario = self.usuario or "Sistema"
-        return f"{usuario} - {self.get_acao_display()} - {self.entidade}"
+
+        return (
+            f"{usuario} - "
+            f"{self.get_acao_display()} - "
+            f"{self.entidade}"
+        )
