@@ -2,26 +2,44 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from regioes.models import Regiao, Localidade, Rua
+from regioes.models import Localidade, Regiao, Rua
 
 
 def validar_cpf(cpf):
     cpf = "".join(filter(str.isdigit, cpf))
 
     if len(cpf) != 11:
-        raise ValidationError("CPF deve conter 11 dígitos.")
+        raise ValidationError(
+            "CPF deve conter 11 dígitos."
+        )
 
     if cpf == cpf[0] * 11:
-        raise ValidationError("CPF inválido.")
+        raise ValidationError(
+            "CPF inválido."
+        )
 
-    soma = sum(int(cpf[i]) * (10 - i) for i in range(9))
-    digito1 = (soma * 10 % 11) % 10
+    soma = sum(
+        int(cpf[i]) * (10 - i)
+        for i in range(9)
+    )
 
-    soma = sum(int(cpf[i]) * (11 - i) for i in range(10))
-    digito2 = (soma * 10 % 11) % 10
+    digito1 = (
+        soma * 10 % 11
+    ) % 10
+
+    soma = sum(
+        int(cpf[i]) * (11 - i)
+        for i in range(10)
+    )
+
+    digito2 = (
+        soma * 10 % 11
+    ) % 10
 
     if cpf[-2:] != f"{digito1}{digito2}":
-        raise ValidationError("CPF inválido.")
+        raise ValidationError(
+            "CPF inválido."
+        )
 
 
 class Pessoa(models.Model):
@@ -31,31 +49,33 @@ class Pessoa(models.Model):
         INATIVO = "INATIVO", "Inativo"
 
     class StatusVerificacao(models.TextChoices):
-        NAO_VERIFICADO = "NAO_VERIFICADO", "Não verificado"
-        CONSULTADO = "CONSULTADO", "Consulta realizada"
+        NAO_VERIFICADO = (
+            "NAO_VERIFICADO",
+            "Não verificado",
+        )
+
+        CONSULTADO = (
+            "CONSULTADO",
+            "Consulta realizada",
+        )
 
     nome_completo = models.CharField(
         max_length=200,
     )
+
     cpf = models.CharField(
-    max_length=14,
-    unique=True,
-    validators=[validar_cpf],
+        max_length=14,
+        unique=True,
+        validators=[validar_cpf],
     )
 
     data_nascimento = models.DateField()
 
-    localidade = models.ForeignKey(
-    Localidade,
-    on_delete=models.PROTECT,
-    related_name="pessoas",
-   )
-
     titulo_eleitor = models.CharField(
-    max_length=20,
-    unique=True,
-    blank=True,
-   )
+        max_length=20,
+        unique=True,
+        blank=True,
+    )
 
     telefone = models.CharField(
         max_length=20,
@@ -68,6 +88,11 @@ class Pessoa(models.Model):
         related_name="pessoas",
     )
 
+    localidade = models.ForeignKey(
+        Localidade,
+        on_delete=models.PROTECT,
+        related_name="pessoas",
+    )
 
     rua = models.ForeignKey(
         Rua,

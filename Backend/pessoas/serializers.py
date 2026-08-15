@@ -66,8 +66,6 @@ class PessoaSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "id",
             "cadastrada_por",
-            "status_verificacao_cpf",
-            "status_verificacao_titulo",
             "criado_em",
             "atualizado_em",
         ]
@@ -83,39 +81,57 @@ class PessoaSerializer(serializers.ModelSerializer):
     def validate(self, dados):
         regiao = dados.get(
             "regiao",
-            getattr(self.instance, "regiao", None),
+            getattr(
+                self.instance,
+                "regiao",
+                None,
+            ),
         )
 
         localidade = dados.get(
             "localidade",
-            getattr(self.instance, "localidade", None),
+            getattr(
+                self.instance,
+                "localidade",
+                None,
+            ),
         )
 
         rua = dados.get(
             "rua",
-            getattr(self.instance, "rua", None),
+            getattr(
+                self.instance,
+                "rua",
+                None,
+            ),
         )
 
-        # Localidade deve pertencer à região informada
+        # ---------------------------------
+        # LOCALIDADE x REGIÃO
+        # ---------------------------------
+
         if regiao and localidade:
             if localidade.regiao_id != regiao.id:
                 raise serializers.ValidationError(
                     {
                         "localidade": (
-                            "A localidade selecionada não pertence "
-                            "à região informada."
+                            "A localidade selecionada "
+                            "não pertence à região informada."
                         )
                     }
                 )
 
-        # Rua deve pertencer à localidade informada
+        # ---------------------------------
+        # RUA x LOCALIDADE
+        # ---------------------------------
+
         if localidade and rua:
             if rua.localidade_id != localidade.id:
                 raise serializers.ValidationError(
                     {
                         "rua": (
-                            "A rua selecionada não pertence "
-                            "à localidade informada."
+                            "A rua selecionada "
+                            "não pertence à localidade informada."
                         )
                     }
                 )
