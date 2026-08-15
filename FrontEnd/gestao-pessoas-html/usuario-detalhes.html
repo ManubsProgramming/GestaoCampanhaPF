@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Detalhes do usuário | Gestão de Cadastros</title>
+
+  <link
+    rel="icon"
+    href="assets/imagens/prefeitura-icon.png"
+  >
+
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/painel.css">
+  <link rel="stylesheet" href="css/usuario-detalhes.css">
+
+  <script
+    src="https://unpkg.com/lucide@0.468.0"
+    defer
+  ></script>
+
+  <script src="js/painel.js" defer></script>
+  <script src="js/usuario-detalhes.js" defer></script>
+</head>
+
+<body>
+  <div
+    id="menu-overlay"
+    class="menu-overlay"
+  ></div>
+
+  <aside
+    id="sidebar"
+    class="sidebar"
+    aria-label="Menu principal"
+  >
+    <div class="sidebar-brand">
+      <img
+        src="assets/imagens/prefeitura-icon.png"
+        alt="Logo do sistema"
+        class="sidebar-logo"
+      >
+
+      <div>
+        <strong>Gestão de Cadastros</strong>
+        <span>Painel administrativo</span>
+      </div>
+
+      <button
+        id="close-menu"
+        class="icon-button close-menu"
+        type="button"
+        aria-label="Fechar menu"
+      >
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-navigation">
+      <span class="sidebar-section-title">
+        Menu principal
+      </span>
+
+      <a href="painel.html" class="sidebar-link">
+        <i data-lucide="layout-dashboard"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a href="pessoas.html" class="sidebar-link">
+        <i data-lucide="users"></i>
+        <span>Pessoas cadastradas</span>
+      </a>
+
+      <a
+        href="novo-cadastro.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="user-plus"></i>
+        <span>Novo cadastro</span>
+      </a>
+
+      <a
+        href="usuarios.html"
+        class="sidebar-link active"
+      >
+        <i data-lucide="user-cog"></i>
+        <span>Usuários</span>
+      </a>
+
+      <a href="regioes.html" class="sidebar-link">
+        <i data-lucide="map-pin"></i>
+        <span>Regiões</span>
+      </a>
+
+      <a href="relatorios.html" class="sidebar-link">
+        <i data-lucide="bar-chart-3"></i>
+        <span>Relatórios</span>
+      </a>
+
+      <a
+        href="configuracoes.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="settings"></i>
+        <span>Configurações</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-avatar">AS</div>
+
+      <div class="sidebar-user-info">
+        <strong>Administrador</strong>
+        <span>Administrador geral</span>
+      </div>
+
+      <button
+        id="logout-button"
+        class="logout-button"
+        type="button"
+        aria-label="Sair do sistema"
+      >
+        <i data-lucide="log-out"></i>
+      </button>
+    </div>
+  </aside>
+
+  <div class="app-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button
+          id="open-menu"
+          class="icon-button open-menu"
+          type="button"
+          aria-label="Abrir menu"
+        >
+          <i data-lucide="menu"></i>
+        </button>
+
+        <div>
+          <h1>Detalhes do usuário</h1>
+          <p>Desempenho do usuário cadastrador</p>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <button
+          class="notification-button"
+          type="button"
+          aria-label="Notificações"
+        >
+          <i data-lucide="bell"></i>
+          <span class="notification-dot"></span>
+        </button>
+
+        <button
+          class="profile-button"
+          type="button"
+          aria-label="Abrir perfil"
+        >
+          <span class="profile-avatar">AS</span>
+
+          <span class="profile-info">
+            <strong id="logged-user">
+              Administrador
+            </strong>
+
+            <small>Administrador geral</small>
+          </span>
+
+          <i data-lucide="chevron-down"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <a href="usuarios.html" class="details-back-link">
+        <i data-lucide="arrow-left"></i>
+        <span>Voltar para usuários</span>
+      </a>
+
+      <section class="user-profile-card">
+        <div class="user-profile-main">
+          <span id="details-avatar" class="details-avatar">
+            JS
+          </span>
+
+          <div class="user-profile-information">
+            <div class="user-name-line">
+              <h2 id="details-name">João Silva</h2>
+
+              <span
+                id="details-status"
+                class="details-status active"
+              >
+                Ativo
+              </span>
+            </div>
+
+            <p id="details-email">
+              joao.silva@sistema.com
+            </p>
+
+            <span class="user-type">
+              Usuário cadastrador
+            </span>
+          </div>
+        </div>
+
+        <button
+          id="edit-user-button"
+          class="edit-user-button"
+          type="button"
+        >
+          <i data-lucide="pencil"></i>
+          <span>Editar usuário</span>
+        </button>
+      </section>
+
+      <section
+        class="user-statistics"
+        aria-label="Estatísticas do usuário"
+      >
+        <article>
+          <span class="details-statistic-icon blue">
+            <i data-lucide="users"></i>
+          </span>
+
+          <div>
+            <p>Total de pessoas cadastradas</p>
+            <strong id="total-registrations">185</strong>
+          </div>
+        </article>
+
+        <article>
+          <span class="details-statistic-icon green">
+            <i data-lucide="calendar-check"></i>
+          </span>
+
+          <div>
+            <p>Cadastros hoje</p>
+            <strong id="today-registrations">12</strong>
+          </div>
+        </article>
+
+        <article>
+          <span class="details-statistic-icon orange">
+            <i data-lucide="calendar-days"></i>
+          </span>
+
+          <div>
+            <p>Cadastros nesta semana</p>
+            <strong id="week-registrations">48</strong>
+          </div>
+        </article>
+
+        <article>
+          <span class="details-statistic-icon purple">
+            <i data-lucide="calendar-range"></i>
+          </span>
+
+          <div>
+            <p>Cadastros neste mês</p>
+            <strong id="month-registrations">185</strong>
+          </div>
+        </article>
+      </section>
+
+      <section class="details-grid">
+        <article class="details-card">
+          <header class="details-card-header">
+            <div>
+              <h3>Cadastros por bairro</h3>
+
+              <p>
+                Pessoas cadastradas por este usuário
+              </p>
+            </div>
+          </header>
+
+          <div id="user-neighborhood-chart" class="details-chart">
+            <div class="details-bar-item">
+              <div>
+                <span>Centro</span>
+                <strong>68</strong>
+              </div>
+
+              <div class="details-bar-track">
+                <div
+                  class="details-bar-fill"
+                  style="width: 100%"
+                ></div>
+              </div>
+            </div>
+
+            <div class="details-bar-item">
+              <div>
+                <span>Alvorada</span>
+                <strong>52</strong>
+              </div>
+
+              <div class="details-bar-track">
+                <div
+                  class="details-bar-fill"
+                  style="width: 76%"
+                ></div>
+              </div>
+            </div>
+
+            <div class="details-bar-item">
+              <div>
+                <span>Flores</span>
+                <strong>39</strong>
+              </div>
+
+              <div class="details-bar-track">
+                <div
+                  class="details-bar-fill"
+                  style="width: 57%"
+                ></div>
+              </div>
+            </div>
+
+            <div class="details-bar-item">
+              <div>
+                <span>Compensa</span>
+                <strong>26</strong>
+              </div>
+
+              <div class="details-bar-track">
+                <div
+                  class="details-bar-fill"
+                  style="width: 38%"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="details-card">
+          <header class="details-card-header">
+            <div>
+              <h3>Cadastros por rua</h3>
+
+              <p>
+                Ruas com mais pessoas cadastradas
+              </p>
+            </div>
+          </header>
+
+          <div id="user-street-list" class="details-street-list">
+            <div>
+              <span>
+                <strong>Rua das Flores</strong>
+                <small>Centro</small>
+              </span>
+
+              <b>32</b>
+            </div>
+
+            <div>
+              <span>
+                <strong>Avenida Brasil</strong>
+                <small>Alvorada</small>
+              </span>
+
+              <b>27</b>
+            </div>
+
+            <div>
+              <span>
+                <strong>Rua Amazonas</strong>
+                <small>Flores</small>
+              </span>
+
+              <b>21</b>
+            </div>
+
+            <div>
+              <span>
+                <strong>Avenida Central</strong>
+                <small>Compensa</small>
+              </span>
+
+              <b>18</b>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="details-card user-people-card">
+        <header class="user-people-header">
+          <div>
+            <h3>Pessoas cadastradas por este usuário</h3>
+
+            <p>
+              <span id="visible-registered-people">4</span>
+              cadastros encontrados
+            </p>
+          </div>
+
+          <label class="details-search">
+            <i data-lucide="search"></i>
+
+            <input
+              id="details-search-input"
+              type="search"
+              placeholder="Pesquisar pessoa"
+              aria-label="Pesquisar pessoa cadastrada"
+            >
+          </label>
+        </header>
+
+        <div class="details-table-container">
+          <table class="details-table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Bairro</th>
+                <th>Rua</th>
+                <th>Data do cadastro</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody id="details-table-body">
+              <tr data-person="Carla Souza">
+                <td data-label="Nome">
+                  <strong>Carla Souza</strong>
+                </td>
+
+                <td data-label="Telefone">
+                  (92) 99999-0001
+                </td>
+
+                <td data-label="Bairro">Centro</td>
+                <td data-label="Rua">Rua das Flores</td>
+                <td data-label="Data">15/08/2026</td>
+
+                <td data-label="Status">
+                  <span class="person-status active">
+                    Ativo
+                  </span>
+                </td>
+              </tr>
+
+              <tr data-person="Rafael Lima">
+                <td data-label="Nome">
+                  <strong>Rafael Lima</strong>
+                </td>
+
+                <td data-label="Telefone">
+                  (92) 99999-0002
+                </td>
+
+                <td data-label="Bairro">Alvorada</td>
+                <td data-label="Rua">Avenida Brasil</td>
+                <td data-label="Data">15/08/2026</td>
+
+                <td data-label="Status">
+                  <span class="person-status active">
+                    Ativo
+                  </span>
+                </td>
+              </tr>
+
+              <tr data-person="Beatriz Rocha">
+                <td data-label="Nome">
+                  <strong>Beatriz Rocha</strong>
+                </td>
+
+                <td data-label="Telefone">
+                  (92) 99999-0003
+                </td>
+
+                <td data-label="Bairro">Flores</td>
+                <td data-label="Rua">Rua Amazonas</td>
+                <td data-label="Data">14/08/2026</td>
+
+                <td data-label="Status">
+                  <span class="person-status active">
+                    Ativo
+                  </span>
+                </td>
+              </tr>
+
+              <tr data-person="Lucas Martins">
+                <td data-label="Nome">
+                  <strong>Lucas Martins</strong>
+                </td>
+
+                <td data-label="Telefone">
+                  (92) 99999-0004
+                </td>
+
+                <td data-label="Bairro">Compensa</td>
+                <td data-label="Rua">Avenida Central</td>
+                <td data-label="Data">13/08/2026</td>
+
+                <td data-label="Status">
+                  <span class="person-status inactive">
+                    Inativo
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="details-empty-state" class="details-empty-state">
+          <i data-lucide="search-x"></i>
+
+          <strong>Nenhuma pessoa encontrada</strong>
+
+          <p>Tente pesquisar outro nome.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

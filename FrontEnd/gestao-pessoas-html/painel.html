@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Painel de pessoas cadastradas no sistema"
+  >
+
+  <title>Dashboard | Gestão de Cadastros</title>
+
+  <link
+    rel="icon"
+    href="assets/imagens/prefeitura-icon.png"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/global.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/painel.css"
+  >
+
+  <script
+    src="https://unpkg.com/lucide@0.468.0"
+    defer
+  ></script>
+
+  <!--
+    A ordem é importante:
+    api.js -> auth.js -> painel.js
+  -->
+  <script
+    src="js/api.js"
+    defer
+  ></script>
+
+  <script
+    src="js/auth.js"
+    defer
+  ></script>
+
+  <script
+    src="js/painel.js"
+    defer
+  ></script>
+</head>
+
+<body>
+
+  <!-- =========================================
+       OVERLAY MOBILE
+  ========================================== -->
+
+  <div
+    id="menu-overlay"
+    class="menu-overlay"
+  ></div>
+
+
+  <!-- =========================================
+       MENU LATERAL
+  ========================================== -->
+
+  <aside
+    id="sidebar"
+    class="sidebar"
+    aria-label="Menu principal"
+  >
+
+    <div class="sidebar-brand">
+
+      <img
+        src="assets/imagens/prefeitura-icon.png"
+        alt="Logo do sistema"
+        class="sidebar-logo"
+      >
+
+      <div>
+        <strong>
+          Gestão de Cadastros
+        </strong>
+
+        <span>
+          Painel administrativo
+        </span>
+      </div>
+
+      <button
+        id="close-menu"
+        class="icon-button close-menu"
+        type="button"
+        aria-label="Fechar menu"
+      >
+        <i data-lucide="x"></i>
+      </button>
+
+    </div>
+
+
+    <!-- NAVEGAÇÃO -->
+
+    <nav class="sidebar-navigation">
+
+      <span class="sidebar-section-title">
+        Menu principal
+      </span>
+
+      <a
+        href="painel.html"
+        class="sidebar-link active"
+      >
+        <i data-lucide="layout-dashboard"></i>
+
+        <span>
+          Dashboard
+        </span>
+      </a>
+
+      <a
+        href="pessoas.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="users"></i>
+
+        <span>
+          Pessoas cadastradas
+        </span>
+      </a>
+
+      <a
+        href="novo-cadastro.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="user-plus"></i>
+
+        <span>
+          Novo cadastro
+        </span>
+      </a>
+
+      <a
+        href="usuarios.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="user-cog"></i>
+
+        <span>
+          Usuários
+        </span>
+      </a>
+
+      <a
+        href="regioes.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="map-pinned"></i>
+
+        <span>
+          Regiões
+        </span>
+      </a>
+
+      <a
+        href="relatorios.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="file-chart-column"></i>
+
+        <span>
+          Relatórios
+        </span>
+      </a>
+
+      <a
+        href="auditoria.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="file-clock"></i>
+
+        <span>
+          Auditoria
+        </span>
+      </a>
+
+    </nav>
+
+
+    <!-- USUÁRIO LOGADO -->
+
+    <div class="sidebar-user">
+
+      <div
+        id="sidebar-avatar"
+        class="user-avatar"
+      >
+        AD
+      </div>
+
+      <div class="sidebar-user-info">
+
+        <strong id="sidebar-user-name">
+          Administrador
+        </strong>
+
+        <span id="sidebar-user-type">
+          Administrador geral
+        </span>
+
+      </div>
+
+      <button
+        id="logout-button"
+        class="logout-button"
+        type="button"
+        aria-label="Sair do sistema"
+        title="Sair"
+      >
+        <i data-lucide="log-out"></i>
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- =========================================
+       CONTEÚDO PRINCIPAL
+  ========================================== -->
+
+  <div class="app-content">
+
+
+    <!-- =========================================
+         CABEÇALHO
+    ========================================== -->
+
+    <header class="topbar">
+
+      <div class="topbar-left">
+
+        <button
+          id="open-menu"
+          class="icon-button open-menu"
+          type="button"
+          aria-label="Abrir menu"
+        >
+          <i data-lucide="menu"></i>
+        </button>
+
+        <div>
+
+          <h1>
+            Dashboard
+          </h1>
+
+          <p>
+            Visão geral das pessoas cadastradas
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="topbar-actions">
+
+        <label class="topbar-search">
+
+          <i data-lucide="search"></i>
+
+          <input
+            type="search"
+            placeholder="Pesquisar..."
+            aria-label="Pesquisar no sistema"
+          >
+
+        </label>
+
+
+        <button
+          class="notification-button"
+          type="button"
+          aria-label="Notificações"
+        >
+          <i data-lucide="bell"></i>
+
+          <span class="notification-dot"></span>
+        </button>
+
+
+        <button
+          class="profile-button"
+          type="button"
+          aria-label="Abrir menu do perfil"
+        >
+
+          <span
+            id="profile-avatar"
+            class="profile-avatar"
+          >
+            AD
+          </span>
+
+          <span class="profile-info">
+
+            <strong id="logged-user">
+              Administrador
+            </strong>
+
+            <small id="logged-user-type">
+              Administrador geral
+            </small>
+
+          </span>
+
+          <i data-lucide="chevron-down"></i>
+
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <!-- =========================================
+         CONTEÚDO
+    ========================================== -->
+
+    <main class="main-content">
+
+
+      <!-- APRESENTAÇÃO -->
+
+      <section class="dashboard-introduction">
+
+        <div>
+
+          <h2>
+            Olá,
+            <span id="welcome-user">
+              Administrador
+            </span>!
+          </h2>
+
+          <p>
+            Acompanhe os registros cadastrados
+            no sistema.
+          </p>
+
+        </div>
+
+        <span class="demo-badge">
+          Dados atualizados
+        </span>
+
+      </section>
+
+
+      <!-- =========================================
+           INDICADORES
+      ========================================== -->
+
+      <section
+        class="statistics-grid"
+        aria-label="Indicadores de cadastros"
+      >
+
+
+        <!-- TOTAL DE PESSOAS -->
+
+        <article class="statistic-card">
+
+          <div class="statistic-icon blue">
+            <i data-lucide="users"></i>
+          </div>
+
+          <div>
+
+            <p>
+              Pessoas cadastradas
+            </p>
+
+            <strong id="total-pessoas">
+              0
+            </strong>
+
+            <small>
+              Pessoas registradas no sistema
+            </small>
+
+          </div>
+
+        </article>
+
+
+        <!-- CADASTROS HOJE -->
+
+        <article class="statistic-card">
+
+          <div class="statistic-icon cyan">
+            <i data-lucide="calendar-plus"></i>
+          </div>
+
+          <div>
+
+            <p>
+              Cadastros hoje
+            </p>
+
+            <strong id="cadastros-hoje">
+              0
+            </strong>
+
+            <small>
+              Novos registros realizados hoje
+            </small>
+
+          </div>
+
+        </article>
+
+
+        <!-- CADASTRADORES -->
+
+        <article class="statistic-card">
+
+          <div class="statistic-icon green">
+            <i data-lucide="user-round-check"></i>
+          </div>
+
+          <div>
+
+            <p>
+              Usuários cadastradores
+            </p>
+
+            <strong id="total-cadastradores">
+              0
+            </strong>
+
+            <small>
+              Cadastradores ativos
+            </small>
+
+          </div>
+
+        </article>
+
+
+        <!-- LOCALIDADES -->
+
+        <article class="statistic-card">
+
+          <div class="statistic-icon orange">
+            <i data-lucide="map-pin"></i>
+          </div>
+
+          <div>
+
+            <p>
+              Localidades com cadastros
+            </p>
+
+            <strong id="total-localidades">
+              0
+            </strong>
+
+            <small>
+              Bairros e comunidades
+            </small>
+
+          </div>
+
+        </article>
+
+
+        <!-- RUAS -->
+
+        <article class="statistic-card">
+
+          <div class="statistic-icon purple">
+            <i data-lucide="route"></i>
+          </div>
+
+          <div>
+
+            <p>
+              Ruas com cadastros
+            </p>
+
+            <strong id="total-ruas">
+              0
+            </strong>
+
+            <small>
+              Ruas alcançadas pelo sistema
+            </small>
+
+          </div>
+
+        </article>
+
+      </section>
+
+
+      <!-- =========================================
+           REFERÊNCIA DO MUNICÍPIO
+      ========================================== -->
+
+      <section class="dashboard-card population-card">
+
+        <header class="card-header">
+
+          <div>
+
+            <h3>
+              Referência do município
+            </h3>
+
+            <p>
+              População estimada de
+              Presidente Figueiredo
+            </p>
+
+          </div>
+
+          <span
+            id="fonte-populacao"
+            class="population-source"
+          >
+            IBGE
+          </span>
+
+        </header>
+
+
+        <div class="population-grid">
+
+          <div class="population-item">
+
+            <span>
+              População estimada
+            </span>
+
+            <strong id="populacao-estimada">
+              0
+            </strong>
+
+          </div>
+
+
+          <div class="population-item">
+
+            <span>
+              Pessoas cadastradas
+            </span>
+
+            <strong id="populacao-pessoas-cadastradas">
+              0
+            </strong>
+
+          </div>
+
+
+          <div class="population-item">
+
+            <span>
+              Cobertura dos cadastros
+            </span>
+
+            <strong id="percentual-cobertura">
+              0%
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <p
+          id="observacao-populacao"
+          class="population-note"
+        >
+          Indicador comparativo entre pessoas
+          cadastradas e a estimativa oficial
+          do município.
+        </p>
+
+      </section>
+
+
+      <!-- =========================================
+           LOCALIDADES + RUAS
+      ========================================== -->
+
+      <section class="dashboard-grid">
+
+
+        <!-- LOCALIDADES -->
+
+        <article
+          class="dashboard-card neighborhood-card"
+        >
+
+          <header class="card-header">
+
+            <div>
+
+              <h3>
+                Cadastros por localidade
+              </h3>
+
+              <p>
+                Quantidade de pessoas cadastradas
+                por bairro ou comunidade
+              </p>
+
+            </div>
+
+            <a
+              href="regioes.html"
+              class="card-link"
+            >
+              Ver detalhes
+            </a>
+
+          </header>
+
+
+          <div
+            class="bar-chart"
+            id="lista-localidades"
+          >
+            <p>
+              Carregando...
+            </p>
+          </div>
+
+        </article>
+
+
+        <!-- RUAS -->
+
+        <article class="dashboard-card">
+
+          <header class="card-header">
+
+            <div>
+
+              <h3>
+                Cadastros por rua
+              </h3>
+
+              <p>
+                Ruas com mais pessoas cadastradas
+              </p>
+
+            </div>
+
+          </header>
+
+
+          <div
+            class="street-list"
+            id="lista-ruas"
+          >
+            <p>
+              Carregando...
+            </p>
+          </div>
+
+        </article>
+
+      </section>
+
+
+      <!-- =========================================
+           RANKING
+      ========================================== -->
+
+      <section class="dashboard-card ranking-card">
+
+        <header class="card-header">
+
+          <div>
+
+            <h3>
+              Quem mais cadastrou
+            </h3>
+
+            <p>
+              Pessoas cadastradas por usuário
+            </p>
+
+          </div>
+
+          <a
+            href="usuarios.html"
+            class="card-link"
+          >
+            Ver usuários
+          </a>
+
+        </header>
+
+
+        <div
+          class="ranking-list"
+          id="ranking-cadastradores"
+        >
+          <p>
+            Carregando...
+          </p>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+</body>
+</html>

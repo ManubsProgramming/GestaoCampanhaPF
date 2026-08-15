@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Pessoas cadastradas no sistema"
+  >
+
+  <title>
+    Pessoas cadastradas | Gestão de Cadastros
+  </title>
+
+  <link
+    rel="icon"
+    href="assets/imagens/prefeitura-icon.png"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/global.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/painel.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/pessoas.css"
+  >
+
+  <script
+    src="https://unpkg.com/lucide@0.468.0"
+    defer
+  ></script>
+
+  <script
+    src="js/api.js"
+    defer
+  ></script>
+
+  <script
+    src="js/auth.js"
+    defer
+  ></script>
+
+  <script
+    src="js/pessoas.js"
+    defer
+  ></script>
+</head>
+
+<body>
+
+  <!-- =====================================
+       OVERLAY MOBILE
+  ====================================== -->
+
+  <div
+    id="menu-overlay"
+    class="menu-overlay"
+  ></div>
+
+
+  <!-- =====================================
+       MENU LATERAL
+  ====================================== -->
+
+  <aside
+    id="sidebar"
+    class="sidebar"
+    aria-label="Menu principal"
+  >
+
+    <div class="sidebar-brand">
+
+      <img
+        src="assets/imagens/prefeitura-icon.png"
+        alt="Logo do sistema"
+        class="sidebar-logo"
+      >
+
+      <div>
+        <strong>
+          Gestão de Cadastros
+        </strong>
+
+        <span>
+          Painel administrativo
+        </span>
+      </div>
+
+      <button
+        id="close-menu"
+        class="icon-button close-menu"
+        type="button"
+        aria-label="Fechar menu"
+      >
+        <i data-lucide="x"></i>
+      </button>
+
+    </div>
+
+
+    <!-- NAVEGAÇÃO -->
+
+    <nav class="sidebar-navigation">
+
+      <span class="sidebar-section-title">
+        Menu principal
+      </span>
+
+      <a
+        href="painel.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="layout-dashboard"></i>
+
+        <span>
+          Dashboard
+        </span>
+      </a>
+
+      <a
+        href="pessoas.html"
+        class="sidebar-link active"
+      >
+        <i data-lucide="users"></i>
+
+        <span>
+          Pessoas cadastradas
+        </span>
+      </a>
+
+      <a
+        href="novo-cadastro.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="user-plus"></i>
+
+        <span>
+          Novo cadastro
+        </span>
+      </a>
+
+      <a
+        href="usuarios.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="user-cog"></i>
+
+        <span>
+          Usuários
+        </span>
+      </a>
+
+      <a
+        href="regioes.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="map-pinned"></i>
+
+        <span>
+          Regiões
+        </span>
+      </a>
+
+      <a
+        href="relatorios.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="file-chart-column"></i>
+
+        <span>
+          Relatórios
+        </span>
+      </a>
+
+      <a
+        href="auditoria.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="file-clock"></i>
+
+        <span>
+          Auditoria
+        </span>
+      </a>
+
+    </nav>
+
+
+    <!-- USUÁRIO LOGADO -->
+
+    <div class="sidebar-user">
+
+      <div class="user-avatar">
+        AD
+      </div>
+
+      <div class="sidebar-user-info">
+
+        <strong>
+          Administrador
+        </strong>
+
+        <span>
+          Administrador geral
+        </span>
+
+      </div>
+
+      <button
+        id="logout-button"
+        class="logout-button"
+        type="button"
+        aria-label="Sair do sistema"
+        title="Sair"
+      >
+        <i data-lucide="log-out"></i>
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- =====================================
+       CONTEÚDO
+  ====================================== -->
+
+  <div class="app-content">
+
+
+    <!-- =====================================
+         CABEÇALHO
+    ====================================== -->
+
+    <header class="topbar">
+
+      <div class="topbar-left">
+
+        <button
+          id="open-menu"
+          class="icon-button open-menu"
+          type="button"
+          aria-label="Abrir menu"
+        >
+          <i data-lucide="menu"></i>
+        </button>
+
+        <div>
+
+          <h1>
+            Pessoas cadastradas
+          </h1>
+
+          <p>
+            Gerencie os registros do sistema
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="topbar-actions">
+
+        <button
+          class="notification-button"
+          type="button"
+          aria-label="Notificações"
+        >
+          <i data-lucide="bell"></i>
+
+          <span class="notification-dot"></span>
+        </button>
+
+
+        <button
+          class="profile-button"
+          type="button"
+          aria-label="Abrir perfil"
+        >
+
+          <span class="profile-avatar">
+            AD
+          </span>
+
+          <span class="profile-info">
+
+            <strong id="logged-user">
+              Administrador
+            </strong>
+
+            <small>
+              Administrador geral
+            </small>
+
+          </span>
+
+          <i data-lucide="chevron-down"></i>
+
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <!-- =====================================
+         CONTEÚDO PRINCIPAL
+    ====================================== -->
+
+    <main class="main-content">
+
+
+      <!-- INTRODUÇÃO -->
+
+      <section class="page-introduction">
+
+        <div>
+
+          <h2>
+            Pessoas cadastradas
+          </h2>
+
+          <p>
+            Todos os registros apresentados pertencem
+            exclusivamente ao sistema.
+          </p>
+
+        </div>
+
+
+        <a
+          href="novo-cadastro.html"
+          class="new-person-button"
+        >
+          <i data-lucide="plus"></i>
+
+          <span>
+            Novo cadastro
+          </span>
+        </a>
+
+      </section>
+
+
+      <!-- =====================================
+           RESUMO
+      ====================================== -->
+
+      <section
+        class="people-summary"
+        aria-label="Resumo dos cadastros"
+      >
+
+        <article>
+
+          <span>
+            Total de pessoas cadastradas
+          </span>
+
+          <strong id="people-total">
+            0
+          </strong>
+
+        </article>
+
+
+        <article>
+
+          <span>
+            Cadastros ativos
+          </span>
+
+          <strong>
+            0
+          </strong>
+
+        </article>
+
+
+        <article>
+
+          <span>
+            Cadastros hoje
+          </span>
+
+          <strong>
+            0
+          </strong>
+
+        </article>
+
+      </section>
+
+
+      <!-- =====================================
+           FILTROS
+      ====================================== -->
+
+      <section class="filters-card">
+
+        <div class="filters-header">
+
+          <div>
+
+            <h3>
+              Pesquisa e filtros
+            </h3>
+
+            <p>
+              Encontre pessoas cadastradas no sistema
+            </p>
+
+          </div>
+
+
+          <button
+            id="clear-filters"
+            class="clear-filters-button"
+            type="button"
+          >
+            Limpar filtros
+          </button>
+
+        </div>
+
+
+        <div class="filters-grid">
+
+
+          <!-- PESQUISA -->
+
+          <label class="filter-field search-field">
+
+            <span>
+              Pesquisar
+            </span>
+
+            <div class="field-with-icon">
+
+              <i data-lucide="search"></i>
+
+              <input
+                id="people-search"
+                type="search"
+                placeholder="Nome, telefone, CPF ou título"
+              >
+
+            </div>
+
+          </label>
+
+
+          <!-- LOCALIDADE -->
+
+          <label class="filter-field">
+
+            <span>
+              Localidade
+            </span>
+
+            <select id="neighborhood-filter">
+
+              <option value="">
+                Todas as localidades
+              </option>
+
+            </select>
+
+          </label>
+
+
+          <!-- RUA -->
+
+          <label class="filter-field">
+
+            <span>
+              Rua
+            </span>
+
+            <select id="street-filter">
+
+              <option value="">
+                Todas as ruas
+              </option>
+
+            </select>
+
+          </label>
+
+
+          <!-- CADASTRADO POR -->
+
+          <label class="filter-field">
+
+            <span>
+              Cadastrado por
+            </span>
+
+            <select id="user-filter">
+
+              <option value="">
+                Todos os usuários
+              </option>
+
+            </select>
+
+          </label>
+
+
+          <!-- PERÍODO -->
+
+          <label class="filter-field">
+
+            <span>
+              Período
+            </span>
+
+            <select id="period-filter">
+
+              <option value="">
+                Todos os períodos
+              </option>
+
+              <option value="hoje">
+                Hoje
+              </option>
+
+              <option value="semana">
+                Últimos 7 dias
+              </option>
+
+              <option value="mes">
+                Este mês
+              </option>
+
+            </select>
+
+          </label>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           LISTA DE PESSOAS
+      ====================================== -->
+
+      <section class="people-card">
+
+        <header class="people-card-header">
+
+          <div>
+
+            <h3>
+              Lista de pessoas cadastradas
+            </h3>
+
+            <p>
+              <span id="visible-total">
+                0
+              </span>
+
+              registros encontrados
+            </p>
+
+          </div>
+
+        </header>
+
+
+        <!-- TABELA -->
+
+        <div class="table-container">
+
+          <table class="people-table">
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Nome
+                </th>
+
+                <th>
+                  Telefone
+                </th>
+
+                <th>
+                  Localidade
+                </th>
+
+                <th>
+                  Rua
+                </th>
+
+                <th>
+                  Data do cadastro
+                </th>
+
+                <th>
+                  Cadastrado por
+                </th>
+
+                <th>
+                  Status
+                </th>
+
+                <th>
+                  Ações
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <!--
+              AS LINHAS SERÃO CRIADAS
+              PELO pessoas.js
+            -->
+
+            <tbody id="people-table-body">
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <!-- ESTADO VAZIO -->
+
+        <div
+          id="empty-state"
+          class="empty-state"
+        >
+
+          <i data-lucide="search-x"></i>
+
+          <strong>
+            Nenhum cadastro encontrado
+          </strong>
+
+          <p>
+            Tente alterar ou limpar os filtros.
+          </p>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+</body>
+</html>

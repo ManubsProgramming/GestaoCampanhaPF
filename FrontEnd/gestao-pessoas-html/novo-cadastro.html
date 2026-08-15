@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Cadastro de pessoas no sistema"
+  >
+
+  <title>
+    Novo cadastro | Gestão de Cadastros
+  </title>
+
+  <link
+    rel="icon"
+    href="assets/imagens/prefeitura-icon.png"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/global.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/painel.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/novo-cadastro.css"
+  >
+
+  <script
+    src="https://unpkg.com/lucide@0.468.0"
+    defer
+  ></script>
+
+  <script
+    src="js/api.js"
+    defer
+  ></script>
+
+  <script
+    src="js/auth.js"
+    defer
+  ></script>
+
+  <script
+    src="js/novo-cadastro.js"
+    defer
+  ></script>
+</head>
+
+<body>
+
+  <!-- OVERLAY MOBILE -->
+
+  <div
+    id="menu-overlay"
+    class="menu-overlay"
+  ></div>
+
+
+  <!-- MENU LATERAL -->
+
+  <aside
+    id="sidebar"
+    class="sidebar"
+    aria-label="Menu principal"
+  >
+
+    <div class="sidebar-brand">
+
+      <img
+        src="assets/imagens/prefeitura-icon.png"
+        alt="Logo do sistema"
+        class="sidebar-logo"
+      >
+
+      <div>
+        <strong>
+          Gestão de Cadastros
+        </strong>
+
+        <span>
+          Painel administrativo
+        </span>
+      </div>
+
+      <button
+        id="close-menu"
+        class="icon-button close-menu"
+        type="button"
+        aria-label="Fechar menu"
+      >
+        <i data-lucide="x"></i>
+      </button>
+
+    </div>
+
+
+    <nav class="sidebar-navigation">
+
+      <span class="sidebar-section-title">
+        Menu principal
+      </span>
+
+      <a
+        href="painel.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="layout-dashboard"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a
+        href="pessoas.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="users"></i>
+        <span>Pessoas cadastradas</span>
+      </a>
+
+      <a
+        href="novo-cadastro.html"
+        class="sidebar-link active"
+      >
+        <i data-lucide="user-plus"></i>
+        <span>Novo cadastro</span>
+      </a>
+
+      <a
+        href="usuarios.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="user-cog"></i>
+        <span>Usuários</span>
+      </a>
+
+      <a
+        href="regioes.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="map-pinned"></i>
+        <span>Regiões</span>
+      </a>
+
+      <a
+        href="relatorios.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="file-chart-column"></i>
+        <span>Relatórios</span>
+      </a>
+
+      <a
+        href="auditoria.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="file-clock"></i>
+        <span>Auditoria</span>
+      </a>
+
+    </nav>
+
+
+    <div class="sidebar-user">
+
+      <div class="user-avatar">
+        AD
+      </div>
+
+      <div class="sidebar-user-info">
+        <strong>
+          Administrador
+        </strong>
+
+        <span>
+          Administrador geral
+        </span>
+      </div>
+
+      <button
+        id="logout-button"
+        class="logout-button"
+        type="button"
+        aria-label="Sair do sistema"
+        title="Sair"
+      >
+        <i data-lucide="log-out"></i>
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- CONTEÚDO -->
+
+  <div class="app-content">
+
+
+    <!-- CABEÇALHO -->
+
+    <header class="topbar">
+
+      <div class="topbar-left">
+
+        <button
+          id="open-menu"
+          class="icon-button open-menu"
+          type="button"
+          aria-label="Abrir menu"
+        >
+          <i data-lucide="menu"></i>
+        </button>
+
+        <div>
+          <h1>
+            Novo cadastro
+          </h1>
+
+          <p>
+            Cadastre uma nova pessoa no sistema
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="topbar-actions">
+
+        <button
+          class="notification-button"
+          type="button"
+          aria-label="Notificações"
+        >
+          <i data-lucide="bell"></i>
+
+          <span class="notification-dot"></span>
+        </button>
+
+        <button
+          class="profile-button"
+          type="button"
+          aria-label="Abrir perfil"
+        >
+
+          <span class="profile-avatar">
+            AD
+          </span>
+
+          <span class="profile-info">
+
+            <strong id="logged-user">
+              Administrador
+            </strong>
+
+            <small>
+              Administrador geral
+            </small>
+
+          </span>
+
+          <i data-lucide="chevron-down"></i>
+
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <!-- CONTEÚDO PRINCIPAL -->
+
+    <main class="main-content">
+
+      <section class="page-introduction">
+
+        <div>
+          <h2>
+            Cadastro de pessoa
+          </h2>
+
+          <p>
+            Preencha os dados abaixo para realizar
+            um novo cadastro.
+          </p>
+        </div>
+
+        <a
+          href="pessoas.html"
+          class="back-button"
+        >
+          <i data-lucide="arrow-left"></i>
+          <span>Voltar</span>
+        </a>
+
+      </section>
+
+
+      <form
+        id="registration-form"
+        class="registration-form"
+        novalidate
+      >
+
+        <!-- DADOS PESSOAIS -->
+
+        <section class="form-card">
+
+          <header class="form-card-header">
+
+            <div class="form-card-icon">
+              <i data-lucide="user"></i>
+            </div>
+
+            <div>
+              <h3>
+                Dados pessoais
+              </h3>
+
+              <p>
+                Informações básicas da pessoa cadastrada.
+              </p>
+            </div>
+
+          </header>
+
+
+          <div class="form-grid">
+
+
+            <!-- NOME -->
+
+            <div class="form-field form-field-full">
+
+              <label for="full-name">
+                Nome completo
+                <span class="required">*</span>
+              </label>
+
+              <input
+                id="full-name"
+                name="nome_completo"
+                type="text"
+                placeholder="Digite o nome completo"
+                autocomplete="name"
+                required
+              >
+
+              <span class="field-error"></span>
+
+            </div>
+
+
+            <!-- CPF -->
+
+            <div class="form-field">
+
+              <label for="cpf">
+                CPF
+                <span class="required">*</span>
+              </label>
+
+              <div class="field-action-row">
+
+                <input
+                  id="cpf"
+                  name="cpf"
+                  type="text"
+                  inputmode="numeric"
+                  placeholder="000.000.000-00"
+                  autocomplete="off"
+                  maxlength="14"
+                  required
+                >
+
+                <button
+                  id="validate-cpf-button"
+                  class="secondary-button"
+                  type="button"
+                >
+                  <i data-lucide="shield-check"></i>
+
+                  <span>
+                    Validar na Receita
+                  </span>
+                </button>
+
+              </div>
+
+              <span class="field-error"></span>
+
+            </div>
+
+
+            <!-- NASCIMENTO -->
+
+            <div class="form-field">
+
+              <label for="birth-date">
+                Data de nascimento
+                <span class="required">*</span>
+              </label>
+
+              <input
+                id="birth-date"
+                name="data_nascimento"
+                type="date"
+                required
+              >
+
+              <span class="field-error"></span>
+
+            </div>
+
+
+            <!-- TÍTULO -->
+
+            <div class="form-field">
+
+              <label for="voter-title">
+                Título de eleitor
+              </label>
+
+              <input
+                id="voter-title"
+                name="titulo_eleitor"
+                type="text"
+                inputmode="numeric"
+                placeholder="Digite o título de eleitor"
+                autocomplete="off"
+              >
+
+              <span class="field-error"></span>
+
+            </div>
+
+
+            <!-- TELEFONE -->
+
+            <div class="form-field">
+
+              <label for="phone">
+                Telefone
+                <span class="required">*</span>
+              </label>
+
+              <input
+                id="phone"
+                name="telefone"
+                type="tel"
+                inputmode="tel"
+                placeholder="(92) 99999-9999"
+                autocomplete="tel"
+                required
+              >
+
+              <span class="field-error"></span>
+
+            </div>
+
+          </div>
+
+
+          <!-- CONFERÊNCIA CPF -->
+
+          <div
+            id="cpf-validation-box"
+            class="cpf-validation-box"
+          >
+
+            <div class="cpf-validation-header">
+
+              <i data-lucide="badge-check"></i>
+
+              <div>
+
+                <strong>
+                  Conferência do CPF
+                </strong>
+
+                <p>
+                  Clique em "Validar na Receita" para abrir
+                  a consulta oficial. Resolva o captcha,
+                  confira o CPF e os dados apresentados e
+                  depois retorne ao sistema.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <label class="cpf-validation-check">
+
+              <input
+                id="cpf-confirmed"
+                type="checkbox"
+              >
+
+              <span>
+                Confirmo que realizei a consulta no site
+                oficial da Receita Federal e conferi os
+                dados apresentados.
+              </span>
+
+            </label>
+
+
+            <p
+              id="cpf-validation-status"
+              class="cpf-validation-status"
+            >
+              CPF ainda não conferido.
+            </p>
+
+          </div>
+
+        </section>
+
+
+        <!-- ENDEREÇO -->
+
+        <section class="form-card">
+
+          <header class="form-card-header">
+
+            <div class="form-card-icon">
+              <i data-lucide="map-pin"></i>
+            </div>
+
+            <div>
+              <h3>
+                Endereço e localização
+              </h3>
+
+              <p>
+                Informe a localização da pessoa cadastrada.
+              </p>
+            </div>
+
+          </header>
+
+
+          <div class="form-grid">
+
+
+            <!-- REGIÃO -->
+
+            <div class="form-field">
+
+              <label for="region">
+                Região
+                <span class="required">*</span>
+              </label>
+
+              <select
+                id="region"
+                name="regiao"
+                required
+              >
+
+                <option value="">
+                  Carregando regiões...
+                </option>
+
+              </select>
+
+              <span class="field-error"></span>
+
+            </div>
+
+
+            <!-- LOCALIDADE -->
+
+            <div class="form-field">
+
+              <label for="neighborhood">
+                Localidade
+                <span class="required">*</span>
+              </label>
+
+              <select
+                id="neighborhood"
+                name="localidade"
+                disabled
+                required
+              >
+
+                <option value="">
+                  Selecione primeiro a região
+                </option>
+
+              </select>
+
+              <span class="field-error"></span>
+
+            </div>
+
+
+            <!-- RUA -->
+
+            <div class="form-field">
+
+              <label for="street">
+                Rua
+                <span class="required">*</span>
+              </label>
+
+              <select
+                id="street"
+                name="rua"
+                disabled
+                required
+              >
+
+                <option value="">
+                  Selecione primeiro a localidade
+                </option>
+
+              </select>
+
+              <span class="field-error"></span>
+
+            </div>
+
+
+            <!-- NÚMERO -->
+
+            <div class="form-field">
+
+              <label for="number">
+                Número
+              </label>
+
+              <input
+                id="number"
+                name="numero"
+                type="text"
+                placeholder="Ex.: 123"
+              >
+
+              <span class="field-error"></span>
+
+            </div>
+
+
+            <!-- COMPLEMENTO -->
+
+            <div class="form-field form-field-full">
+
+              <label for="complement">
+                Complemento
+              </label>
+
+              <input
+                id="complement"
+                name="complemento"
+                type="text"
+                placeholder="Casa, bloco, apartamento, referência..."
+              >
+
+              <span class="field-error"></span>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- OBSERVAÇÕES -->
+
+        <section class="form-card">
+
+          <header class="form-card-header">
+
+            <div class="form-card-icon">
+              <i data-lucide="message-square-text"></i>
+            </div>
+
+            <div>
+              <h3>
+                Observações
+              </h3>
+
+              <p>
+                Informações adicionais sobre o cadastro.
+              </p>
+            </div>
+
+          </header>
+
+
+          <div class="form-field">
+
+            <label for="observations">
+              Observações
+            </label>
+
+            <textarea
+              id="observations"
+              name="observacoes"
+              rows="5"
+              maxlength="1000"
+              placeholder="Digite informações adicionais, se necessário..."
+            ></textarea>
+
+            <div class="textarea-footer">
+
+              <span class="field-error"></span>
+
+              <span class="character-counter">
+                <span id="character-total">0</span>
+                /1000
+              </span>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- RESPONSÁVEL -->
+
+        <section class="registration-responsible">
+
+          <div>
+
+            <span>
+              Cadastro realizado por
+            </span>
+
+            <strong id="registered-by">
+              Carregando...
+            </strong>
+
+          </div>
+
+          <p>
+            O responsável é definido automaticamente
+            pelo usuário autenticado.
+          </p>
+
+        </section>
+
+
+        <!-- AÇÕES -->
+
+        <div class="form-actions">
+
+          <a
+            href="pessoas.html"
+            class="cancel-button"
+          >
+            Cancelar
+          </a>
+
+          <button
+            id="save-button"
+            class="save-button"
+            type="submit"
+          >
+            <i data-lucide="save"></i>
+
+            <span>
+              Salvar cadastro
+            </span>
+          </button>
+
+        </div>
+
+      </form>
+
+    </main>
+
+  </div>
+
+
+  <!-- MODAL DE SUCESSO -->
+
+  <div
+    id="success-modal"
+    class="modal-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="success-title"
+  >
+
+    <div class="success-modal">
+
+      <div class="success-icon">
+        <i data-lucide="circle-check-big"></i>
+      </div>
+
+      <h2 id="success-title">
+        Cadastro realizado!
+      </h2>
+
+      <p>
+        A pessoa foi cadastrada com sucesso no sistema.
+      </p>
+
+      <div class="success-actions">
+
+        <button
+          id="new-registration-button"
+          class="primary-button"
+          type="button"
+        >
+          <i data-lucide="user-plus"></i>
+
+          <span>
+            Fazer novo cadastro
+          </span>
+        </button>
+
+        <a
+          href="pessoas.html"
+          class="secondary-link-button"
+        >
+          Ver pessoas cadastradas
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
