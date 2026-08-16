@@ -146,4 +146,44 @@ a {
   body {
     font-size: 1rem;
   }
+  /* =========================================
+   PROTEÇÃO DE ACESSO
+========================================= */
+
+/*
+ * Toda página protegida começa
+ * invisível.
+ *
+ * O auth.js só libera depois
+ * que o backend confirmar
+ * quem é o usuário.
+ */
+
+body.auth-loading {
+  visibility: hidden;
+}
+
+
+/*
+ * Depois da validação,
+ * a página aparece.
+ */
+
+body.auth-ready {
+  visibility: visible;
+}
+
+
+/*
+ * Links administrativos
+ * começam escondidos.
+ *
+ * O JavaScript libera somente
+ * quando o usuário realmente
+ * for ADMINISTRADOR.
+ */
+
+[data-admin-only] {
+  display: none;
+}
 }
