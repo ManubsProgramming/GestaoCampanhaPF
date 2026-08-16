@@ -145,27 +145,11 @@ if os.environ.get("PGHOST"):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-
-            "NAME": os.environ.get(
-                "PGDATABASE"
-            ),
-
-            "USER": os.environ.get(
-                "PGUSER"
-            ),
-
-            "PASSWORD": os.environ.get(
-                "PGPASSWORD"
-            ),
-
-            "HOST": os.environ.get(
-                "PGHOST"
-            ),
-
-            "PORT": os.environ.get(
-                "PGPORT",
-                "5432",
-            ),
+            "NAME": os.environ.get("PGDATABASE"),
+            "USER": os.environ.get("PGUSER"),
+            "PASSWORD": os.environ.get("PGPASSWORD"),
+            "HOST": os.environ.get("PGHOST"),
+            "PORT": os.environ.get("PGPORT", "5432"),
         }
     }
 
@@ -173,32 +157,26 @@ else:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
-
             "NAME": os.environ.get(
                 "MARIADB_DATABASE",
                 "gestaopf",
             ),
-
             "USER": os.environ.get(
                 "MARIADB_USER",
                 "root",
             ),
-
             "PASSWORD": os.environ.get(
                 "MARIADB_PASSWORD",
                 "",
             ),
-
             "HOST": os.environ.get(
                 "MARIADB_HOST",
                 "localhost",
             ),
-
             "PORT": os.environ.get(
                 "MARIADB_PORT",
                 "3308",
             ),
-
             "OPTIONS": {
                 "charset": "utf8mb4",
             },
