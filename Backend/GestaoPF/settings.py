@@ -27,13 +27,17 @@ load_dotenv(
 
 SECRET_KEY = os.environ.get(
     "SECRET_KEY",
-    "django-insecure-qu@q3_ax6ad03^ju1f!mvjo34(la8y9=edk#nx@!-hzg$f7_so",
 )
+
+if not SECRET_KEY:
+    raise RuntimeError(
+        "A variável SECRET_KEY não foi configurada."
+    )
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = (
     os.environ.get(
         "DEBUG",
-        "True",
+        "False",
     ).lower()
     == "true"
 )
@@ -73,17 +77,15 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 MIDDLEWARE = [
-
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
+    "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
+    "corsheaders.middleware.CorsMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 CSRF_TRUSTED_ORIGINS = [
     
@@ -139,40 +141,69 @@ WSGI_APPLICATION = 'GestaoPF.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
+if os.environ.get("PGHOST"):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
 
-        "NAME": os.environ.get(
-            "MARIADB_DATABASE",
-            "gestaopf",
-        ),
+            "NAME": os.environ.get(
+                "PGDATABASE"
+            ),
 
-        "USER": os.environ.get(
-            "MARIADB_USER",
-            "root",
-        ),
+            "USER": os.environ.get(
+                "PGUSER"
+            ),
 
-        "PASSWORD": os.environ.get(
-            "MARIADB_PASSWORD",
-            "manu123",
-        ),
+            "PASSWORD": os.environ.get(
+                "PGPASSWORD"
+            ),
 
-        "HOST": os.environ.get(
-            "MARIADB_HOST",
-            "localhost",
-        ),
+            "HOST": os.environ.get(
+                "PGHOST"
+            ),
 
-        "PORT": os.environ.get(
-            "MARIADB_PORT",
-            "3308",
-        ),
-
-        "OPTIONS": {
-            "charset": "utf8mb4",
-        },
+            "PORT": os.environ.get(
+                "PGPORT",
+                "5432",
+            ),
+        }
     }
-}
+
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+
+            "NAME": os.environ.get(
+                "MARIADB_DATABASE",
+                "gestaopf",
+            ),
+
+            "USER": os.environ.get(
+                "MARIADB_USER",
+                "root",
+            ),
+
+            "PASSWORD": os.environ.get(
+                "MARIADB_PASSWORD",
+                "",
+            ),
+
+            "HOST": os.environ.get(
+                "MARIADB_HOST",
+                "localhost",
+            ),
+
+            "PORT": os.environ.get(
+                "MARIADB_PORT",
+                "3308",
+            ),
+
+            "OPTIONS": {
+                "charset": "utf8mb4",
+            },
+        }
+    }
 
 AUTH_USER_MODEL = "usuarios.Usuario"
 
