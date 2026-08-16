@@ -142,32 +142,52 @@ WSGI_APPLICATION = 'GestaoPF.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-import dj_database_url
+# =========================================================
+# BANCO DE DADOS
+# PostgreSQL no Railway / MariaDB local
+# =========================================================
 
+if os.environ.get("DATABASE_URL"):
+    from urllib.parse import urlparse
 
-database_url = os.environ.get(
-    "DATABASE_URL"
-)
+    database_url = urlparse(
+        os.environ.get("DATABASE_URL")
+    )
 
-
-if database_url:
     DATABASES = {
-        "default": dj_database_url.parse(
-            database_url,
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
 
-    # Railway normalmente fornece PGDATABASE.
-    # Se o nome não veio na URL, usamos essa variável.
-    if not DATABASES["default"].get("NAME"):
-        DATABASES["default"]["NAME"] = (
-            os.environ.get(
-                "PGDATABASE",
-                "railway",
-            )
-        )
+            "NAME": (
+                os.environ.get("PGDATABASE")
+                or database_url.path.lstrip("/")
+                or "railway"
+            ),
+
+            "USER": (
+                os.environ.get("PGUSER")
+                or database_url.username
+            ),
+
+            "PASSWORD": (
+                os.environ.get("PGPASSWORD")
+                or database_url.password
+            ),
+
+            "HOST": (
+                os.environ.get("PGHOST")
+                or database_url.hostname
+            ),
+
+            "PORT": (
+                os.environ.get("PGPORT")
+                or database_url.port
+                or "5432"
+            ),
+
+            "CONN_MAX_AGE": 600,
+        }
+    }
 
 else:
     DATABASES = {
