@@ -98,7 +98,89 @@
   font-size: 14px;
   line-height: 1.6;
 }
+.person-details-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  text-align: left;
+  margin-top: 8px;
+}
 
+.person-details-section {
+  padding-bottom: 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.person-details-section:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.person-details-section h4 {
+  margin: 0 0 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.person-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 22px;
+}
+
+.person-details-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.person-details-grid > div.full {
+  grid-column: 1 / -1;
+}
+
+.person-details-grid span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.person-details-grid strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  word-break: break-word;
+}
+
+@media (max-width: 640px) {
+  .person-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .person-details-grid > div.full {
+    grid-column: auto;
+  }
+}
+#system-modal-message {
+  white-space: pre-line;
+  text-align: left;
+  line-height: 1.6;
+  width: 100%;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.system-modal {
+  width: min(560px, calc(100% - 32px));
+  max-height: 90vh;
+}
+#system-modal-message::-webkit-scrollbar {
+  width: 6px;
+}
+
+#system-modal-message::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
 /* =========================
    BOTÕES
 ========================= */

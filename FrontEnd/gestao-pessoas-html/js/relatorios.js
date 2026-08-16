@@ -1421,12 +1421,12 @@ exportExcelButton
         )
 
 
-        await baixarArquivo(
-          `/relatorios/exportar/excel/${
-            query
+      await baixarArquivo(
+         `/relatorios/exportar/excel/${
+          query
               ? `?${query}`
-              : ""
-          }`,
+            : ""
+           }`,
 
           "relatorio_pessoas_cadastradas.xlsx"
         )

@@ -600,14 +600,49 @@ function renderizarTabela(lista) {
 /* =========================
    VISUALIZAR PESSOA
 ========================= */
-
 async function visualizarPessoa(pessoa) {
+  const dataNascimento =
+    pessoa.data_nascimento
+      ? new Date(
+          `${pessoa.data_nascimento}T00:00:00`
+        ).toLocaleDateString("pt-BR")
+      : "-";
+
+  const criadoEm =
+    pessoa.criado_em
+      ? new Date(
+          pessoa.criado_em
+        ).toLocaleString("pt-BR")
+      : "-";
+
   const mensagem = [
-    `Nome: ${pessoa.nome_completo || "-"}`,
+    "DADOS PESSOAIS",
+    "",
+    `Nome completo: ${pessoa.nome_completo || "-"}`,
     `CPF: ${pessoa.cpf || "-"}`,
+    `Data de nascimento: ${dataNascimento}`,
     `Telefone: ${formatarTelefone(pessoa.telefone)}`,
+    "",
+    "DADOS ELEITORAIS",
+    "",
+    `Título de eleitor: ${pessoa.titulo_eleitor || "-"}`,
+    `Zona eleitoral: ${pessoa.zona_eleitoral || "-"}`,
+    `Seção eleitoral: ${pessoa.secao_eleitoral || "-"}`,
+    `Município eleitoral: ${pessoa.municipio_eleitoral || "-"}`,
+    "",
+    "ENDEREÇO",
+    "",
+    `Região: ${pessoa.regiao_nome || "-"}`,
     `Localidade: ${nomeLocalidade(pessoa) || "-"}`,
-    `Rua: ${nomeRua(pessoa) || "-"}`
+    `Rua: ${nomeRua(pessoa) || "-"}`,
+    `Número: ${pessoa.numero || "-"}`,
+    `Complemento: ${pessoa.complemento || "-"}`,
+    "",
+    "INFORMAÇÕES DO CADASTRO",
+    "",
+    `Status: ${pessoa.status || "-"}`,
+    `Cadastrada por: ${pessoa.cadastrada_por_nome || "-"}`,
+    `Data do cadastro: ${criadoEm}`
   ].join("\n");
 
   if (window.SystemModal) {
@@ -623,6 +658,8 @@ async function visualizarPessoa(pessoa) {
 
   window.alert(mensagem);
 }
+
+
 
 /* =========================
    EXCLUIR PESSOA

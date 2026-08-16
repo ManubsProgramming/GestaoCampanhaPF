@@ -87,6 +87,19 @@ const notificationButton = document.querySelector(
   ".notification-button"
 );
 
+
+/* =========================
+   MODO CADASTRO / EDIÇÃO
+========================= */
+
+const pageParams = new URLSearchParams(
+  window.location.search
+);
+
+const editingPersonId = pageParams.get("id");
+
+const isEditing = Boolean(editingPersonId);
+
 let currentUser = null;
 
 
@@ -121,29 +134,38 @@ async function showMessage({
 function openMenu() {
   sidebar?.classList.add("open");
   menuOverlay?.classList.add("visible");
-  document.body.style.overflow = "hidden";
+
+  document.body.style.overflow =
+    "hidden";
 }
+
 
 function closeMenu() {
   sidebar?.classList.remove("open");
   menuOverlay?.classList.remove("visible");
-  document.body.style.overflow = "";
+
+  document.body.style.overflow =
+    "";
 }
+
 
 openMenuButton?.addEventListener(
   "click",
   openMenu
 );
 
+
 closeMenuButton?.addEventListener(
   "click",
   closeMenu
 );
 
+
 menuOverlay?.addEventListener(
   "click",
   closeMenu
 );
+
 
 window.addEventListener(
   "resize",
@@ -273,46 +295,73 @@ function configureMenuByProfile(user) {
 
 
 /* =========================
+   FORMATAÇÃO
+========================= */
+
+function formatCpfValue(value) {
+  const numbers = String(value || "")
+    .replace(/\D/g, "")
+    .slice(0, 11);
+
+  return numbers
+    .replace(
+      /(\d{3})(\d)/,
+      "$1.$2"
+    )
+    .replace(
+      /(\d{3})(\d)/,
+      "$1.$2"
+    )
+    .replace(
+      /(\d{3})(\d{1,2})$/,
+      "$1-$2"
+    );
+}
+
+
+function formatPhoneValue(value) {
+  const numbers = String(value || "")
+    .replace(/\D/g, "")
+    .slice(0, 11);
+
+  if (numbers.length > 10) {
+    return numbers.replace(
+      /^(\d{2})(\d{5})(\d{0,4})/,
+      "($1) $2-$3"
+    );
+  }
+
+  if (numbers.length > 6) {
+    return numbers.replace(
+      /^(\d{2})(\d{4})(\d{0,4})/,
+      "($1) $2-$3"
+    );
+  }
+
+  if (numbers.length > 2) {
+    return numbers.replace(
+      /^(\d{2})(\d{0,5})/,
+      "($1) $2"
+    );
+  }
+
+  return numbers
+    ? `(${numbers}`
+    : "";
+}
+
+
+/* =========================
    MÁSCARA DO TELEFONE
 ========================= */
 
 phoneInput?.addEventListener(
   "input",
   function () {
-    let numbers = phoneInput.value
-      .replace(/\D/g, "")
-      .slice(0, 11);
-
-    if (numbers.length > 10) {
-      phoneInput.value = numbers.replace(
-        /^(\d{2})(\d{5})(\d{0,4})/,
-        "($1) $2-$3"
+    phoneInput.value =
+      formatPhoneValue(
+        phoneInput.value
       );
-
-      return;
-    }
-
-    if (numbers.length > 6) {
-      phoneInput.value = numbers.replace(
-        /^(\d{2})(\d{4})(\d{0,4})/,
-        "($1) $2-$3"
-      );
-
-      return;
-    }
-
-    if (numbers.length > 2) {
-      phoneInput.value = numbers.replace(
-        /^(\d{2})(\d{0,5})/,
-        "($1) $2"
-      );
-
-      return;
-    }
-
-    phoneInput.value = numbers
-      ? `(${numbers}`
-      : "";
   }
 );
 
@@ -340,22 +389,9 @@ function resetCpfConfirmation() {
 cpfInput?.addEventListener(
   "input",
   function () {
-    let numbers = cpfInput.value
-      .replace(/\D/g, "")
-      .slice(0, 11);
-
-    cpfInput.value = numbers
-      .replace(
-        /(\d{3})(\d)/,
-        "$1.$2"
-      )
-      .replace(
-        /(\d{3})(\d)/,
-        "$1.$2"
-      )
-      .replace(
-        /(\d{3})(\d{1,2})$/,
-        "$1-$2"
+    cpfInput.value =
+      formatCpfValue(
+        cpfInput.value
       );
 
     resetCpfConfirmation();
@@ -1163,7 +1199,6 @@ function validateForm() {
 
 
   if (voterTitle) {
-
     if (
       !electoralZoneInput
         ?.value
@@ -1500,6 +1535,313 @@ function showBackendErrors(
 
 
 /* =========================
+   CARREGAR PESSOA PARA EDIÇÃO
+========================= */
+
+async function loadPersonForEditing() {
+  if (!isEditing) {
+    return;
+  }
+
+  const response = await apiFetch(
+    `/pessoas/${editingPersonId}/`
+  );
+
+  if (!response.ok) {
+    let message =
+      "Não foi possível carregar o cadastro para edição.";
+
+    try {
+      const errorData =
+        await response.json();
+
+      message =
+        errorData.detail ||
+        errorData.mensagem ||
+        message;
+    } catch {
+      // mantém a mensagem padrão
+    }
+
+    throw new Error(message);
+  }
+
+  const pessoa =
+    await response.json();
+
+
+  /* =========================
+     DADOS PESSOAIS
+  ========================= */
+
+  fullNameInput.value =
+    pessoa.nome_completo || "";
+
+  cpfInput.value =
+    formatCpfValue(
+      pessoa.cpf
+    );
+
+  birthDateInput.value =
+    pessoa.data_nascimento || "";
+
+  phoneInput.value =
+    formatPhoneValue(
+      pessoa.telefone
+    );
+
+
+  /* =========================
+     DADOS ELEITORAIS
+  ========================= */
+
+  if (voterTitleInput) {
+    voterTitleInput.value =
+      String(
+        pessoa.titulo_eleitor || ""
+      ).replace(/\D/g, "");
+  }
+
+  if (electoralZoneInput) {
+    electoralZoneInput.value =
+      pessoa.zona_eleitoral || "";
+  }
+
+  if (electoralSectionInput) {
+    electoralSectionInput.value =
+      pessoa.secao_eleitoral || "";
+  }
+
+  if (electoralMunicipalityInput) {
+    electoralMunicipalityInput.value =
+      pessoa.municipio_eleitoral || "";
+  }
+
+
+  /* =========================
+     ENDEREÇO
+  ========================= */
+
+  if (pessoa.regiao) {
+    regionSelect.value =
+      String(
+        pessoa.regiao
+      );
+
+    await loadNeighborhoods(
+      pessoa.regiao
+    );
+  }
+
+  if (pessoa.localidade) {
+    neighborhoodSelect.value =
+      String(
+        pessoa.localidade
+      );
+
+    await loadStreets(
+      pessoa.localidade
+    );
+  }
+
+  if (pessoa.rua) {
+    streetSelect.value =
+      String(
+        pessoa.rua
+      );
+  }
+
+  numberInput.value =
+    pessoa.numero || "";
+
+  if (complementInput) {
+    complementInput.value =
+      pessoa.complemento || "";
+  }
+
+
+  /* =========================
+     OBSERVAÇÕES
+  ========================= */
+
+  if (observationsInput) {
+    observationsInput.value =
+      pessoa.observacoes || "";
+  }
+
+  if (characterTotal) {
+    characterTotal.textContent =
+      String(
+        observationsInput
+          ?.value
+          .length || 0
+      );
+  }
+
+
+  /* =========================
+     RESPONSÁVEL
+  ========================= */
+
+  if (registeredBy) {
+    registeredBy.textContent =
+      pessoa.cadastrada_por_nome ||
+      getUserName(currentUser);
+  }
+
+
+  /* =========================
+     CONFERÊNCIA CPF
+  ========================= */
+
+  if (cpfConfirmed) {
+    cpfConfirmed.checked =
+      pessoa.status_verificacao_cpf ===
+      "CONSULTADO";
+
+    if (
+      cpfConfirmed.checked &&
+      cpfValidationStatus
+    ) {
+      cpfValidationStatus.textContent =
+        "Consulta realizada e CPF conferido.";
+
+      cpfValidationStatus
+        .classList
+        .add(
+          "confirmed"
+        );
+    } else if (
+      cpfValidationStatus
+    ) {
+      cpfValidationStatus.textContent =
+        "CPF ainda não conferido.";
+
+      cpfValidationStatus
+        .classList
+        .remove(
+          "confirmed"
+        );
+    }
+  }
+
+
+  /* =========================
+     CONFERÊNCIA TÍTULO
+  ========================= */
+
+  if (voterTitleConfirmed) {
+    voterTitleConfirmed.checked =
+      pessoa.status_verificacao_titulo ===
+      "CONSULTADO";
+
+    if (
+      voterTitleConfirmed.checked &&
+      voterTitleValidationStatus
+    ) {
+      voterTitleValidationStatus.textContent =
+        "Consulta realizada e título conferido.";
+
+      voterTitleValidationStatus
+        .classList
+        .add(
+          "confirmed"
+        );
+    } else if (
+      voterTitleValidationStatus
+    ) {
+      voterTitleValidationStatus.textContent =
+        "Título ainda não conferido.";
+
+      voterTitleValidationStatus
+        .classList
+        .remove(
+          "confirmed"
+        );
+    }
+  }
+
+
+  if (
+    pessoa.titulo_eleitor &&
+    pessoa.zona_eleitoral &&
+    pessoa.secao_eleitoral &&
+    pessoa.municipio_eleitoral
+  ) {
+    setVoterTitleStatus(
+      "Dados eleitorais carregados do cadastro.",
+      "success"
+    );
+  } else if (
+    pessoa.titulo_eleitor
+  ) {
+    setVoterTitleStatus(
+      "Título carregado. Confira os dados eleitorais.",
+      ""
+    );
+  }
+
+
+  /* =========================
+     ALTERA TÍTULOS DA PÁGINA
+  ========================= */
+
+  document.title =
+    "Editar cadastro | Gestão de Cadastros";
+
+  const topbarTitle =
+    document.querySelector(
+      ".topbar h1"
+    );
+
+  if (topbarTitle) {
+    topbarTitle.textContent =
+      "Editar cadastro";
+  }
+
+  const topbarDescription =
+    document.querySelector(
+      ".topbar-left p"
+    );
+
+  if (topbarDescription) {
+    topbarDescription.textContent =
+      "Atualize os dados da pessoa cadastrada";
+  }
+
+  const introductionTitle =
+    document.querySelector(
+      ".page-introduction h2"
+    );
+
+  if (introductionTitle) {
+    introductionTitle.textContent =
+      "Editar pessoa";
+  }
+
+  const introductionDescription =
+    document.querySelector(
+      ".page-introduction p"
+    );
+
+  if (introductionDescription) {
+    introductionDescription.textContent =
+      "Altere os dados necessários e salve as alterações.";
+  }
+
+  const buttonText =
+    saveButton?.querySelector(
+      "span"
+    );
+
+  if (buttonText) {
+    buttonText.textContent =
+      "Salvar alterações";
+  }
+}
+
+
+/* =========================
    SALVAR
 ========================= */
 
@@ -1507,12 +1849,21 @@ async function saveRegistration() {
   const data =
     buildRegistrationData();
 
+  const endpoint =
+    isEditing
+      ? `/pessoas/${editingPersonId}/`
+      : "/pessoas/";
+
+  const method =
+    isEditing
+      ? "PATCH"
+      : "POST";
+
   const response =
     await apiFetch(
-      "/pessoas/",
+      endpoint,
       {
-        method:
-          "POST",
+        method,
 
         body:
           JSON.stringify(
@@ -1521,9 +1872,7 @@ async function saveRegistration() {
       }
     );
 
-  if (
-    response.status === 201
-  ) {
+  if (response.ok) {
     return response.json();
   }
 
@@ -1534,7 +1883,7 @@ async function saveRegistration() {
       await response.json();
   } catch (error) {
     console.error(
-      "Resposta do cadastro sem JSON:",
+      "Resposta do servidor sem JSON:",
       error
     );
   }
@@ -1552,7 +1901,11 @@ async function saveRegistration() {
   throw new Error(
     errors.detail ||
     errors.mensagem ||
-    "Não foi possível salvar o cadastro."
+    (
+      isEditing
+        ? "Não foi possível atualizar o cadastro."
+        : "Não foi possível salvar o cadastro."
+    )
   );
 }
 
@@ -1580,7 +1933,9 @@ registrationForm?.addEventListener(
 
     if (buttonText) {
       buttonText.textContent =
-        "Salvando...";
+        isEditing
+          ? "Salvando alterações..."
+          : "Salvando...";
     }
 
     try {
@@ -1597,6 +1952,34 @@ registrationForm?.addEventListener(
       sessionStorage.removeItem(
         "tituloEmValidacao"
       );
+
+
+      /* =========================
+         EDIÇÃO
+      ========================= */
+
+      if (isEditing) {
+        await showMessage({
+          title:
+            "Cadastro atualizado",
+
+          message:
+            "Os dados da pessoa foram atualizados com sucesso.",
+
+          type:
+            "success"
+        });
+
+        window.location.href =
+          "pessoas.html";
+
+        return;
+      }
+
+
+      /* =========================
+         NOVO CADASTRO
+      ========================= */
 
       if (successModal) {
         successModal.classList.add(
@@ -1621,17 +2004,25 @@ registrationForm?.addEventListener(
 
     } catch (error) {
       console.error(
-        "Erro ao cadastrar:",
+        isEditing
+          ? "Erro ao atualizar cadastro:"
+          : "Erro ao cadastrar:",
         error
       );
 
       await showMessage({
         title:
-          "Erro ao cadastrar",
+          isEditing
+            ? "Erro ao atualizar"
+            : "Erro ao cadastrar",
 
         message:
           error.message ||
-          "Não foi possível salvar o cadastro.",
+          (
+            isEditing
+              ? "Não foi possível atualizar o cadastro."
+              : "Não foi possível salvar o cadastro."
+          ),
 
         type:
           "warning"
@@ -1643,7 +2034,9 @@ registrationForm?.addEventListener(
 
       if (buttonText) {
         buttonText.textContent =
-          "Salvar cadastro";
+          isEditing
+            ? "Salvar alterações"
+            : "Salvar cadastro";
       }
     }
   }
@@ -1651,13 +2044,26 @@ registrationForm?.addEventListener(
 
 
 /* =========================
-   NOVO CADASTRO
+   NOVO CADASTRO APÓS SALVAR
 ========================= */
 
 newRegistrationButton
   ?.addEventListener(
     "click",
     function () {
+      /*
+       * Se por algum motivo o modal aparecer
+       * enquanto estiver no modo de edição,
+       * volta para a página limpa de cadastro.
+       */
+
+      if (isEditing) {
+        window.location.href =
+          "novo-cadastro.html";
+
+        return;
+      }
+
       registrationForm.reset();
 
       clearElectoralData();
@@ -1832,7 +2238,28 @@ async function initializePage() {
       currentUser
     );
 
+    /*
+     * Primeiro carrega as regiões.
+     * Isso precisa acontecer antes de carregar
+     * uma pessoa no modo de edição.
+     */
+
     await loadRegions();
+
+
+    /*
+     * Se a URL for:
+     *
+     * novo-cadastro.html?id=12
+     *
+     * busca a pessoa 12 no banco
+     * e preenche o formulário.
+     */
+
+    if (isEditing) {
+      await loadPersonForEditing();
+    }
+
 
     if (window.lucide) {
       window.lucide.createIcons();
@@ -1843,6 +2270,33 @@ async function initializePage() {
       "Erro ao iniciar página:",
       error
     );
+
+
+    /*
+     * Se estamos editando e a pessoa
+     * não pôde ser carregada, não queremos
+     * necessariamente apagar uma sessão válida.
+     */
+
+    if (isEditing) {
+      await showMessage({
+        title:
+          "Não foi possível editar",
+
+        message:
+          error.message ||
+          "Não foi possível carregar o cadastro.",
+
+        type:
+          "warning"
+      });
+
+      window.location.href =
+        "pessoas.html";
+
+      return;
+    }
+
 
     limparSessao();
 
