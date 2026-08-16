@@ -9,13 +9,16 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from datetime import timedelta
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv(
+    BASE_DIR / ".env"
+)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -64,8 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-     "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.common.CommonMiddleware",
+    
 ]
 
 CORS_ALLOW_ALL_ORIGINS = False
@@ -97,20 +99,41 @@ WSGI_APPLICATION = 'GestaoPF.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "gestaopf",
-        "USER": "root",
-        "PASSWORD": "manu123",
-        "HOST": "localhost",
-        "PORT": "3308",
+
+        "NAME": os.environ.get(
+            "MARIADB_DATABASE",
+            "gestaopf",
+        ),
+
+        "USER": os.environ.get(
+            "MARIADB_USER",
+            "root",
+        ),
+
+        "PASSWORD": os.environ.get(
+            "MARIADB_PASSWORD",
+            "manu123",
+        ),
+
+        "HOST": os.environ.get(
+            "MARIADB_HOST",
+            "localhost",
+        ),
+
+        "PORT": os.environ.get(
+            "MARIADB_PORT",
+            "3308",
+        ),
+
         "OPTIONS": {
             "charset": "utf8mb4",
         },
     }
 }
+
 AUTH_USER_MODEL = "usuarios.Usuario"
 
 # Password validation
@@ -135,7 +158,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-br'
 
 TIME_ZONE = 'UTC'
 

@@ -106,6 +106,33 @@ class PessoaSerializer(
             .username
         )
 
+    def validate_cpf(
+        self,
+        value,
+    ):
+        cpf = "".join(
+            filter(
+                str.isdigit,
+                value or "",
+            )
+        )
+
+        queryset = Pessoa.objects.filter(
+            cpf=cpf
+        )
+
+        if self.instance:
+            queryset = queryset.exclude(
+                pk=self.instance.pk
+            )
+
+        if queryset.exists():
+            raise serializers.ValidationError(
+                "Já existe uma pessoa cadastrada com este CPF."
+            )
+
+        return cpf
+
     def validate(
         self,
         dados,
