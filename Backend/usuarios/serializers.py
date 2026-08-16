@@ -6,8 +6,25 @@ from .models import Usuario
 class UsuarioSerializer(serializers.ModelSerializer):
     nome_completo = serializers.SerializerMethodField()
 
+    total_cadastros = serializers.IntegerField(
+        read_only=True,
+    )
+
+    cadastros_hoje = serializers.IntegerField(
+        read_only=True,
+    )
+
+    cadastros_semana = serializers.IntegerField(
+        read_only=True,
+    )
+
+    cadastros_mes = serializers.IntegerField(
+        read_only=True,
+    )
+
     class Meta:
         model = Usuario
+
         fields = [
             "id",
             "username",
@@ -20,6 +37,12 @@ class UsuarioSerializer(serializers.ModelSerializer):
             "ativo",
             "is_active",
             "is_staff",
+
+            "total_cadastros",
+            "cadastros_hoje",
+            "cadastros_semana",
+            "cadastros_mes",
+
             "criado_em",
             "atualizado_em",
         ]
@@ -27,15 +50,26 @@ class UsuarioSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "id",
             "is_staff",
+
+            "total_cadastros",
+            "cadastros_hoje",
+            "cadastros_semana",
+            "cadastros_mes",
+
             "criado_em",
             "atualizado_em",
         ]
 
     def get_nome_completo(self, obj):
-        return obj.get_full_name() or obj.username
+        return (
+            obj.get_full_name()
+            or obj.username
+        )
 
 
-class UsuarioCriacaoSerializer(serializers.ModelSerializer):
+class UsuarioCriacaoSerializer(
+    serializers.ModelSerializer
+):
     password = serializers.CharField(
         write_only=True,
         min_length=8,
@@ -43,6 +77,7 @@ class UsuarioCriacaoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Usuario
+
         fields = [
             "id",
             "username",
@@ -54,16 +89,23 @@ class UsuarioCriacaoSerializer(serializers.ModelSerializer):
             "password",
         ]
 
-        read_only_fields = ["id"]
+        read_only_fields = [
+            "id",
+        ]
 
     def create(self, validated_data):
-        password = validated_data.pop("password")
+        password = validated_data.pop(
+            "password"
+        )
 
-        usuario = Usuario(**validated_data)
+        usuario = Usuario(
+            **validated_data
+        )
 
-        usuario.set_password(password)
+        usuario.set_password(
+            password
+        )
 
-        # Usuários criados pela API não viram staff automaticamente.
         usuario.is_staff = False
         usuario.is_superuser = False
         usuario.is_active = True

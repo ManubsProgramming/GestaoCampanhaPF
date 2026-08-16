@@ -5,119 +5,107 @@ from .models import Pessoa
 
 @admin.register(Pessoa)
 class PessoaAdmin(admin.ModelAdmin):
-
-    list_display = (
+    list_display = [
         "nome_completo",
         "cpf",
-        "data_nascimento",
         "titulo_eleitor",
+        "zona_eleitoral",
+        "secao_eleitoral",
+        "municipio_eleitoral",
         "telefone",
         "regiao",
         "localidade",
         "rua",
         "cadastrada_por",
         "status",
-        "status_verificacao_cpf",
-        "status_verificacao_titulo",
         "criado_em",
-    )
+    ]
 
-    list_filter = (
-        "status",
-        "status_verificacao_cpf",
-        "status_verificacao_titulo",
-        "regiao",
-        "localidade__tipo",
-        "localidade",
-        "rua",
-        "cadastrada_por",
-        "criado_em",
-    )
-
-    search_fields = (
+    search_fields = [
         "nome_completo",
         "cpf",
         "titulo_eleitor",
+        "zona_eleitoral",
+        "secao_eleitoral",
+        "municipio_eleitoral",
         "telefone",
-        "regiao__nome",
-        "localidade__nome",
-        "rua__nome",
         "cadastrada_por__username",
         "cadastrada_por__first_name",
         "cadastrada_por__last_name",
-    )
+    ]
 
-    autocomplete_fields = (
+    list_filter = [
+        "status",
         "regiao",
         "localidade",
-        "rua",
-        "cadastrada_por",
-    )
+        "status_verificacao_cpf",
+        "status_verificacao_titulo",
+        "criado_em",
+    ]
 
-    readonly_fields = (
+    readonly_fields = [
         "criado_em",
         "atualizado_em",
-    )
+    ]
 
-    ordering = (
-        "-criado_em",
-    )
-
-    date_hierarchy = "criado_em"
-
-    list_per_page = 25
-
-    fieldsets = (
+    fieldsets = [
         (
             "Dados pessoais",
             {
-                "fields": (
+                "fields": [
                     "nome_completo",
                     "cpf",
                     "data_nascimento",
-                    "titulo_eleitor",
                     "telefone",
-                )
+                ]
             },
         ),
+
+        (
+            "Dados eleitorais",
+            {
+                "fields": [
+                    "titulo_eleitor",
+                    "zona_eleitoral",
+                    "secao_eleitoral",
+                    "municipio_eleitoral",
+                    "status_verificacao_titulo",
+                ]
+            },
+        ),
+
         (
             "Endereço",
             {
-                "fields": (
+                "fields": [
                     "regiao",
                     "localidade",
                     "rua",
                     "numero",
                     "complemento",
-                )
+                ]
             },
         ),
-        (
-            "Verificações",
-            {
-                "fields": (
-                    "status_verificacao_cpf",
-                    "status_verificacao_titulo",
-                )
-            },
-        ),
+
         (
             "Cadastro",
             {
-                "fields": (
+                "fields": [
                     "cadastrada_por",
                     "status",
+                    "status_verificacao_cpf",
                     "observacoes",
-                )
+                ]
             },
         ),
+
         (
-            "Controle",
+            "Datas",
             {
-                "fields": (
+                "fields": [
                     "criado_em",
                     "atualizado_em",
-                )
+                ]
             },
         ),
-    )
+    ]

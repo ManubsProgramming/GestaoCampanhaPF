@@ -1,4 +1,11 @@
-from rest_framework import filters, status, viewsets
+from django.db.models import Count
+
+from rest_framework import (
+    filters,
+    status,
+    viewsets,
+)
+
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -7,6 +14,7 @@ from auditoria.services import registrar_auditoria
 
 from .models import Usuario
 from .permissions import EhAdministrador
+
 from .serializers import (
     UsuarioCriacaoSerializer,
     UsuarioSerializer,
@@ -14,12 +22,9 @@ from .serializers import (
 
 
 class UsuarioViewSet(viewsets.ModelViewSet):
-    queryset = Usuario.objects.all().order_by(
-        "first_name",
-        "username",
-    )
-
-    permission_classes = [EhAdministrador]
+    permission_classes = [
+        EhAdministrador
+    ]
 
     filter_backends = [
         filters.SearchFilter,
@@ -39,17 +44,43 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         "first_name",
         "last_name",
         "criado_em",
+        "total_cadastros",
     ]
+
+    ordering = [
+        "first_name",
+        "username",
+    ]
+
+    def get_queryset(self):
+        return (
+            Usuario.objects
+            .annotate(
+                total_cadastros=Count(
+                    "pessoas_cadastradas"
+                )
+            )
+            .order_by(
+                "first_name",
+                "username",
+            )
+        )
 
     def get_permissions(self):
         if self.action == "me":
-            return [IsAuthenticated()]
+            return [
+                IsAuthenticated()
+            ]
 
-        return [EhAdministrador()]
+        return [
+            EhAdministrador()
+        ]
 
     def get_serializer_class(self):
         if self.action == "create":
-            return UsuarioCriacaoSerializer
+            return (
+                UsuarioCriacaoSerializer
+            )
 
         return UsuarioSerializer
 
@@ -59,8 +90,20 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         url_path="me",
     )
     def me(self, request):
+        usuario = (
+            Usuario.objects
+            .annotate(
+                total_cadastros=Count(
+                    "pessoas_cadastradas"
+                )
+            )
+            .get(
+                pk=request.user.pk
+            )
+        )
+
         serializer = UsuarioSerializer(
-            request.user
+            usuario
         )
 
         return Response(
@@ -75,7 +118,10 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             acao="CRIACAO",
             entidade="Usuario",
             entidade_id=usuario.id,
-            descricao=f"Usuário {usuario.username} criado.",
+            descricao=(
+                f"Usuário "
+                f"{usuario.username} criado."
+            ),
         )
 
     def perform_update(self, serializer):
@@ -86,25 +132,31 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             acao="ALTERACAO",
             entidade="Usuario",
             entidade_id=usuario.id,
-            descricao=f"Usuário {usuario.username} alterado.",
+            descricao=(
+                f"Usuário "
+                f"{usuario.username} alterado."
+            ),
         )
 
-    def destroy(self, request, *args, **kwargs):
-        """
-        Em vez de apagar usuário, desativamos.
-        Isso preserva o histórico de cadastros.
-        """
-
+    def destroy(
+        self,
+        request,
+        *args,
+        **kwargs,
+    ):
         usuario = self.get_object()
 
         if usuario == request.user:
             return Response(
                 {
                     "detail": (
-                        "Você não pode desativar o próprio usuário."
+                        "Você não pode "
+                        "desativar o próprio usuário."
                     )
                 },
-                status=status.HTTP_400_BAD_REQUEST,
+                status=(
+                    status.HTTP_400_BAD_REQUEST
+                ),
             )
 
         usuario.ativo = False
@@ -122,12 +174,18 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             acao="DESATIVACAO",
             entidade="Usuario",
             entidade_id=usuario.id,
-            descricao=f"Usuário {usuario.username} desativado.",
+            descricao=(
+                f"Usuário "
+                f"{usuario.username} desativado."
+            ),
         )
 
         return Response(
             {
-                "detail": "Usuário desativado com sucesso."
+                "detail": (
+                    "Usuário desativado "
+                    "com sucesso."
+                )
             },
             status=status.HTTP_200_OK,
         )
@@ -137,7 +195,11 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         methods=["patch"],
         url_path="ativar",
     )
-    def ativar(self, request, pk=None):
+    def ativar(
+        self,
+        request,
+        pk=None,
+    ):
         usuario = self.get_object()
 
         usuario.ativo = True
@@ -155,12 +217,18 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             acao="ATIVACAO",
             entidade="Usuario",
             entidade_id=usuario.id,
-            descricao=f"Usuário {usuario.username} ativado.",
+            descricao=(
+                f"Usuário "
+                f"{usuario.username} ativado."
+            ),
         )
 
         return Response(
             {
-                "detail": "Usuário ativado com sucesso."
+                "detail": (
+                    "Usuário ativado "
+                    "com sucesso."
+                )
             },
             status=status.HTTP_200_OK,
         )

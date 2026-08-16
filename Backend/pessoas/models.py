@@ -2,11 +2,13 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from regioes.models import Localidade, Regiao, Rua
+from regioes.models import Regiao, Localidade, Rua
 
 
 def validar_cpf(cpf):
-    cpf = "".join(filter(str.isdigit, cpf))
+    cpf = "".join(
+        filter(str.isdigit, cpf)
+    )
 
     if len(cpf) != 11:
         raise ValidationError(
@@ -36,7 +38,9 @@ def validar_cpf(cpf):
         soma * 10 % 11
     ) % 10
 
-    if cpf[-2:] != f"{digito1}{digito2}":
+    if cpf[-2:] != (
+        f"{digito1}{digito2}"
+    ):
         raise ValidationError(
             "CPF inválido."
         )
@@ -45,10 +49,19 @@ def validar_cpf(cpf):
 class Pessoa(models.Model):
 
     class Status(models.TextChoices):
-        ATIVO = "ATIVO", "Ativo"
-        INATIVO = "INATIVO", "Inativo"
+        ATIVO = (
+            "ATIVO",
+            "Ativo",
+        )
 
-    class StatusVerificacao(models.TextChoices):
+        INATIVO = (
+            "INATIVO",
+            "Inativo",
+        )
+
+    class StatusVerificacao(
+        models.TextChoices
+    ):
         NAO_VERIFICADO = (
             "NAO_VERIFICADO",
             "Não verificado",
@@ -66,7 +79,9 @@ class Pessoa(models.Model):
     cpf = models.CharField(
         max_length=14,
         unique=True,
-        validators=[validar_cpf],
+        validators=[
+            validar_cpf
+        ],
     )
 
     data_nascimento = models.DateField()
@@ -74,6 +89,21 @@ class Pessoa(models.Model):
     titulo_eleitor = models.CharField(
         max_length=20,
         unique=True,
+        blank=True,
+    )
+
+    zona_eleitoral = models.CharField(
+        max_length=10,
+        blank=True,
+    )
+
+    secao_eleitoral = models.CharField(
+        max_length=10,
+        blank=True,
+    )
+
+    municipio_eleitoral = models.CharField(
+        max_length=150,
         blank=True,
     )
 
@@ -126,16 +156,30 @@ class Pessoa(models.Model):
         default=Status.ATIVO,
     )
 
-    status_verificacao_cpf = models.CharField(
-        max_length=20,
-        choices=StatusVerificacao.choices,
-        default=StatusVerificacao.NAO_VERIFICADO,
+    status_verificacao_cpf = (
+        models.CharField(
+            max_length=20,
+            choices=(
+                StatusVerificacao.choices
+            ),
+            default=(
+                StatusVerificacao
+                .NAO_VERIFICADO
+            ),
+        )
     )
 
-    status_verificacao_titulo = models.CharField(
-        max_length=20,
-        choices=StatusVerificacao.choices,
-        default=StatusVerificacao.NAO_VERIFICADO,
+    status_verificacao_titulo = (
+        models.CharField(
+            max_length=20,
+            choices=(
+                StatusVerificacao.choices
+            ),
+            default=(
+                StatusVerificacao
+                .NAO_VERIFICADO
+            ),
+        )
     )
 
     criado_em = models.DateTimeField(
@@ -147,9 +191,17 @@ class Pessoa(models.Model):
     )
 
     class Meta:
-        verbose_name = "Pessoa cadastrada"
-        verbose_name_plural = "Pessoas cadastradas"
-        ordering = ["-criado_em"]
+        verbose_name = (
+            "Pessoa cadastrada"
+        )
+
+        verbose_name_plural = (
+            "Pessoas cadastradas"
+        )
+
+        ordering = [
+            "-criado_em"
+        ]
 
     def __str__(self):
         return self.nome_completo

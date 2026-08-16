@@ -1,16 +1,37 @@
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, viewsets
-from rest_framework.permissions import IsAuthenticated
+from django_filters.rest_framework import (
+    DjangoFilterBackend,
+)
 
-from auditoria.services import registrar_auditoria
+from rest_framework import (
+    filters,
+    viewsets,
+)
+
+from rest_framework.permissions import (
+    IsAuthenticated,
+)
+
+from auditoria.services import (
+    registrar_auditoria,
+)
 
 from .models import Pessoa
-from .serializers import PessoaSerializer
+
+from .serializers import (
+    PessoaSerializer,
+)
 
 
-class PessoaViewSet(viewsets.ModelViewSet):
-    serializer_class = PessoaSerializer
-    permission_classes = [IsAuthenticated]
+class PessoaViewSet(
+    viewsets.ModelViewSet
+):
+    serializer_class = (
+        PessoaSerializer
+    )
+
+    permission_classes = [
+        IsAuthenticated
+    ]
 
     filter_backends = [
         DjangoFilterBackend,
@@ -24,12 +45,18 @@ class PessoaViewSet(viewsets.ModelViewSet):
         "rua",
         "cadastrada_por",
         "status",
+        "zona_eleitoral",
+        "secao_eleitoral",
+        "municipio_eleitoral",
     ]
 
     search_fields = [
         "nome_completo",
         "cpf",
         "titulo_eleitor",
+        "zona_eleitoral",
+        "secao_eleitoral",
+        "municipio_eleitoral",
         "telefone",
         "regiao__nome",
         "localidade__nome",
@@ -61,38 +88,64 @@ class PessoaViewSet(viewsets.ModelViewSet):
             .all()
         )
 
-        usuario = self.request.user
-
-        # Cadastrador só enxerga os próprios cadastros.
-        # Administrador continua enxergando todos.
-        if usuario.tipo == "CADASTRADOR":
-            queryset = queryset.filter(
-                cadastrada_por=usuario
-            )
-
-        data_inicio = self.request.query_params.get(
-            "data_inicio"
+        usuario = (
+            self.request.user
         )
 
-        data_fim = self.request.query_params.get(
-            "data_fim"
+        if (
+            usuario.tipo ==
+            "CADASTRADOR"
+        ):
+            queryset = (
+                queryset.filter(
+                    cadastrada_por=usuario
+                )
+            )
+
+        data_inicio = (
+            self.request
+            .query_params
+            .get(
+                "data_inicio"
+            )
+        )
+
+        data_fim = (
+            self.request
+            .query_params
+            .get(
+                "data_fim"
+            )
         )
 
         if data_inicio:
-            queryset = queryset.filter(
-                criado_em__date__gte=data_inicio
+            queryset = (
+                queryset.filter(
+                    criado_em__date__gte=(
+                        data_inicio
+                    )
+                )
             )
 
         if data_fim:
-            queryset = queryset.filter(
-                criado_em__date__lte=data_fim
+            queryset = (
+                queryset.filter(
+                    criado_em__date__lte=(
+                        data_fim
+                    )
+                )
             )
 
         return queryset
 
-    def perform_create(self, serializer):
+    def perform_create(
+        self,
+        serializer,
+    ):
         pessoa = serializer.save(
-            cadastrada_por=self.request.user
+            cadastrada_por=(
+                self.request.user
+            )
         )
 
         registrar_auditoria(
@@ -101,11 +154,16 @@ class PessoaViewSet(viewsets.ModelViewSet):
             entidade="Pessoa",
             entidade_id=pessoa.id,
             descricao=(
-                f"Pessoa {pessoa.nome_completo} cadastrada."
+                f"Pessoa "
+                f"{pessoa.nome_completo} "
+                f"cadastrada."
             ),
         )
 
-    def perform_update(self, serializer):
+    def perform_update(
+        self,
+        serializer,
+    ):
         pessoa = serializer.save()
 
         registrar_auditoria(
@@ -114,13 +172,23 @@ class PessoaViewSet(viewsets.ModelViewSet):
             entidade="Pessoa",
             entidade_id=pessoa.id,
             descricao=(
-                f"Cadastro de {pessoa.nome_completo} alterado."
+                f"Cadastro de "
+                f"{pessoa.nome_completo} "
+                f"alterado."
             ),
         )
 
-    def perform_destroy(self, instance):
-        pessoa_id = instance.id
-        nome = instance.nome_completo
+    def perform_destroy(
+        self,
+        instance,
+    ):
+        pessoa_id = (
+            instance.id
+        )
+
+        nome = (
+            instance.nome_completo
+        )
 
         instance.delete()
 
@@ -129,5 +197,8 @@ class PessoaViewSet(viewsets.ModelViewSet):
             acao="EXCLUSAO",
             entidade="Pessoa",
             entidade_id=pessoa_id,
-            descricao=f"Cadastro de {nome} excluído.",
+            descricao=(
+                f"Cadastro de "
+                f"{nome} excluído."
+            ),
         )

@@ -4,17 +4,25 @@ from .models import Regiao, Localidade, Rua
 
 
 class RegiaoSerializer(serializers.ModelSerializer):
+    total_pessoas = serializers.IntegerField(
+        read_only=True,
+    )
+
     class Meta:
         model = Regiao
+
         fields = [
             "id",
             "nome",
             "ativa",
+            "total_pessoas",
             "criado_em",
             "atualizado_em",
         ]
+
         read_only_fields = [
             "id",
+            "total_pessoas",
             "criado_em",
             "atualizado_em",
         ]
@@ -31,8 +39,13 @@ class LocalidadeSerializer(serializers.ModelSerializer):
         read_only=True,
     )
 
+    total_pessoas = serializers.IntegerField(
+        read_only=True,
+    )
+
     class Meta:
         model = Localidade
+
         fields = [
             "id",
             "regiao",
@@ -41,11 +54,14 @@ class LocalidadeSerializer(serializers.ModelSerializer):
             "tipo",
             "tipo_nome",
             "ativa",
+            "total_pessoas",
             "criado_em",
             "atualizado_em",
         ]
+
         read_only_fields = [
             "id",
+            "total_pessoas",
             "criado_em",
             "atualizado_em",
         ]
@@ -72,8 +88,13 @@ class RuaSerializer(serializers.ModelSerializer):
         read_only=True,
     )
 
+    total_pessoas = serializers.IntegerField(
+        read_only=True,
+    )
+
     class Meta:
         model = Rua
+
         fields = [
             "id",
             "localidade",
@@ -83,11 +104,14 @@ class RuaSerializer(serializers.ModelSerializer):
             "regiao_nome",
             "nome",
             "ativa",
+            "total_pessoas",
             "criado_em",
             "atualizado_em",
         ]
+
         read_only_fields = [
             "id",
+            "total_pessoas",
             "criado_em",
             "atualizado_em",
         ]

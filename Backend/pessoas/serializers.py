@@ -3,20 +3,28 @@ from rest_framework import serializers
 from .models import Pessoa
 
 
-class PessoaSerializer(serializers.ModelSerializer):
+class PessoaSerializer(
+    serializers.ModelSerializer
+):
     regiao_nome = serializers.CharField(
         source="regiao.nome",
         read_only=True,
     )
 
-    localidade_nome = serializers.CharField(
-        source="localidade.nome",
-        read_only=True,
+    localidade_nome = (
+        serializers.CharField(
+            source="localidade.nome",
+            read_only=True,
+        )
     )
 
-    tipo_localidade = serializers.CharField(
-        source="localidade.get_tipo_display",
-        read_only=True,
+    tipo_localidade = (
+        serializers.CharField(
+            source=(
+                "localidade.get_tipo_display"
+            ),
+            read_only=True,
+        )
     )
 
     rua_nome = serializers.CharField(
@@ -24,7 +32,9 @@ class PessoaSerializer(serializers.ModelSerializer):
         read_only=True,
     )
 
-    cadastrada_por_nome = serializers.SerializerMethodField()
+    cadastrada_por_nome = (
+        serializers.SerializerMethodField()
+    )
 
     class Meta:
         model = Pessoa
@@ -34,7 +44,12 @@ class PessoaSerializer(serializers.ModelSerializer):
             "nome_completo",
             "cpf",
             "data_nascimento",
+
             "titulo_eleitor",
+            "zona_eleitoral",
+            "secao_eleitoral",
+            "municipio_eleitoral",
+
             "telefone",
 
             "regiao",
@@ -66,19 +81,35 @@ class PessoaSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "id",
             "cadastrada_por",
+            "status_verificacao_cpf",
+            "status_verificacao_titulo",
             "criado_em",
             "atualizado_em",
         ]
 
-    def get_cadastrada_por_nome(self, obj):
-        nome = obj.cadastrada_por.get_full_name()
+    def get_cadastrada_por_nome(
+        self,
+        obj,
+    ):
+        nome = (
+            obj
+            .cadastrada_por
+            .get_full_name()
+        )
 
         if nome:
             return nome
 
-        return obj.cadastrada_por.username
+        return (
+            obj
+            .cadastrada_por
+            .username
+        )
 
-    def validate(self, dados):
+    def validate(
+        self,
+        dados,
+    ):
         regiao = dados.get(
             "regiao",
             getattr(
@@ -106,34 +137,48 @@ class PessoaSerializer(serializers.ModelSerializer):
             ),
         )
 
-        # ---------------------------------
-        # LOCALIDADE x REGIÃO
-        # ---------------------------------
-
-        if regiao and localidade:
-            if localidade.regiao_id != regiao.id:
-                raise serializers.ValidationError(
-                    {
-                        "localidade": (
-                            "A localidade selecionada "
-                            "não pertence à região informada."
-                        )
-                    }
+        if (
+            regiao and
+            localidade
+        ):
+            if (
+                localidade.regiao_id
+                != regiao.id
+            ):
+                raise (
+                    serializers
+                    .ValidationError(
+                        {
+                            "localidade": (
+                                "A localidade "
+                                "selecionada não "
+                                "pertence à região "
+                                "informada."
+                            )
+                        }
+                    )
                 )
 
-        # ---------------------------------
-        # RUA x LOCALIDADE
-        # ---------------------------------
-
-        if localidade and rua:
-            if rua.localidade_id != localidade.id:
-                raise serializers.ValidationError(
-                    {
-                        "rua": (
-                            "A rua selecionada "
-                            "não pertence à localidade informada."
-                        )
-                    }
+        if (
+            localidade and
+            rua
+        ):
+            if (
+                rua.localidade_id
+                != localidade.id
+            ):
+                raise (
+                    serializers
+                    .ValidationError(
+                        {
+                            "rua": (
+                                "A rua selecionada "
+                                "não pertence à "
+                                "localidade "
+                                "informada."
+                            )
+                        }
+                    )
                 )
 
         return dados

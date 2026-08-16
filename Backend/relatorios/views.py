@@ -74,6 +74,41 @@ class RelatorioCadastrosView(APIView):
             )
             .order_by("-total")
         )
+        por_municipio_eleitoral = (
+            pessoas
+            .exclude(municipio_eleitoral="")
+            .values(
+                 "municipio_eleitoral"
+            )
+            .annotate(
+             total=Count("id")
+            )
+            .order_by("-total")
+        )
+
+        por_zona_eleitoral = (
+           pessoas
+           .exclude(zona_eleitoral="")
+           .values(
+            "zona_eleitoral"
+           )
+           .annotate(
+            total=Count("id")
+           )
+           .order_by("-total")
+        )
+
+        por_secao_eleitoral = (
+           pessoas
+           .exclude(secao_eleitoral="")
+           .values(
+            "secao_eleitoral"
+           )
+            .annotate(
+             total=Count("id")
+            )
+            .order_by("-total")
+        )
 
         dados = {
             "filtros": {
@@ -103,6 +138,17 @@ class RelatorioCadastrosView(APIView):
 
             "pessoas_cadastradas_por_usuario": list(
                 por_usuario
+            ),
+            "cadastros_por_municipio_eleitoral": list(
+             por_municipio_eleitoral
+            ),
+
+             "cadastros_por_zona_eleitoral": list(
+              por_zona_eleitoral
+            ),
+
+              "cadastros_por_secao_eleitoral": list(
+               por_secao_eleitoral
             ),
         }
 
