@@ -1,0 +1,12 @@
+{
+  "steps": {
+    "install": {
+      "commands": [
+        "npm install"
+      ]
+    }
+  },
+  "deploy": {
+    "startCommand": "npm start"
+  }
+}
