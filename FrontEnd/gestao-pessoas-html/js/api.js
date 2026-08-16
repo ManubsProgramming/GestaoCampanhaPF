@@ -1,6 +1,10 @@
 
-const API_URL ="https://gestaocampanhapf-production.up.railway.app/api";
-function getAccessToken() {
+const API_URL =
+  "https://gestaocampanhapf-production.up.railway.app/api";
+  
+  
+  
+  function getAccessToken() {
   return localStorage.getItem("access")
 }
 
