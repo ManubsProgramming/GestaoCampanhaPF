@@ -143,32 +143,19 @@ WSGI_APPLICATION = 'GestaoPF.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-if os.environ.get("PGHOST"):
+
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL"
+)
+
+
+if DATABASE_URL:
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-
-            "NAME": os.environ.get(
-                "PGDATABASE"
-            ),
-
-            "USER": os.environ.get(
-                "PGUSER"
-            ),
-
-            "PASSWORD": os.environ.get(
-                "PGPASSWORD"
-            ),
-
-            "HOST": os.environ.get(
-                "PGHOST"
-            ),
-
-            "PORT": os.environ.get(
-                "PGPORT",
-                "5432",
-            ),
-        }
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
 
 else:
