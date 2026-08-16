@@ -142,16 +142,32 @@ WSGI_APPLICATION = 'GestaoPF.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-if os.environ.get("DATABASE_URL"):
+import dj_database_url
+
+
+database_url = os.environ.get(
+    "DATABASE_URL"
+)
+
+
+if database_url:
     DATABASES = {
-        "default": dj_database_url.config(
-            default=os.environ.get(
-                "DATABASE_URL"
-            ),
+        "default": dj_database_url.parse(
+            database_url,
             conn_max_age=600,
             conn_health_checks=True,
         )
     }
+
+    # Railway normalmente fornece PGDATABASE.
+    # Se o nome não veio na URL, usamos essa variável.
+    if not DATABASES["default"].get("NAME"):
+        DATABASES["default"]["NAME"] = (
+            os.environ.get(
+                "PGDATABASE",
+                "railway",
+            )
+        )
 
 else:
     DATABASES = {
