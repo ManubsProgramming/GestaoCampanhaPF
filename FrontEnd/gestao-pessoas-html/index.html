@@ -2,141 +2,705 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
   >
 
+  <title>
+    Gestão Campanha PF | Gerenciamento para sua campanha
+  </title>
+
   <meta
     name="description"
-    content="Sistema de gestão de pessoas cadastradas"
+    content="Gestão Campanha PF - plataforma para organização de pessoas, regiões, equipe e relatórios da sua campanha."
   >
-<title>Gestão Campanha PF</title>
 
-<meta
-  name="description"
-  content="Gestão Campanha PF - sistema de gestão e organização de campanha."
->
+  <meta
+    name="robots"
+    content="index, follow"
+  >
 
-<meta
-  name="robots"
-  content="index, follow"
->
+  <link
+    rel="canonical"
+    href="https://gestaocampanhapf.up.railway.app/"
+  >
 
-<link
-  rel="canonical"
-  href="https://gestaocampanhapf.up.railway.app/"
->
-  <title>Gestão de Cadastros</title>
+  <!--
+  GOOGLE SEARCH CONSOLE
+  Substitua pelo código fornecido pelo Google.
+  -->
+  <meta
+    name="google-site-verification"
+    content="SEU_CODIGO_DO_GOOGLE"
+  >
 
   <link
     rel="icon"
     href="assets/imagens/prefeitura-icon.png"
   >
 
-  <link rel="stylesheet" href="css/global.css">
-  <link rel="stylesheet" href="css/login.css">
+  <link
+    rel="stylesheet"
+    href="css/global.css"
+  >
 
-<script src="js/api.js" defer></script>
-<script src="js/auth.js" defer></script>
-<script src="js/login.js" defer></script></head>
+  <link
+    rel="stylesheet"
+    href="css/login.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/apresentacao.css"
+  >
+
+  <script
+    src="js/api.js"
+    defer
+  ></script>
+
+  <script
+    src="js/auth.js"
+    defer
+  ></script>
+
+  <script
+    src="js/login.js"
+    defer
+  ></script>
+</head>
+
 
 <body>
-  <main class="login-page">
-    <section class="login-card">
-      <header class="login-brand">
+
+  <!-- =====================================
+       HEADER
+  ====================================== -->
+  <header class="landing-header">
+
+    <div class="landing-container header-content">
+
+      <a
+        href="#inicio"
+        class="landing-brand"
+      >
         <img
           src="assets/imagens/prefeitura-icon.png"
-          alt="Logo do sistema"
-          class="login-logo"
+          alt="Gestão Campanha PF"
         >
 
         <div>
-          <h1>Gestão de Cadastros</h1>
-          <p>Acesso ao sistema</p>
+          <strong>
+            Gestão Campanha PF
+          </strong>
+
+          <span>
+            Gestão inteligente
+          </span>
         </div>
-      </header>
+      </a>
 
-      <div class="login-heading">
-        <h2>Bem-vindo</h2>
 
-        <p>
-          Entre com seus dados para continuar.
-        </p>
-      </div>
+      <nav class="landing-nav">
 
-      <form id="login-form" class="login-form">
-        <div class="form-field">
-          <label for="usuario">
-            E-mail ou usuário
-          </label>
+        <a href="#recursos">
+          Recursos
+        </a>
 
-          <input
-            id="usuario"
-            name="usuario"
-            type="text"
-            placeholder="Digite seu e-mail ou usuário"
-            autocomplete="username"
-            required
-          >
-        </div>
+        <a href="#beneficios">
+          Benefícios
+        </a>
 
-        <div class="form-field">
-          <div class="form-label-row">
-            <label for="senha">
-              Senha
-            </label>
-
-            <button
-              id="forgot-password"
-              class="text-button"
-              type="button"
-            >
-              Esqueci minha senha
-            </button>
-          </div>
-
-          <div class="password-wrapper">
-            <input
-              id="senha"
-              name="senha"
-              type="password"
-              placeholder="Digite sua senha"
-              autocomplete="current-password"
-              required
-            >
-
-            <button
-              id="password-toggle"
-              class="password-toggle"
-              type="button"
-              aria-label="Mostrar senha"
-            >
-              Mostrar
-            </button>
-          </div>
-        </div>
-
-        <p
-          id="login-message"
-          class="login-message"
-          role="alert"
-          aria-live="polite"
-        ></p>
-
-        <button
-          id="login-button"
-          class="primary-button"
-          type="submit"
+        <a
+          href="#login"
+          class="header-login-button"
         >
           Entrar
-        </button>
-      </form>
+        </a>
 
-      <footer class="login-footer">
-        Sistema de gestão de pessoas cadastradas
-      </footer>
+      </nav>
+
+    </div>
+
+  </header>
+
+
+  <main>
+
+    <!-- =====================================
+         APRESENTAÇÃO
+    ====================================== -->
+    <section
+      class="landing-hero"
+      id="inicio"
+    >
+
+      <div class="decor-circle circle-left"></div>
+      <div class="decor-circle circle-right"></div>
+
+      <div class="landing-container hero-layout">
+
+
+        <div class="hero-copy">
+
+          <span class="hero-tag">
+            GESTÃO • ORGANIZAÇÃO • ESTRATÉGIA
+          </span>
+
+
+          <h1>
+            O melhor gerenciamento
+            <span>
+              para sua campanha
+            </span>
+          </h1>
+
+
+          <p>
+            Organize cadastros, regiões,
+            equipe e relatórios em uma única
+            plataforma desenvolvida para facilitar
+            a gestão da sua campanha.
+          </p>
+
+
+          <div class="hero-actions">
+
+            <a
+              href="#login"
+              class="hero-primary-button"
+            >
+              Entrar no sistema
+              <span>→</span>
+            </a>
+
+
+            <a
+              href="#recursos"
+              class="hero-secondary-button"
+            >
+              Conhecer recursos
+            </a>
+
+          </div>
+
+
+          <div class="hero-highlights">
+
+            <div>
+              <strong>
+                Simples
+              </strong>
+
+              <span>
+                Fácil de utilizar
+              </span>
+            </div>
+
+
+            <div>
+              <strong>
+                Organizado
+              </strong>
+
+              <span>
+                Dados centralizados
+              </span>
+            </div>
+
+
+            <div>
+              <strong>
+                Seguro
+              </strong>
+
+              <span>
+                Acesso controlado
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- PREVIEW -->
+        <div class="system-preview">
+
+          <div class="preview-window-header">
+
+            <div class="preview-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+
+            <strong>
+              Gestão Campanha PF
+            </strong>
+
+          </div>
+
+
+          <div class="preview-body">
+
+            <div class="preview-title">
+              <div>
+                <span>
+                  Visão geral
+                </span>
+
+                <strong>
+                  Painel da campanha
+                </strong>
+              </div>
+
+              <div class="preview-avatar">
+                AD
+              </div>
+            </div>
+
+
+            <div class="preview-stats">
+
+              <article class="stat-orange">
+                <span>
+                  Pessoas
+                </span>
+
+                <strong>
+                  Gestão centralizada
+                </strong>
+              </article>
+
+
+              <article class="stat-yellow">
+                <span>
+                  Regiões
+                </span>
+
+                <strong>
+                  Organização territorial
+                </strong>
+              </article>
+
+            </div>
+
+
+            <div class="preview-chart">
+
+              <div class="chart-heading">
+                <span>
+                  Acompanhamento
+                </span>
+
+                <strong>
+                  Cadastros
+                </strong>
+              </div>
+
+
+              <div class="chart-bars">
+
+                <i style="height: 35%"></i>
+                <i style="height: 55%"></i>
+                <i style="height: 48%"></i>
+                <i style="height: 78%"></i>
+                <i style="height: 65%"></i>
+                <i style="height: 90%"></i>
+                <i style="height: 74%"></i>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
     </section>
+
+
+    <!-- =====================================
+         RECURSOS
+    ====================================== -->
+    <section
+      class="landing-features"
+      id="recursos"
+    >
+
+      <div class="landing-container">
+
+        <div class="section-heading">
+
+          <span>
+            RECURSOS
+          </span>
+
+          <h2>
+            Tudo que sua equipe precisa
+            em um só lugar
+          </h2>
+
+          <p>
+            Recursos pensados para manter
+            as informações organizadas e facilitar
+            o acompanhamento da campanha.
+          </p>
+
+        </div>
+
+
+        <div class="features-grid">
+
+          <article class="feature-card">
+            <div class="feature-icon">
+              👥
+            </div>
+
+            <h3>
+              Gestão de pessoas
+            </h3>
+
+            <p>
+              Centralize cadastros e consulte
+              informações rapidamente.
+            </p>
+          </article>
+
+
+          <article class="feature-card">
+            <div class="feature-icon">
+              📍
+            </div>
+
+            <h3>
+              Regiões e localidades
+            </h3>
+
+            <p>
+              Organize regiões, localidades
+              e ruas utilizadas pela equipe.
+            </p>
+          </article>
+
+
+          <article class="feature-card">
+            <div class="feature-icon">
+              📊
+            </div>
+
+            <h3>
+              Relatórios
+            </h3>
+
+            <p>
+              Acompanhe indicadores e exporte
+              dados em PDF e Excel.
+            </p>
+          </article>
+
+
+          <article class="feature-card">
+            <div class="feature-icon">
+              👤
+            </div>
+
+            <h3>
+              Gestão de equipe
+            </h3>
+
+            <p>
+              Administre usuários e níveis
+              de acesso ao sistema.
+            </p>
+          </article>
+
+
+          <article class="feature-card">
+            <div class="feature-icon">
+              ✓
+            </div>
+
+            <h3>
+              Auditoria
+            </h3>
+
+            <p>
+              Consulte ações realizadas
+              dentro da plataforma.
+            </p>
+          </article>
+
+
+          <article class="feature-card">
+            <div class="feature-icon">
+              🔒
+            </div>
+
+            <h3>
+              Segurança
+            </h3>
+
+            <p>
+              Proteção por autenticação
+              e permissões de usuário.
+            </p>
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================
+         BENEFÍCIOS
+    ====================================== -->
+    <section
+      class="landing-benefits"
+      id="beneficios"
+    >
+
+      <div class="landing-container benefits-box">
+
+        <div>
+
+          <span>
+            GESTÃO CAMPANHA PF
+          </span>
+
+          <h2>
+            Mais organização.
+            Mais controle.
+            Mais eficiência.
+          </h2>
+
+          <p>
+            Tenha uma visão centralizada
+            da operação e facilite o trabalho
+            da sua equipe.
+          </p>
+
+        </div>
+
+
+        <a
+          href="#login"
+          class="benefits-button"
+        >
+          Acessar sistema
+          <span>→</span>
+        </a>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================
+         LOGIN
+    ====================================== -->
+    <section
+      class="landing-login-section"
+      id="login"
+    >
+
+      <div class="landing-container login-section-content">
+
+        <div class="login-presentation">
+
+          <span>
+            ACESSO AO SISTEMA
+          </span>
+
+          <h2>
+            Entre na sua conta
+          </h2>
+
+          <p>
+            Utilize seu usuário e senha
+            para acessar o painel da campanha.
+          </p>
+
+        </div>
+
+
+        <!--
+          SEU FORMULÁRIO FOI MANTIDO
+          COM OS MESMOS IDs.
+          O login.js continua funcionando.
+        -->
+        <section class="login-card">
+
+          <header class="login-brand">
+
+            <img
+              src="assets/imagens/prefeitura-icon.png"
+              alt="Logo do sistema"
+              class="login-logo"
+            >
+
+            <div>
+
+              <h2>
+                Gestão de Cadastros
+              </h2>
+
+              <p>
+                Acesso ao sistema
+              </p>
+
+            </div>
+
+          </header>
+
+
+          <div class="login-heading">
+
+            <h3>
+              Bem-vindo
+            </h3>
+
+            <p>
+              Entre com seus dados
+              para continuar.
+            </p>
+
+          </div>
+
+
+          <form
+            id="login-form"
+            class="login-form"
+          >
+
+            <div class="form-field">
+
+              <label for="usuario">
+                E-mail ou usuário
+              </label>
+
+              <input
+                id="usuario"
+                name="usuario"
+                type="text"
+                placeholder="Digite seu e-mail ou usuário"
+                autocomplete="username"
+                required
+              >
+
+            </div>
+
+
+            <div class="form-field">
+
+              <div class="form-label-row">
+
+                <label for="senha">
+                  Senha
+                </label>
+
+                <button
+                  id="forgot-password"
+                  class="text-button"
+                  type="button"
+                >
+                  Esqueci minha senha
+                </button>
+
+              </div>
+
+
+              <div class="password-wrapper">
+
+                <input
+                  id="senha"
+                  name="senha"
+                  type="password"
+                  placeholder="Digite sua senha"
+                  autocomplete="current-password"
+                  required
+                >
+
+                <button
+                  id="password-toggle"
+                  class="password-toggle"
+                  type="button"
+                  aria-label="Mostrar senha"
+                >
+                  Mostrar
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <p
+              id="login-message"
+              class="login-message"
+              role="alert"
+              aria-live="polite"
+            ></p>
+
+
+            <button
+              id="login-button"
+              class="primary-button"
+              type="submit"
+            >
+              Entrar
+            </button>
+
+          </form>
+
+
+          <footer class="login-footer">
+            Sistema de gestão
+            de pessoas cadastradas
+          </footer>
+
+        </section>
+
+      </div>
+
+    </section>
+
   </main>
+
+
+  <!-- =====================================
+       FOOTER
+  ====================================== -->
+  <footer class="landing-footer">
+
+    <div class="landing-container footer-content">
+
+      <div>
+        <strong>
+          Gestão Campanha PF
+        </strong>
+
+        <span>
+          Gestão inteligente para sua campanha.
+        </span>
+      </div>
+
+
+      <p>
+        © 2026 Gestão Campanha PF.
+        Todos os direitos reservados.
+      </p>
+
+    </div>
+
+  </footer>
+
 </body>
 </html>
