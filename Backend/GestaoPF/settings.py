@@ -142,51 +142,19 @@ WSGI_APPLICATION = 'GestaoPF.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-# =========================================================
-# BANCO DE DADOS
-# PostgreSQL no Railway / MariaDB local
-# =========================================================
 
-if os.environ.get("DATABASE_URL"):
-    from urllib.parse import urlparse
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL"
+)
 
-    database_url = urlparse(
-        os.environ.get("DATABASE_URL")
-    )
 
+if DATABASE_URL:
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-
-            "NAME": (
-                os.environ.get("PGDATABASE")
-                or database_url.path.lstrip("/")
-                or "railway"
-            ),
-
-            "USER": (
-                os.environ.get("PGUSER")
-                or database_url.username
-            ),
-
-            "PASSWORD": (
-                os.environ.get("PGPASSWORD")
-                or database_url.password
-            ),
-
-            "HOST": (
-                os.environ.get("PGHOST")
-                or database_url.hostname
-            ),
-
-            "PORT": (
-                os.environ.get("PGPORT")
-                or database_url.port
-                or "5432"
-            ),
-
-            "CONN_MAX_AGE": 600,
-        }
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
 
 else:
