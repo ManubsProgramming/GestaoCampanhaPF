@@ -27,9 +27,9 @@ load_dotenv(
 SECRET_KEY = 'django-insecure-qu@q3_ax6ad03^ju1f!mvjo34(la8y9=edk#nx@!-hzg$f7_so'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["gestaocampanhapf-production.up.railway.app"]
 
 
 # Application definition
