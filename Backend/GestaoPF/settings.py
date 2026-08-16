@@ -24,13 +24,28 @@ load_dotenv(
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-qu@q3_ax6ad03^ju1f!mvjo34(la8y9=edk#nx@!-hzg$f7_so'
 
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    "django-insecure-qu@q3_ax6ad03^ju1f!mvjo34(la8y9=edk#nx@!-hzg$f7_so",
+)
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = (
+    os.environ.get(
+        "DEBUG",
+        "True",
+    ).lower()
+    == "true"
+)
 
-ALLOWED_HOSTS = ["gestaocampanhapf-production.up.railway.app"]
-
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get(
+        "ALLOWED_HOSTS",
+        "127.0.0.1,localhost",
+    ).split(",")
+    if host.strip()
+]
 
 # Application definition
 
@@ -70,7 +85,31 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
 ]
+CSRF_TRUSTED_ORIGINS = [
+    
+    origin.strip()
+    for origin in os.environ.get(
+        "CSRF_TRUSTED_ORIGINS",
+        "",
+    ).split(",")
+    if origin.strip()
+]
 
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = (
+        "HTTP_X_FORWARDED_PROTO",
+        "https",
+    )
+
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+
+
+
+    
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
