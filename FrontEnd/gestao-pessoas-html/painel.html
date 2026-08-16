@@ -53,6 +53,7 @@
     src="js/painel.js"
     defer
   ></script>
+  <link rel="stylesheet" href="css/modal.css">
 </head>
 
 <body>
@@ -180,19 +181,23 @@
           Relatórios
         </span>
       </a>
+<a
+  href="configuracoes.html"
+  class="sidebar-link"
+>
+  <i data-lucide="settings"></i>
 
-      <a
-        href="auditoria.html"
-        class="sidebar-link"
-      >
-        <i data-lucide="file-clock"></i>
-
-        <span>
-          Auditoria
-        </span>
-      </a>
-
+  <span>Configurações</span>
+</a>
+<a
+  href="auditoria.html"
+  class="sidebar-link"
+>
+  <i data-lucide="file-clock"></i>
+  <span>Auditoria</span>
+</a>
     </nav>
+    
 
 
     <!-- USUÁRIO LOGADO -->
@@ -728,6 +733,6 @@
     </main>
 
   </div>
-
+<script src="js/modal.js"></script>
 </body>
 </html>

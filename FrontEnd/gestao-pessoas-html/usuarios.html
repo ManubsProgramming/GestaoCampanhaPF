@@ -8,6 +8,11 @@
     content="width=device-width, initial-scale=1.0"
   >
 
+  <meta
+    name="description"
+    content="Gerenciamento de usuários do sistema"
+  >
+
   <title>Usuários | Gestão de Cadastros</title>
 
   <link
@@ -18,28 +23,38 @@
   <link rel="stylesheet" href="css/global.css">
   <link rel="stylesheet" href="css/painel.css">
   <link rel="stylesheet" href="css/usuarios.css">
+  <link rel="stylesheet" href="css/modal.css">
 
   <script
     src="https://unpkg.com/lucide@0.468.0"
     defer
   ></script>
 
-  <script src="js/painel.js" defer></script>
+  <script src="js/api.js" defer></script>
+  <script src="js/auth.js" defer></script>
+  <script src="js/modal.js" defer></script>
   <script src="js/usuarios.js" defer></script>
+
 </head>
 
 <body>
+
   <div
     id="menu-overlay"
     class="menu-overlay"
   ></div>
+
+
+  <!-- MENU LATERAL -->
 
   <aside
     id="sidebar"
     class="sidebar"
     aria-label="Menu principal"
   >
+
     <div class="sidebar-brand">
+
       <img
         src="assets/imagens/prefeitura-icon.png"
         alt="Logo do sistema"
@@ -59,19 +74,28 @@
       >
         <i data-lucide="x"></i>
       </button>
+
     </div>
 
+
     <nav class="sidebar-navigation">
+
       <span class="sidebar-section-title">
         Menu principal
       </span>
 
-      <a href="painel.html" class="sidebar-link">
+      <a
+        href="painel.html"
+        class="sidebar-link"
+      >
         <i data-lucide="layout-dashboard"></i>
         <span>Dashboard</span>
       </a>
 
-      <a href="pessoas.html" class="sidebar-link">
+      <a
+        href="pessoas.html"
+        class="sidebar-link"
+      >
         <i data-lucide="users"></i>
         <span>Pessoas cadastradas</span>
       </a>
@@ -92,12 +116,18 @@
         <span>Usuários</span>
       </a>
 
-      <a href="regioes.html" class="sidebar-link">
+      <a
+        href="regioes.html"
+        class="sidebar-link"
+      >
         <i data-lucide="map-pin"></i>
         <span>Regiões</span>
       </a>
 
-      <a href="relatorios.html" class="sidebar-link">
+      <a
+        href="relatorios.html"
+        class="sidebar-link"
+      >
         <i data-lucide="bar-chart-3"></i>
         <span>Relatórios</span>
       </a>
@@ -109,10 +139,23 @@
         <i data-lucide="settings"></i>
         <span>Configurações</span>
       </a>
+
+      <a
+        href="auditoria.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="file-clock"></i>
+        <span>Auditoria</span>
+      </a>
+
     </nav>
 
+
     <div class="sidebar-user">
-      <div class="user-avatar">AS</div>
+
+      <div class="user-avatar">
+        AD
+      </div>
 
       <div class="sidebar-user-info">
         <strong>Administrador</strong>
@@ -127,12 +170,20 @@
       >
         <i data-lucide="log-out"></i>
       </button>
+
     </div>
+
   </aside>
 
+
+  <!-- CONTEÚDO -->
+
   <div class="app-content">
+
     <header class="topbar">
+
       <div class="topbar-left">
+
         <button
           id="open-menu"
           class="icon-button open-menu"
@@ -144,50 +195,79 @@
 
         <div>
           <h1>Usuários</h1>
-          <p>Gerencie os usuários cadastradores</p>
+
+          <p>
+            Gerencie os usuários cadastrados no sistema
+          </p>
         </div>
+
       </div>
 
+
       <div class="topbar-actions">
+
         <button
           class="notification-button"
           type="button"
           aria-label="Notificações"
         >
           <i data-lucide="bell"></i>
+
           <span class="notification-dot"></span>
         </button>
+
 
         <button
           class="profile-button"
           type="button"
-          aria-label="Abrir perfil"
+          aria-label="Perfil"
         >
-          <span class="profile-avatar">AS</span>
+
+          <span class="profile-avatar">
+            AD
+          </span>
 
           <span class="profile-info">
+
             <strong id="logged-user">
-              Administrador
+              Carregando...
             </strong>
 
-            <small>Administrador geral</small>
+            <small>
+              Administrador geral
+            </small>
+
           </span>
 
           <i data-lucide="chevron-down"></i>
+
         </button>
+
       </div>
+
     </header>
 
+
     <main class="main-content">
+
+
+      <!-- INTRODUÇÃO -->
+
       <section class="users-introduction">
+
         <div>
-          <h2>Usuários cadastradores</h2>
+
+          <h2>
+            Usuários do sistema
+          </h2>
 
           <p>
-            Acompanhe os usuários e as pessoas
-            cadastradas por cada um.
+            Acompanhe os usuários e a quantidade de
+            pessoas cadastradas por cada um.
           </p>
+
         </div>
+
 
         <button
           id="open-user-modal"
@@ -195,319 +275,327 @@
           type="button"
         >
           <i data-lucide="user-plus"></i>
-          <span>Novo usuário</span>
+
+          <span>
+            Novo usuário
+          </span>
         </button>
+
       </section>
 
+
+      <!-- RESUMO -->
+
       <section class="users-summary">
+
         <article class="user-summary-card">
+
           <span class="summary-icon blue">
             <i data-lucide="users"></i>
           </span>
 
           <div>
-            <p>Total de usuários</p>
-            <strong>24</strong>
-            <small>Usuários cadastradores</small>
+
+            <p>
+              Total de usuários
+            </p>
+
+            <strong id="total-users">
+              0
+            </strong>
+
+            <small>
+              Usuários cadastrados
+            </small>
+
           </div>
+
         </article>
 
+
         <article class="user-summary-card">
+
           <span class="summary-icon green">
             <i data-lucide="user-check"></i>
           </span>
 
           <div>
-            <p>Usuários ativos</p>
-            <strong>21</strong>
-            <small>Com acesso ao sistema</small>
+
+            <p>
+              Usuários ativos
+            </p>
+
+            <strong id="active-users">
+              0
+            </strong>
+
+            <small>
+              Com acesso ao sistema
+            </small>
+
           </div>
+
         </article>
 
+
         <article class="user-summary-card">
+
           <span class="summary-icon orange">
             <i data-lucide="user-x"></i>
           </span>
 
           <div>
-            <p>Usuários inativos</p>
-            <strong>3</strong>
-            <small>Sem acesso ao sistema</small>
+
+            <p>
+              Usuários inativos
+            </p>
+
+            <strong id="inactive-users">
+              0
+            </strong>
+
+            <small>
+              Sem acesso ao sistema
+            </small>
+
           </div>
+
         </article>
+
       </section>
 
+
+      <!-- RANKING + ATIVIDADE -->
+
       <section class="users-layout">
+
         <article class="users-card ranking-section">
+
           <header class="users-card-header">
+
             <div>
-              <h3>Quem mais cadastrou</h3>
+
+              <h3>
+                Quem mais cadastrou
+              </h3>
 
               <p>
-                Ranking de pessoas cadastradas por usuário
+                Ranking baseado nos cadastros
+                existentes no banco
               </p>
+
             </div>
 
             <span class="period-badge">
-              Este mês
+              Geral
             </span>
+
           </header>
 
-          <div class="user-ranking">
-            <a
-              href="usuario-detalhes.html?usuario=joao"
-              class="ranking-user-item"
-            >
-              <span class="position first">1º</span>
-              <span class="user-list-avatar">JS</span>
 
-              <span class="ranking-user-data">
-                <strong>João Silva</strong>
-                <small>185 pessoas cadastradas</small>
-              </span>
-
-              <span class="ranking-number">185</span>
-              <i data-lucide="chevron-right"></i>
-            </a>
-
-            <a
-              href="usuario-detalhes.html?usuario=maria"
-              class="ranking-user-item"
-            >
-              <span class="position second">2º</span>
-              <span class="user-list-avatar">MS</span>
-
-              <span class="ranking-user-data">
-                <strong>Maria Santos</strong>
-                <small>142 pessoas cadastradas</small>
-              </span>
-
-              <span class="ranking-number">142</span>
-              <i data-lucide="chevron-right"></i>
-            </a>
-
-            <a
-              href="usuario-detalhes.html?usuario=pedro"
-              class="ranking-user-item"
-            >
-              <span class="position third">3º</span>
-              <span class="user-list-avatar">PO</span>
-
-              <span class="ranking-user-data">
-                <strong>Pedro Oliveira</strong>
-                <small>97 pessoas cadastradas</small>
-              </span>
-
-              <span class="ranking-number">97</span>
-              <i data-lucide="chevron-right"></i>
-            </a>
-
-            <a
-              href="usuario-detalhes.html?usuario=ana"
-              class="ranking-user-item"
-            >
-              <span class="position">4º</span>
-              <span class="user-list-avatar">AC</span>
-
-              <span class="ranking-user-data">
-                <strong>Ana Costa</strong>
-                <small>76 pessoas cadastradas</small>
-              </span>
-
-              <span class="ranking-number">76</span>
-              <i data-lucide="chevron-right"></i>
-            </a>
-          </div>
-        </article>
-
-        <article class="users-card activity-section">
-          <header class="users-card-header">
-            <div>
-              <h3>Atividade dos cadastradores</h3>
-              <p>Resumo de cadastros realizados</p>
-            </div>
-          </header>
-
-          <div class="activity-grid">
-            <div>
-              <span>Hoje</span>
-              <strong>38</strong>
-              <small>pessoas cadastradas</small>
-            </div>
-
-            <div>
-              <span>Esta semana</span>
-              <strong>214</strong>
-              <small>pessoas cadastradas</small>
-            </div>
-
-            <div>
-              <span>Este mês</span>
-              <strong>652</strong>
-              <small>pessoas cadastradas</small>
-            </div>
-          </div>
-        </article>
-      </section>
-
-      <section class="users-card users-list-section">
-        <header class="users-list-header">
-          <div>
-            <h3>Todos os usuários</h3>
+          <div
+            id="user-ranking"
+            class="user-ranking"
+          >
 
             <p>
-              <span id="visible-users">4</span>
-              usuários encontrados
+              Carregando ranking...
             </p>
+
           </div>
 
+        </article>
+
+
+        <article class="users-card activity-section">
+
+          <header class="users-card-header">
+
+            <div>
+
+              <h3>
+                Atividade dos cadastradores
+              </h3>
+
+              <p>
+                Resumo dos cadastros realizados
+              </p>
+
+            </div>
+
+          </header>
+
+
+          <div class="activity-grid">
+
+            <div>
+
+              <span>
+                Hoje
+              </span>
+
+              <strong id="activity-today">
+                0
+              </strong>
+
+              <small>
+                pessoas cadastradas
+              </small>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Últimos 7 dias
+              </span>
+
+              <strong id="activity-week">
+                0
+              </strong>
+
+              <small>
+                pessoas cadastradas
+              </small>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Este mês
+              </span>
+
+              <strong id="activity-month">
+                0
+              </strong>
+
+              <small>
+                pessoas cadastradas
+              </small>
+
+            </div>
+
+          </div>
+
+        </article>
+
+      </section>
+
+
+      <!-- LISTA DE USUÁRIOS -->
+
+      <section
+        class="users-card users-list-section"
+      >
+
+        <header class="users-list-header">
+
+          <div>
+
+            <h3>
+              Todos os usuários
+            </h3>
+
+            <p>
+
+              <span id="visible-users">
+                0
+              </span>
+
+              usuários encontrados
+
+            </p>
+
+          </div>
+
+
           <div class="users-filters">
+
             <label class="user-search">
+
               <i data-lucide="search"></i>
 
               <input
                 id="user-search-input"
                 type="search"
-                placeholder="Pesquisar usuário"
+                placeholder="Pesquisar nome, usuário ou e-mail"
                 aria-label="Pesquisar usuário"
               >
+
             </label>
+
 
             <select
               id="user-status-filter"
               aria-label="Filtrar por status"
             >
-              <option value="">Todos os status</option>
-              <option value="Ativo">Ativos</option>
-              <option value="Inativo">Inativos</option>
+
+              <option value="">
+                Todos os status
+              </option>
+
+              <option value="Ativo">
+                Ativos
+              </option>
+
+              <option value="Inativo">
+                Inativos
+              </option>
+
             </select>
+
           </div>
+
         </header>
 
-        <div id="users-list" class="users-list">
-          <article
-            class="registered-user"
-            data-name="João Silva"
-            data-status="Ativo"
-          >
-            <span class="user-list-avatar">JS</span>
 
-            <div class="registered-user-data">
-              <strong>João Silva</strong>
-              <span>joao.silva@sistema.com</span>
-            </div>
+        <!--
+          NÃO COLOQUE USUÁRIOS AQUI.
+          O usuarios.js monta esta lista
+          com GET /api/usuarios/
+        -->
 
-            <div class="user-registration-data">
-              <span>Pessoas cadastradas</span>
-              <strong>185</strong>
-            </div>
+        <div
+          id="users-list"
+          class="users-list"
+        >
 
-            <span class="user-status active">Ativo</span>
+          <p>
+            Carregando usuários do banco...
+          </p>
 
-            <a
-              href="usuario-detalhes.html?usuario=joao"
-              class="user-details-button"
-            >
-              Ver detalhes
-              <i data-lucide="arrow-right"></i>
-            </a>
-          </article>
-
-          <article
-            class="registered-user"
-            data-name="Maria Santos"
-            data-status="Ativo"
-          >
-            <span class="user-list-avatar">MS</span>
-
-            <div class="registered-user-data">
-              <strong>Maria Santos</strong>
-              <span>maria.santos@sistema.com</span>
-            </div>
-
-            <div class="user-registration-data">
-              <span>Pessoas cadastradas</span>
-              <strong>142</strong>
-            </div>
-
-            <span class="user-status active">Ativo</span>
-
-            <a
-              href="usuario-detalhes.html?usuario=maria"
-              class="user-details-button"
-            >
-              Ver detalhes
-              <i data-lucide="arrow-right"></i>
-            </a>
-          </article>
-
-          <article
-            class="registered-user"
-            data-name="Pedro Oliveira"
-            data-status="Ativo"
-          >
-            <span class="user-list-avatar">PO</span>
-
-            <div class="registered-user-data">
-              <strong>Pedro Oliveira</strong>
-              <span>pedro.oliveira@sistema.com</span>
-            </div>
-
-            <div class="user-registration-data">
-              <span>Pessoas cadastradas</span>
-              <strong>97</strong>
-            </div>
-
-            <span class="user-status active">Ativo</span>
-
-            <a
-              href="usuario-detalhes.html?usuario=pedro"
-              class="user-details-button"
-            >
-              Ver detalhes
-              <i data-lucide="arrow-right"></i>
-            </a>
-          </article>
-
-          <article
-            class="registered-user"
-            data-name="Ana Costa"
-            data-status="Inativo"
-          >
-            <span class="user-list-avatar">AC</span>
-
-            <div class="registered-user-data">
-              <strong>Ana Costa</strong>
-              <span>ana.costa@sistema.com</span>
-            </div>
-
-            <div class="user-registration-data">
-              <span>Pessoas cadastradas</span>
-              <strong>76</strong>
-            </div>
-
-            <span class="user-status inactive">
-              Inativo
-            </span>
-
-            <a
-              href="usuario-detalhes.html?usuario=ana"
-              class="user-details-button"
-            >
-              Ver detalhes
-              <i data-lucide="arrow-right"></i>
-            </a>
-          </article>
         </div>
 
-        <div id="users-empty-state" class="users-empty-state">
+
+        <div
+          id="users-empty-state"
+          class="users-empty-state"
+        >
+
           <i data-lucide="search-x"></i>
-          <strong>Nenhum usuário encontrado</strong>
-          <p>Tente alterar os filtros utilizados.</p>
+
+          <strong>
+            Nenhum usuário encontrado
+          </strong>
+
+          <p>
+            Não existem usuários correspondentes
+            aos filtros selecionados.
+          </p>
+
         </div>
+
       </section>
+
     </main>
+
   </div>
+
+
+  <!-- MODAL NOVO USUÁRIO -->
 
   <div
     id="user-modal"
@@ -516,15 +604,23 @@
     aria-modal="true"
     aria-labelledby="user-modal-title"
   >
+
     <div class="user-modal-content">
+
       <header>
+
         <div>
+
           <h2 id="user-modal-title">
             Cadastrar usuário
           </h2>
 
-          <p>Adicione um novo usuário cadastrador</p>
+          <p>
+            Adicione um novo usuário ao sistema
+          </p>
+
         </div>
+
 
         <button
           id="close-user-modal"
@@ -533,44 +629,146 @@
         >
           <i data-lucide="x"></i>
         </button>
+
       </header>
 
+
       <form id="new-user-form">
+
+
         <label>
-          <span>Nome completo</span>
+
+          <span>
+            Nome
+          </span>
 
           <input
-            id="new-user-name"
+            id="new-user-first-name"
             type="text"
             placeholder="Digite o nome"
             required
           >
+
         </label>
 
+
         <label>
-          <span>E-mail</span>
+
+          <span>
+            Sobrenome
+          </span>
+
+          <input
+            id="new-user-last-name"
+            type="text"
+            placeholder="Digite o sobrenome"
+          >
+
+        </label>
+
+
+        <label>
+
+          <span>
+            Nome de usuário
+          </span>
+
+          <input
+            id="new-user-username"
+            type="text"
+            placeholder="Ex.: maria.silva"
+            autocomplete="off"
+            required
+          >
+
+        </label>
+
+
+        <label>
+
+          <span>
+            E-mail
+          </span>
 
           <input
             id="new-user-email"
             type="email"
             placeholder="usuario@sistema.com"
-            required
           >
+
         </label>
+
 
         <label>
-          <span>Tipo de usuário</span>
 
-          <select id="new-user-type" required>
-            <option value="">Selecione</option>
-            <option value="Cadastrador">Cadastrador</option>
-            <option value="Administrador">
-              Administrador
-            </option>
-          </select>
+          <span>
+            Telefone
+          </span>
+
+          <input
+            id="new-user-phone"
+            type="tel"
+            placeholder="(92) 99999-9999"
+          >
+
         </label>
 
+
+        <label>
+
+          <span>
+            Tipo de usuário
+          </span>
+
+          <select
+            id="new-user-type"
+            required
+          >
+
+            <option value="">
+              Selecione
+            </option>
+
+            <option value="CADASTRADOR">
+              Cadastrador
+            </option>
+
+            <option value="ADMINISTRADOR">
+              Administrador
+            </option>
+
+          </select>
+
+        </label>
+
+
+        <label>
+
+          <span>
+            Senha inicial
+          </span>
+
+          <input
+            id="new-user-password"
+            type="password"
+            minlength="8"
+            autocomplete="new-password"
+            placeholder="Mínimo de 8 caracteres"
+            required
+          >
+
+        </label>
+
+
+        <p
+          id="new-user-message"
+          class="user-form-message"
+          role="alert"
+        ></p>
+
+
         <div class="user-modal-actions">
+
           <button
             id="cancel-user-modal"
             class="cancel-user-button"
@@ -579,15 +777,22 @@
             Cancelar
           </button>
 
+
           <button
+            id="save-user-button"
             class="save-user-button"
             type="submit"
           >
             Salvar usuário
           </button>
+
         </div>
+
       </form>
+
     </div>
+
   </div>
+
 </body>
 </html>

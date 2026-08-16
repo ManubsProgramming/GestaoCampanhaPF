@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Configurações | Gestão de Cadastros</title>
+
+  <link
+    rel="icon"
+    href="assets/imagens/prefeitura-icon.png"
+  >
+
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/painel.css">
+  <link rel="stylesheet" href="css/configuracoes.css">
+<link rel="stylesheet" href="css/modal.css">
+
+  <script
+  src="https://unpkg.com/lucide@0.468.0"
+  defer
+></script>
+
+<script src="js/api.js" defer></script>
+<script src="js/auth.js" defer></script>
+<script src="js/modal.js" defer></script>
+<script src="js/configuracoes.js" defer></script>
+</head>
+
+<body>
+  <div
+    id="menu-overlay"
+    class="menu-overlay"
+  ></div>
+
+  <aside
+    id="sidebar"
+    class="sidebar"
+    aria-label="Menu principal"
+  >
+    <div class="sidebar-brand">
+      <img
+        src="assets/imagens/prefeitura-icon.png"
+        alt="Logo do sistema"
+        class="sidebar-logo"
+      >
+
+      <div>
+        <strong>Gestão de Cadastros</strong>
+        <span>Painel administrativo</span>
+      </div>
+
+      <button
+        id="close-menu"
+        class="icon-button close-menu"
+        type="button"
+        aria-label="Fechar menu"
+      >
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-navigation">
+      <span class="sidebar-section-title">
+        Menu principal
+      </span>
+
+      <a href="painel.html" class="sidebar-link">
+        <i data-lucide="layout-dashboard"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a href="pessoas.html" class="sidebar-link">
+        <i data-lucide="users"></i>
+        <span>Pessoas cadastradas</span>
+      </a>
+
+      <a
+        href="novo-cadastro.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="user-plus"></i>
+        <span>Novo cadastro</span>
+      </a>
+
+      <a href="usuarios.html" class="sidebar-link">
+        <i data-lucide="user-cog"></i>
+        <span>Usuários</span>
+      </a>
+
+      <a href="regioes.html" class="sidebar-link">
+        <i data-lucide="map-pin"></i>
+        <span>Regiões</span>
+      </a>
+
+      <a href="relatorios.html" class="sidebar-link">
+        <i data-lucide="bar-chart-3"></i>
+        <span>Relatórios</span>
+      </a>
+
+      <a
+        href="configuracoes.html"
+        class="sidebar-link active"
+      >
+        <i data-lucide="settings"></i>
+        <span>Configurações</span>
+      </a>
+      <a
+  href="auditoria.html"
+  class="sidebar-link"
+>
+  <i data-lucide="file-clock"></i>
+  <span>Auditoria</span>
+</a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-avatar">AS</div>
+
+      <div class="sidebar-user-info">
+        <strong>Administrador</strong>
+        <span>Administrador geral</span>
+      </div>
+
+      <button
+        id="logout-button"
+        class="logout-button"
+        type="button"
+        aria-label="Sair do sistema"
+      >
+        <i data-lucide="log-out"></i>
+      </button>
+    </div>
+  </aside>
+
+  <div class="app-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button
+          id="open-menu"
+          class="icon-button open-menu"
+          type="button"
+          aria-label="Abrir menu"
+        >
+          <i data-lucide="menu"></i>
+        </button>
+
+        <div>
+          <h1>Configurações</h1>
+          <p>Personalize o sistema administrativo</p>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <button
+          class="notification-button"
+          type="button"
+          aria-label="Notificações"
+        >
+          <i data-lucide="bell"></i>
+          <span class="notification-dot"></span>
+        </button>
+
+        <button
+          class="profile-button"
+          type="button"
+          aria-label="Abrir perfil"
+        >
+          <span class="profile-avatar">AS</span>
+
+          <span class="profile-info">
+            <strong id="logged-user">
+              Administrador
+            </strong>
+
+            <small>Administrador geral</small>
+          </span>
+
+          <i data-lucide="chevron-down"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <section class="settings-introduction">
+        <div>
+          <h2>Configurações do sistema</h2>
+
+          <p>
+            Gerencie as preferências e permissões
+            administrativas.
+          </p>
+        </div>
+
+        <button
+          id="save-settings"
+          class="save-settings-button"
+          type="button"
+        >
+          <i data-lucide="save"></i>
+          <span>Salvar configurações</span>
+        </button>
+      </section>
+
+      <nav
+        class="settings-tabs"
+        aria-label="Categorias das configurações"
+      >
+        <button
+          class="settings-tab active"
+          data-tab="general"
+          type="button"
+        >
+          <i data-lucide="settings-2"></i>
+          <span>Geral</span>
+        </button>
+
+        <button
+          class="settings-tab"
+          data-tab="permissions"
+          type="button"
+        >
+          <i data-lucide="shield-check"></i>
+          <span>Permissões</span>
+        </button>
+
+        <button
+          class="settings-tab"
+          data-tab="security"
+          type="button"
+        >
+          <i data-lucide="lock-keyhole"></i>
+          <span>Segurança</span>
+        </button>
+
+        <button
+          class="settings-tab"
+          data-tab="backup"
+          type="button"
+        >
+          <i data-lucide="database-backup"></i>
+          <span>Backup</span>
+        </button>
+      </nav>
+
+      <div class="settings-content">
+        <section
+          id="general"
+          class="settings-panel active"
+        >
+          <article class="settings-card">
+            <header class="settings-card-header">
+              <span>
+                <i data-lucide="building-2"></i>
+              </span>
+
+              <div>
+                <h3>Informações do sistema</h3>
+                <p>Nome e identificação visual</p>
+              </div>
+            </header>
+
+            <div class="system-logo-area">
+              <img
+                id="settings-logo-preview"
+                src="assets/imagens/prefeitura-icon.png"
+                alt="Logo atual do sistema"
+              >
+
+              <div>
+                <strong>Logo do sistema</strong>
+
+                <p>
+                  Utilize uma imagem PNG ou JPG.
+                </p>
+
+                <label class="change-logo-button">
+                  <i data-lucide="upload"></i>
+                  <span>Alterar logo</span>
+
+                  <input
+                    id="settings-logo-input"
+                    type="file"
+                    accept="image/png,image/jpeg"
+                  >
+                </label>
+              </div>
+            </div>
+
+            <div class="settings-form-grid">
+              <label class="settings-field full-field">
+                <span>Nome do sistema</span>
+
+                <input
+                  id="system-name"
+                  type="text"
+                  value="Gestão de Cadastros"
+                >
+              </label>
+
+              <label class="settings-field">
+                <span>Nome da instituição</span>
+
+                <input
+                  id="institution-name"
+                  type="text"
+                  placeholder="Digite o nome da instituição"
+                >
+              </label>
+
+              <label class="settings-field">
+                <span>E-mail institucional</span>
+
+                <input
+                  id="institution-email"
+                  type="email"
+                  placeholder="contato@instituicao.com"
+                >
+              </label>
+            </div>
+          </article>
+
+          <article class="settings-card">
+            <header class="settings-card-header">
+              <span>
+                <i data-lucide="user-round-cog"></i>
+              </span>
+
+              <div>
+                <h3>Dados do administrador</h3>
+                <p>Informações do usuário responsável</p>
+              </div>
+            </header>
+
+            <div class="settings-form-grid">
+              <label class="settings-field">
+                <span>Nome completo</span>
+
+                <input
+                  id="administrator-name"
+                  type="text"
+                  value="Administrador"
+                >
+              </label>
+
+              <label class="settings-field">
+                <span>E-mail</span>
+
+                <input
+                  id="administrator-email"
+                  type="email"
+                  value="administrador@sistema.com"
+                >
+              </label>
+            </div>
+          </article>
+
+          <article class="settings-card">
+            <header class="settings-card-header">
+              <span>
+                <i data-lucide="palette"></i>
+              </span>
+
+              <div>
+                <h3>Preferências da interface</h3>
+                <p>Aparência e comportamento do sistema</p>
+              </div>
+            </header>
+
+            <div class="settings-options">
+              <label class="settings-option">
+                <div>
+                  <strong>Menu compacto</strong>
+
+                  <p>
+                    Reduzir o tamanho do menu no computador.
+                  </p>
+                </div>
+
+                <input
+                  id="compact-menu"
+                  type="checkbox"
+                >
+
+                <span class="toggle-switch"></span>
+              </label>
+
+              <label class="settings-option">
+                <div>
+                  <strong>Animações da interface</strong>
+
+                  <p>
+                    Exibir transições e animações suaves.
+                  </p>
+                </div>
+
+                <input
+                  id="interface-animations"
+                  type="checkbox"
+                  checked
+                >
+
+                <span class="toggle-switch"></span>
+              </label>
+            </div>
+          </article>
+        </section>
+
+        <section
+          id="permissions"
+          class="settings-panel"
+        >
+          <article class="settings-card">
+            <header class="settings-card-header">
+              <span>
+                <i data-lucide="shield-check"></i>
+              </span>
+
+              <div>
+                <h3>Permissões dos cadastradores</h3>
+
+                <p>
+                  Defina o que os usuários podem fazer
+                </p>
+              </div>
+            </header>
+
+            <div class="settings-options">
+              <label class="settings-option">
+                <div>
+                  <strong>Criar novos cadastros</strong>
+
+                  <p>
+                    Permitir cadastrar novas pessoas.
+                  </p>
+                </div>
+
+                <input
+                  id="permission-create"
+                  type="checkbox"
+                  checked
+                >
+
+                <span class="toggle-switch"></span>
+              </label>
+
+              <label class="settings-option">
+                <div>
+                  <strong>Editar os próprios cadastros</strong>
+
+                  <p>
+                    Permitir alterações nos registros
+                    feitos pelo próprio usuário.
+                  </p>
+                </div>
+
+                <input
+                  id="permission-edit"
+                  type="checkbox"
+                  checked
+                >
+
+                <span class="toggle-switch"></span>
+              </label>
+
+              <label class="settings-option">
+                <div>
+                  <strong>Excluir os próprios cadastros</strong>
+
+                  <p>
+                    Permitir a exclusão de registros.
+                  </p>
+                </div>
+
+                <input
+                  id="permission-delete"
+                  type="checkbox"
+                >
+
+                <span class="toggle-switch"></span>
+              </label>
+
+              <label class="settings-option">
+                <div>
+                  <strong>Visualizar cadastros de outros</strong>
+
+                  <p>
+                    Permitir visualizar registros feitos
+                    por outros usuários.
+                  </p>
+                </div>
+
+                <input
+                  id="permission-view-others"
+                  type="checkbox"
+                >
+
+                <span class="toggle-switch"></span>
+              </label>
+
+              <label class="settings-option">
+                <div>
+                  <strong>Exportar relatórios</strong>
+
+                  <p>
+                    Permitir exportações em Excel e PDF.
+                  </p>
+                </div>
+
+                <input
+                  id="permission-export"
+                  type="checkbox"
+                >
+
+                <span class="toggle-switch"></span>
+              </label>
+            </div>
+          </article>
+        </section>
+
+        <section
+          id="security"
+          class="settings-panel"
+        >
+          <article class="settings-card">
+            <header class="settings-card-header">
+              <span>
+                <i data-lucide="key-round"></i>
+              </span>
+
+              <div>
+                <h3>Alterar senha</h3>
+                <p>Atualize sua senha de acesso</p>
+              </div>
+            </header>
+
+            <form id="password-form">
+              <div class="settings-form-grid">
+                <label class="settings-field full-field">
+                  <span>Senha atual</span>
+
+                  <input
+                    id="current-password"
+                    type="password"
+                    placeholder="Digite sua senha atual"
+                    required
+                  >
+                </label>
+
+                <label class="settings-field">
+                  <span>Nova senha</span>
+
+                  <input
+                    id="new-password"
+                    type="password"
+                    placeholder="Mínimo de 8 caracteres"
+                    minlength="8"
+                    required
+                  >
+                </label>
+
+                <label class="settings-field">
+                  <span>Confirmar nova senha</span>
+
+                  <input
+                    id="confirm-password"
+                    type="password"
+                    placeholder="Digite novamente"
+                    minlength="8"
+                    required
+                  >
+                </label>
+              </div>
+
+              <button
+                class="change-password-button"
+                type="submit"
+              >
+                Alterar senha
+              </button>
+            </form>
+          </article>
+
+          <article class="settings-card">
+            <header class="settings-card-header">
+              <span>
+                <i data-lucide="log-in"></i>
+              </span>
+
+              <div>
+                <h3>Sessão e acesso</h3>
+                <p>Preferências de segurança</p>
+              </div>
+            </header>
+
+            <div class="settings-options">
+              <label class="settings-option">
+                <div>
+                  <strong>Encerrar sessão automaticamente</strong>
+
+                  <p>
+                    Sair após um período sem atividade.
+                  </p>
+                </div>
+
+                <input
+                  id="automatic-logout"
+                  type="checkbox"
+                  checked
+                >
+
+                <span class="toggle-switch"></span>
+              </label>
+            </div>
+          </article>
+        </section>
+
+        <section
+          id="backup"
+          class="settings-panel"
+        >
+          <article class="settings-card">
+            <header class="settings-card-header">
+              <span>
+                <i data-lucide="database-backup"></i>
+              </span>
+
+              <div>
+                <h3>Backup do sistema</h3>
+                <p>Proteja os dados cadastrados</p>
+              </div>
+            </header>
+
+            <div class="backup-information">
+              <span class="backup-status-icon">
+                <i data-lucide="circle-check"></i>
+              </span>
+
+              <div>
+                <strong>Último backup</strong>
+                <p id="last-backup">Nenhum backup realizado</p>
+              </div>
+            </div>
+
+            <div class="backup-actions">
+              <button
+                id="create-backup"
+                class="create-backup-button"
+                type="button"
+              >
+                <i data-lucide="download"></i>
+                <span>Criar backup</span>
+              </button>
+
+              <label class="restore-backup-button">
+                <i data-lucide="upload"></i>
+                <span>Restaurar backup</span>
+
+                <input
+                  id="restore-backup-input"
+                  type="file"
+                  accept="application/json"
+                >
+              </label>
+            </div>
+
+            <p class="backup-warning">
+              O backup demonstrativo inclui os dados
+              armazenados localmente neste navegador.
+            </p>
+          </article>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div
+    id="settings-confirmation"
+    class="settings-confirmation"
+    role="status"
+    aria-live="polite"
+  >
+    <i data-lucide="circle-check"></i>
+    <span>Configurações salvas com sucesso.</span>
+  </div>
+  
+</body>
+</html>

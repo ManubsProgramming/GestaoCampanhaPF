@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Relatórios | Gestão de Cadastros
+  </title>
+
+  <link
+    rel="icon"
+    href="assets/imagens/prefeitura-icon.png"
+  >
+
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/painel.css">
+  <link rel="stylesheet" href="css/relatorios.css">
+  <link rel="stylesheet" href="css/modal.css">
+
+  <script
+    src="https://unpkg.com/lucide@0.468.0"
+    defer
+  ></script>
+
+  <script src="js/api.js" defer></script>
+  <script src="js/auth.js" defer></script>
+  <script src="js/modal.js" defer></script>
+  <script src="js/relatorios.js" defer></script>
+</head>
+
+<body>
+
+  <div
+    id="menu-overlay"
+    class="menu-overlay"
+  ></div>
+
+
+  <aside
+    id="sidebar"
+    class="sidebar"
+    aria-label="Menu principal"
+  >
+
+    <div class="sidebar-brand">
+
+      <img
+        src="assets/imagens/prefeitura-icon.png"
+        alt="Logo do sistema"
+        class="sidebar-logo"
+      >
+
+      <div>
+        <strong>
+          Gestão de Cadastros
+        </strong>
+
+        <span>
+          Painel administrativo
+        </span>
+      </div>
+
+      <button
+        id="close-menu"
+        class="icon-button close-menu"
+        type="button"
+        aria-label="Fechar menu"
+      >
+        <i data-lucide="x"></i>
+      </button>
+
+    </div>
+
+
+    <nav class="sidebar-navigation">
+
+      <span class="sidebar-section-title">
+        Menu principal
+      </span>
+
+      <a
+        href="painel.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="layout-dashboard"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a
+        href="pessoas.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="users"></i>
+        <span>Pessoas cadastradas</span>
+      </a>
+
+      <a
+        href="novo-cadastro.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="user-plus"></i>
+        <span>Novo cadastro</span>
+      </a>
+
+      <a
+        href="usuarios.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="user-cog"></i>
+        <span>Usuários</span>
+      </a>
+
+      <a
+        href="regioes.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="map-pin"></i>
+        <span>Regiões</span>
+      </a>
+
+      <a
+        href="relatorios.html"
+        class="sidebar-link active"
+      >
+        <i data-lucide="bar-chart-3"></i>
+        <span>Relatórios</span>
+      </a>
+
+      <a
+        href="configuracoes.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="settings"></i>
+        <span>Configurações</span>
+      </a>
+
+      <a
+        href="auditoria.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="file-clock"></i>
+        <span>Auditoria</span>
+      </a>
+
+    </nav>
+
+
+    <div class="sidebar-user">
+
+      <div class="user-avatar">
+        AD
+      </div>
+
+      <div class="sidebar-user-info">
+        <strong>Administrador</strong>
+        <span>Administrador geral</span>
+      </div>
+
+      <button
+        id="logout-button"
+        class="logout-button"
+        type="button"
+        aria-label="Sair"
+      >
+        <i data-lucide="log-out"></i>
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <div class="app-content">
+
+    <header class="topbar">
+
+      <div class="topbar-left">
+
+        <button
+          id="open-menu"
+          class="icon-button open-menu"
+          type="button"
+          aria-label="Abrir menu"
+        >
+          <i data-lucide="menu"></i>
+        </button>
+
+        <div>
+          <h1>Relatórios</h1>
+
+          <p>
+            Analise os cadastros realizados
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="topbar-actions">
+
+        <button
+          class="notification-button"
+          type="button"
+          aria-label="Notificações"
+        >
+          <i data-lucide="bell"></i>
+          <span class="notification-dot"></span>
+        </button>
+
+
+        <button
+          class="profile-button"
+          type="button"
+        >
+          <span class="profile-avatar">
+            AD
+          </span>
+
+          <span class="profile-info">
+            <strong id="logged-user">
+              Carregando...
+            </strong>
+
+            <small>
+              Administrador geral
+            </small>
+          </span>
+
+          <i data-lucide="chevron-down"></i>
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <main class="main-content">
+
+      <section class="reports-introduction">
+
+        <div>
+          <h2>
+            Relatório de cadastros
+          </h2>
+
+          <p>
+            Todos os resultados abaixo são obtidos
+            diretamente do banco de dados.
+          </p>
+        </div>
+
+
+        <div class="export-actions">
+
+          <button
+            id="export-excel"
+            class="export-button excel"
+            type="button"
+          >
+            <i data-lucide="sheet"></i>
+            <span>Exportar Excel</span>
+          </button>
+
+
+          <button
+            id="export-pdf"
+            class="export-button pdf"
+            type="button"
+          >
+            <i data-lucide="file-text"></i>
+            <span>Exportar PDF</span>
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <!-- FILTROS -->
+
+      <section class="report-filters-card">
+
+        <header>
+
+          <div>
+            <h3>
+              Filtros do relatório
+            </h3>
+
+            <p>
+              Selecione os dados que deseja analisar
+            </p>
+          </div>
+
+          <button
+            id="clear-report-filters"
+            type="button"
+          >
+            Limpar filtros
+          </button>
+
+        </header>
+
+
+        <div class="report-filters-grid">
+
+          <label>
+
+            <span>
+              Período
+            </span>
+
+            <select id="report-period">
+
+              <option value="">
+                Todos os períodos
+              </option>
+
+              <option value="hoje">
+                Hoje
+              </option>
+
+              <option value="semana">
+                Esta semana
+              </option>
+
+              <option value="mes">
+                Este mês
+              </option>
+
+              <option value="personalizado">
+                Período personalizado
+              </option>
+
+            </select>
+
+          </label>
+
+
+          <label
+            id="start-date-field"
+            class="date-field hidden"
+          >
+
+            <span>
+              Data inicial
+            </span>
+
+            <input
+              id="report-start-date"
+              type="date"
+            >
+
+          </label>
+
+
+          <label
+            id="end-date-field"
+            class="date-field hidden"
+          >
+
+            <span>
+              Data final
+            </span>
+
+            <input
+              id="report-end-date"
+              type="date"
+            >
+
+          </label>
+
+
+          <label>
+
+            <span>
+              Região
+            </span>
+
+            <select id="report-region">
+              <option value="">
+                Todas as regiões
+              </option>
+            </select>
+
+          </label>
+
+
+          <label>
+
+            <span>
+              Localidade
+            </span>
+
+            <select id="report-neighborhood">
+
+              <option value="">
+                Todas as localidades
+              </option>
+
+            </select>
+
+          </label>
+
+
+          <label>
+
+            <span>
+              Rua
+            </span>
+
+            <select id="report-street">
+
+              <option value="">
+                Todas as ruas
+              </option>
+
+            </select>
+
+          </label>
+
+
+          <label>
+
+            <span>
+              Usuário cadastrador
+            </span>
+
+            <select id="report-user">
+
+              <option value="">
+                Todos os usuários
+              </option>
+
+            </select>
+
+          </label>
+
+        </div>
+
+      </section>
+
+
+      <!-- RESUMO -->
+
+      <section class="report-summary">
+
+        <article>
+
+          <span class="report-summary-icon blue">
+            <i data-lucide="users"></i>
+          </span>
+
+          <div>
+
+            <p>
+              Total de pessoas cadastradas
+            </p>
+
+            <strong id="report-total">
+              0
+            </strong>
+
+            <small>
+              Conforme filtros aplicados
+            </small>
+
+          </div>
+
+        </article>
+
+
+        <article>
+
+          <span class="report-summary-icon green">
+            <i data-lucide="map-pin"></i>
+          </span>
+
+          <div>
+
+            <p>
+              Localidades com cadastros
+            </p>
+
+            <strong id="report-neighborhood-total">
+              0
+            </strong>
+
+            <small>
+              Com registros no período
+            </small>
+
+          </div>
+
+        </article>
+
+
+        <article>
+
+          <span class="report-summary-icon orange">
+            <i data-lucide="route"></i>
+          </span>
+
+          <div>
+
+            <p>
+              Ruas com cadastros
+            </p>
+
+            <strong id="report-street-total">
+              0
+            </strong>
+
+            <small>
+              Com registros no período
+            </small>
+
+          </div>
+
+        </article>
+
+
+        <article>
+
+          <span class="report-summary-icon purple">
+            <i data-lucide="user-check"></i>
+          </span>
+
+          <div>
+
+            <p>
+              Usuários cadastradores
+            </p>
+
+            <strong id="report-user-total">
+              0
+            </strong>
+
+            <small>
+              Com cadastros no período
+            </small>
+
+          </div>
+
+        </article>
+
+      </section>
+
+
+      <!-- GRÁFICOS -->
+
+      <section class="report-charts-grid">
+
+        <article class="report-card">
+
+          <header class="report-card-header">
+
+            <div>
+              <h3>
+                Cadastros por localidade
+              </h3>
+
+              <p>
+                Quantidade de pessoas cadastradas
+              </p>
+            </div>
+
+          </header>
+
+          <div
+            id="report-locality-chart"
+            class="report-bar-chart"
+          >
+            <p>
+              Carregando dados...
+            </p>
+          </div>
+
+        </article>
+
+
+        <article class="report-card">
+
+          <header class="report-card-header">
+
+            <div>
+              <h3>
+                Pessoas cadastradas por usuário
+              </h3>
+
+              <p>
+                Quantidade de cadastros realizados
+              </p>
+            </div>
+
+          </header>
+
+          <div
+            id="report-user-chart"
+            class="report-bar-chart"
+          >
+            <p>
+              Carregando dados...
+            </p>
+          </div>
+
+        </article>
+
+      </section>
+
+
+      <!-- TABELA -->
+
+      <section
+        class="report-card detailed-report-card"
+      >
+
+        <header class="detailed-report-header">
+
+          <div>
+
+            <h3>
+              Relatório detalhado
+            </h3>
+
+            <p>
+              <span id="report-visible-total">
+                0
+              </span>
+
+              registros encontrados
+            </p>
+
+          </div>
+
+
+          <label class="report-search">
+
+            <i data-lucide="search"></i>
+
+            <input
+              id="report-search-input"
+              type="search"
+              placeholder="Pesquisar pessoa"
+            >
+
+          </label>
+
+        </header>
+
+
+        <div class="report-table-container">
+
+          <table
+            id="report-table"
+            class="report-table"
+          >
+
+            <thead>
+
+              <tr>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Região</th>
+                <th>Localidade</th>
+                <th>Rua</th>
+                <th>Cadastrado por</th>
+                <th>Data</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="report-table-body">
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <div
+          id="report-empty-state"
+          class="report-empty-state"
+        >
+
+          <i data-lucide="search-x"></i>
+
+          <strong>
+            Nenhum registro encontrado
+          </strong>
+
+          <p>
+            Tente alterar os filtros do relatório.
+          </p>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+</body>
+</html>

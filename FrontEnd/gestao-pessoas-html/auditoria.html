@@ -10,11 +10,11 @@
 
   <meta
     name="description"
-    content="Pessoas cadastradas no sistema"
+    content="Registros de auditoria do sistema"
   >
 
   <title>
-    Pessoas cadastradas | Gestão de Cadastros
+    Auditoria | Gestão de Cadastros
   </title>
 
   <link
@@ -34,12 +34,7 @@
 
   <link
     rel="stylesheet"
-    href="css/pessoas.css"
-  >
-
-  <link
-    rel="stylesheet"
-    href="css/modal.css"
+    href="css/auditoria.css"
   >
 
   <script
@@ -58,26 +53,18 @@
   ></script>
 
   <script
-    src="js/modal.js"
-    defer
-  ></script>
-
-  <script
-    src="js/pessoas.js"
+    src="js/auditoria.js"
     defer
   ></script>
 </head>
 
 <body>
 
-  <!-- Fundo do menu no celular -->
-
   <div
     id="menu-overlay"
     class="menu-overlay"
   ></div>
 
-  <!-- Menu lateral -->
 
   <aside
     id="sidebar"
@@ -114,7 +101,6 @@
 
     </div>
 
-    <!-- Navegação -->
 
     <nav class="sidebar-navigation">
 
@@ -127,21 +113,15 @@
         class="sidebar-link"
       >
         <i data-lucide="layout-dashboard"></i>
-
-        <span>
-          Dashboard
-        </span>
+        <span>Dashboard</span>
       </a>
 
       <a
         href="pessoas.html"
-        class="sidebar-link active"
+        class="sidebar-link"
       >
         <i data-lucide="users"></i>
-
-        <span>
-          Pessoas cadastradas
-        </span>
+        <span>Pessoas cadastradas</span>
       </a>
 
       <a
@@ -149,10 +129,7 @@
         class="sidebar-link"
       >
         <i data-lucide="user-plus"></i>
-
-        <span>
-          Novo cadastro
-        </span>
+        <span>Novo cadastro</span>
       </a>
 
       <a
@@ -160,32 +137,23 @@
         class="sidebar-link"
       >
         <i data-lucide="user-cog"></i>
-
-        <span>
-          Usuários
-        </span>
+        <span>Usuários</span>
       </a>
 
       <a
         href="regioes.html"
         class="sidebar-link"
       >
-        <i data-lucide="map-pinned"></i>
-
-        <span>
-          Regiões
-        </span>
+        <i data-lucide="map-pin"></i>
+        <span>Regiões</span>
       </a>
 
       <a
         href="relatorios.html"
         class="sidebar-link"
       >
-        <i data-lucide="file-chart-column"></i>
-
-        <span>
-          Relatórios
-        </span>
+        <i data-lucide="bar-chart-3"></i>
+        <span>Relatórios</span>
       </a>
 
       <a
@@ -193,21 +161,19 @@
         class="sidebar-link"
       >
         <i data-lucide="settings"></i>
-
-        <span>
-          Configurações
-        </span>
+        <span>Configurações</span>
       </a>
-<a
-  href="auditoria.html"
-  class="sidebar-link"
->
-  <i data-lucide="file-clock"></i>
-  <span>Auditoria</span>
-</a>
+
+      <a
+        href="auditoria.html"
+        class="sidebar-link active"
+      >
+        <i data-lucide="file-clock"></i>
+        <span>Auditoria</span>
+      </a>
+
     </nav>
 
-    <!-- Usuário logado -->
 
     <div class="sidebar-user">
 
@@ -216,7 +182,6 @@
       </div>
 
       <div class="sidebar-user-info">
-
         <strong>
           Administrador
         </strong>
@@ -224,7 +189,6 @@
         <span>
           Administrador geral
         </span>
-
       </div>
 
       <button
@@ -232,7 +196,6 @@
         class="logout-button"
         type="button"
         aria-label="Sair do sistema"
-        title="Sair"
       >
         <i data-lucide="log-out"></i>
       </button>
@@ -241,11 +204,8 @@
 
   </aside>
 
-  <!-- Conteúdo -->
 
   <div class="app-content">
-
-    <!-- Cabeçalho -->
 
     <header class="topbar">
 
@@ -261,18 +221,15 @@
         </button>
 
         <div>
-
-          <h1>
-            Pessoas cadastradas
-          </h1>
+          <h1>Auditoria</h1>
 
           <p>
-            Gerencie os registros do sistema
+            Histórico de ações realizadas no sistema
           </p>
-
         </div>
 
       </div>
+
 
       <div class="topbar-actions">
 
@@ -282,7 +239,6 @@
           aria-label="Notificações"
         >
           <i data-lucide="bell"></i>
-
           <span class="notification-dot"></span>
         </button>
 
@@ -291,13 +247,11 @@
           type="button"
           aria-label="Abrir perfil"
         >
-
           <span class="profile-avatar">
             AD
           </span>
 
           <span class="profile-info">
-
             <strong id="logged-user">
               Administrador
             </strong>
@@ -305,332 +259,237 @@
             <small>
               Administrador geral
             </small>
-
           </span>
 
           <i data-lucide="chevron-down"></i>
-
         </button>
 
       </div>
 
     </header>
 
-    <!-- Conteúdo principal -->
 
     <main class="main-content">
 
-      <!-- Introdução -->
-
-      <section class="page-introduction">
+      <section class="audit-introduction">
 
         <div>
-
           <h2>
-            Pessoas cadastradas
+            Registros de auditoria
           </h2>
 
           <p>
-            Todos os registros apresentados pertencem
-            exclusivamente ao sistema.
+            Consulte as ações realizadas por usuários
+            e pelo próprio sistema.
           </p>
-
         </div>
 
-        <a
-          href="novo-cadastro.html"
-          class="new-person-button"
-        >
-          <i data-lucide="plus"></i>
-
-          <span>
-            Novo cadastro
-          </span>
-        </a>
-
       </section>
 
-      <!-- Resumo -->
 
-      <section
-        class="people-summary"
-        aria-label="Resumo dos cadastros"
-      >
+      <section class="audit-summary">
 
         <article>
-
-          <span>
-            Total de pessoas cadastradas
+          <span class="audit-summary-icon blue">
+            <i data-lucide="list-checks"></i>
           </span>
-
-          <strong id="people-total">
-            0
-          </strong>
-
-        </article>
-
-        <article>
-
-          <span>
-            Cadastros ativos
-          </span>
-
-          <strong id="active-people-total">
-            0
-          </strong>
-
-        </article>
-
-        <article>
-
-          <span>
-            Cadastros hoje
-          </span>
-
-          <strong id="today-people-total">
-            0
-          </strong>
-
-        </article>
-
-      </section>
-
-      <!-- Filtros -->
-
-      <section class="filters-card">
-
-        <div class="filters-header">
 
           <div>
+            <p>Total de registros</p>
+            <strong id="audit-total">0</strong>
+          </div>
+        </article>
 
-            <h3>
-              Pesquisa e filtros
-            </h3>
+
+        <article>
+          <span class="audit-summary-icon green">
+            <i data-lucide="plus-circle"></i>
+          </span>
+
+          <div>
+            <p>Criações</p>
+            <strong id="audit-creations">0</strong>
+          </div>
+        </article>
+
+
+        <article>
+          <span class="audit-summary-icon orange">
+            <i data-lucide="pencil"></i>
+          </span>
+
+          <div>
+            <p>Alterações</p>
+            <strong id="audit-updates">0</strong>
+          </div>
+        </article>
+
+
+        <article>
+          <span class="audit-summary-icon red">
+            <i data-lucide="user-x"></i>
+          </span>
+
+          <div>
+            <p>Desativações</p>
+            <strong id="audit-deactivations">0</strong>
+          </div>
+        </article>
+
+      </section>
+
+
+      <section class="audit-filters">
+
+        <div class="audit-filters-header">
+
+          <div>
+            <h3>Pesquisa e filtros</h3>
 
             <p>
-              Encontre pessoas cadastradas no sistema
+              Refine os registros apresentados
             </p>
-
           </div>
 
           <button
-            id="clear-filters"
-            class="clear-filters-button"
+            id="clear-audit-filters"
             type="button"
+            class="audit-clear-button"
           >
             Limpar filtros
           </button>
 
         </div>
 
-        <div class="filters-grid">
 
-          <!-- Pesquisa -->
+        <div class="audit-filters-grid">
 
-          <label class="filter-field search-field">
+          <label>
+            <span>Pesquisar</span>
 
-            <span>
-              Pesquisar
-            </span>
-
-            <div class="field-with-icon">
-
+            <div class="audit-search">
               <i data-lucide="search"></i>
 
               <input
-                id="people-search"
+                id="audit-search-input"
                 type="search"
-                placeholder="Nome, telefone, CPF ou título"
+                placeholder="Descrição, usuário, entidade ou IP"
               >
-
             </div>
-
           </label>
 
-          <!-- Localidade -->
 
-          <label class="filter-field">
+          <label>
+            <span>Ação</span>
 
-            <span>
-              Localidade
-            </span>
-
-            <select id="neighborhood-filter">
-
+            <select id="audit-action-filter">
               <option value="">
-                Todas as localidades
+                Todas as ações
               </option>
 
+              <option value="LOGIN">Login</option>
+              <option value="LOGOUT">Logout</option>
+              <option value="CRIACAO">Criação</option>
+              <option value="ALTERACAO">Alteração</option>
+              <option value="EXCLUSAO">Exclusão</option>
+              <option value="ATIVACAO">Ativação</option>
+              <option value="DESATIVACAO">Desativação</option>
+              <option value="CONSULTA">Consulta</option>
             </select>
-
           </label>
 
-          <!-- Rua -->
 
-          <label class="filter-field">
+          <label>
+            <span>Entidade</span>
 
-            <span>
-              Rua
-            </span>
-
-            <select id="street-filter">
-
+            <select id="audit-entity-filter">
               <option value="">
-                Todas as ruas
+                Todas as entidades
               </option>
-
             </select>
-
           </label>
 
-          <!-- Usuário cadastrador -->
 
-          <label class="filter-field">
+          <label>
+            <span>Data inicial</span>
 
-            <span>
-              Cadastrado por
-            </span>
-
-            <select id="user-filter">
-
-              <option value="">
-                Todos os usuários
-              </option>
-
-            </select>
-
+            <input
+              id="audit-start-date"
+              type="date"
+            >
           </label>
 
-          <!-- Período -->
 
-          <label class="filter-field">
+          <label>
+            <span>Data final</span>
 
-            <span>
-              Período
-            </span>
-
-            <select id="period-filter">
-
-              <option value="">
-                Todos os períodos
-              </option>
-
-              <option value="hoje">
-                Hoje
-              </option>
-
-              <option value="semana">
-                Últimos 7 dias
-              </option>
-
-              <option value="mes">
-                Este mês
-              </option>
-
-            </select>
-
+            <input
+              id="audit-end-date"
+              type="date"
+            >
           </label>
 
         </div>
 
       </section>
 
-      <!-- Lista de pessoas -->
 
-      <section class="people-card">
+      <section class="audit-card">
 
-        <header class="people-card-header">
+        <header class="audit-card-header">
 
           <div>
-
             <h3>
-              Lista de pessoas cadastradas
+              Histórico de ações
             </h3>
 
             <p>
-              <span id="visible-total">
+              <span id="audit-visible-total">
                 0
               </span>
-
               registros encontrados
             </p>
-
           </div>
 
         </header>
 
-        <!-- Tabela -->
 
-        <div class="table-container">
+        <div class="audit-table-container">
 
-          <table class="people-table">
+          <table class="audit-table">
 
             <thead>
-
               <tr>
-
-                <th>
-                  Nome
-                </th>
-
-                <th>
-                  Telefone
-                </th>
-
-                <th>
-                  Localidade
-                </th>
-
-                <th>
-                  Rua
-                </th>
-
-                <th>
-                  Data do cadastro
-                </th>
-
-                <th>
-                  Cadastrado por
-                </th>
-
-                <th>
-                  Status
-                </th>
-
-                <th>
-                  Ações
-                </th>
-
+                <th>Data e hora</th>
+                <th>Usuário</th>
+                <th>Ação</th>
+                <th>Entidade</th>
+                <th>Descrição</th>
+                <th>IP</th>
               </tr>
-
             </thead>
 
-            <!-- Linhas criadas pelo pessoas.js -->
-
-            <tbody id="people-table-body">
+            <tbody id="audit-table-body">
             </tbody>
 
           </table>
 
         </div>
 
-        <!-- Quando nenhum cadastro for encontrado -->
 
         <div
-          id="empty-state"
-          class="empty-state"
+          id="audit-empty-state"
+          class="audit-empty-state"
         >
-
           <i data-lucide="search-x"></i>
 
           <strong>
-            Nenhum cadastro encontrado
+            Nenhum registro encontrado
           </strong>
 
           <p>
             Tente alterar ou limpar os filtros.
           </p>
-
         </div>
 
       </section>

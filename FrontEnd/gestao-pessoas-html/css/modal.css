@@ -1,0 +1,291 @@
+/* =========================
+   FUNDO DO MODAL
+========================= */
+
+.system-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.58);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease;
+}
+
+.system-modal-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* =========================
+   CAIXA DO MODAL
+========================= */
+
+.system-modal {
+  width: 100%;
+  max-width: 460px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.28);
+  transform: translateY(40px);
+  transition: transform 0.25s ease;
+}
+
+.system-modal-overlay.visible .system-modal {
+  transform: translateY(0);
+}
+
+/* =========================
+   CONTEÚDO
+========================= */
+
+.system-modal-content {
+  padding: 24px 20px 20px;
+  text-align: center;
+}
+
+.system-modal-icon {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 17px;
+  border-radius: 16px;
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.system-modal-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.system-modal-icon.warning {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.system-modal-icon.success {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.system-modal-icon.information {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.system-modal-title {
+  margin: 0 0 9px;
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.system-modal-message {
+  max-width: 360px;
+  margin: 0 auto;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* =========================
+   BOTÕES
+========================= */
+
+.system-modal-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  padding: 0 20px 22px;
+}
+
+.system-modal-cancel,
+.system-modal-confirm {
+  min-height: 45px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 17px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.system-modal-cancel {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+}
+
+.system-modal-cancel:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.system-modal-confirm {
+  border: 1px solid transparent;
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.system-modal-confirm:hover {
+  background: #b91c1c;
+}
+
+.system-modal-confirm.success {
+  background: #16a34a;
+}
+
+.system-modal-confirm.success:hover {
+  background: #15803d;
+}
+
+.system-modal-confirm.primary {
+  background: #2563eb;
+}
+
+.system-modal-confirm.primary:hover {
+  background: #1d4ed8;
+}
+
+.system-modal-cancel:active,
+.system-modal-confirm:active {
+  transform: scale(0.98);
+}
+
+.system-modal-confirm:disabled,
+.system-modal-cancel:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* =========================
+   CARREGAMENTO
+========================= */
+
+.system-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 6000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(248, 250, 252, 0.82);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
+}
+
+.system-loading-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.system-loading-box {
+  min-width: 170px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 22px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.14);
+}
+
+.system-loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 4px solid #dbeafe;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: systemLoadingSpin 0.8s linear infinite;
+}
+
+@keyframes systemLoadingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Evita rolagem enquanto o modal estiver aberto */
+
+body.modal-open {
+  overflow: hidden;
+}
+
+/* =========================
+   TABLET E COMPUTADOR
+========================= */
+
+@media (min-width: 600px) {
+  .system-modal-overlay {
+    align-items: center;
+  }
+
+  .system-modal-content {
+    padding: 28px 28px 22px;
+  }
+
+  .system-modal-actions {
+    grid-template-columns: 1fr 1fr;
+    padding: 0 28px 28px;
+  }
+
+  .system-modal-title {
+    font-size: 22px;
+  }
+}
+
+/* Pessoas que preferem menos animações */
+
+@media (prefers-reduced-motion: reduce) {
+  .system-modal-overlay,
+  .system-modal,
+  .system-loading-overlay,
+  .system-modal-cancel,
+  .system-modal-confirm {
+    transition: none;
+  }
+
+  .system-loading-spinner {
+    animation-duration: 1.5s;
+  }
+}
+/* Centraliza o único botão dos modais de aviso */
+
+.system-modal-cancel[style*="display: none"]
+  + .system-modal-confirm {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 245px;
+  justify-self: center;
+}

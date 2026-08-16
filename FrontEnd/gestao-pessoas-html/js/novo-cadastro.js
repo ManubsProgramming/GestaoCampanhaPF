@@ -1,699 +1,913 @@
-const registrationForm =
-  document.querySelector("#registration-form")
+const registrationForm = document.querySelector(
+  "#registration-form"
+);
 
-const fullNameInput =
-  document.querySelector("#full-name")
+const fullNameInput = document.querySelector("#full-name");
+const cpfInput = document.querySelector("#cpf");
+const birthDateInput = document.querySelector("#birth-date");
+const voterTitleInput = document.querySelector("#voter-title");
+const phoneInput = document.querySelector("#phone");
 
-const cpfInput =
-  document.querySelector("#cpf")
+const electoralZoneInput = document.querySelector(
+  "#electoral-zone"
+);
 
-const birthDateInput =
-  document.querySelector("#birth-date")
+const electoralSectionInput = document.querySelector(
+  "#electoral-section"
+);
 
-const voterTitleInput =
-  document.querySelector("#voter-title")
+const electoralMunicipalityInput = document.querySelector(
+  "#electoral-municipality"
+);
 
-const phoneInput =
-  document.querySelector("#phone")
+const voterTitleStatus = document.querySelector(
+  "#voter-title-status"
+);
 
-const regionSelect =
-  document.querySelector("#region")
+const validateVoterTitleButton = document.querySelector(
+  "#validate-voter-title-button"
+);
 
-const neighborhoodSelect =
-  document.querySelector("#neighborhood")
+const voterTitleConfirmed = document.querySelector(
+  "#voter-title-confirmed"
+);
 
-const streetSelect =
-  document.querySelector("#street")
+const voterTitleValidationStatus = document.querySelector(
+  "#voter-title-validation-status"
+);
 
-const numberInput =
-  document.querySelector("#number")
+const regionSelect = document.querySelector("#region");
 
-const complementInput =
-  document.querySelector("#complement")
+const neighborhoodSelect = document.querySelector(
+  "#neighborhood"
+);
 
-const observationsInput =
-  document.querySelector("#observations")
+const streetSelect = document.querySelector("#street");
+const numberInput = document.querySelector("#number");
+const complementInput = document.querySelector("#complement");
 
-const characterTotal =
-  document.querySelector("#character-total")
+const observationsInput = document.querySelector(
+  "#observations"
+);
 
-const registeredBy =
-  document.querySelector("#registered-by")
+const characterTotal = document.querySelector(
+  "#character-total"
+);
 
-const saveButton =
-  document.querySelector("#save-button")
+const registeredBy = document.querySelector("#registered-by");
+const saveButton = document.querySelector("#save-button");
+const successModal = document.querySelector("#success-modal");
 
-const successModal =
-  document.querySelector("#success-modal")
+const newRegistrationButton = document.querySelector(
+  "#new-registration-button"
+);
 
-const newRegistrationButton =
-  document.querySelector("#new-registration-button")
+const validateCpfButton = document.querySelector(
+  "#validate-cpf-button"
+);
 
-const validateCpfButton =
-  document.querySelector("#validate-cpf-button")
+const cpfConfirmed = document.querySelector("#cpf-confirmed");
 
-const cpfConfirmed =
-  document.querySelector("#cpf-confirmed")
+const cpfValidationStatus = document.querySelector(
+  "#cpf-validation-status"
+);
 
-const cpfValidationStatus =
-  document.querySelector("#cpf-validation-status")
+const sidebar = document.querySelector("#sidebar");
 
+const menuOverlay = document.querySelector(
+  "#menu-overlay"
+);
 
-const sidebar =
-  document.querySelector("#sidebar")
+const openMenuButton = document.querySelector("#open-menu");
+const closeMenuButton = document.querySelector("#close-menu");
+const logoutButton = document.querySelector("#logout-button");
+const loggedUser = document.querySelector("#logged-user");
 
-const menuOverlay =
-  document.querySelector("#menu-overlay")
+const notificationButton = document.querySelector(
+  ".notification-button"
+);
 
-const openMenuButton =
-  document.querySelector("#open-menu")
-
-const closeMenuButton =
-  document.querySelector("#close-menu")
-
-const logoutButton =
-  document.querySelector("#logout-button")
-
-const loggedUser =
-  document.querySelector("#logged-user")
-
-const notificationButton =
-  document.querySelector(".notification-button")
-
-
-let usuarioAtual = null
+let currentUser = null;
 
 
-/* =====================================================
-   MENU MOBILE
-===================================================== */
+/* =========================
+   MODAIS
+========================= */
+
+async function showMessage({
+  title = "Aviso",
+  message = "",
+  type = "information"
+}) {
+  if (window.SystemModal) {
+    await window.SystemModal.alert({
+      title,
+      message,
+      confirmText: "Entendi",
+      type
+    });
+
+    return;
+  }
+
+  window.alert(message);
+}
+
+
+/* =========================
+   MENU
+========================= */
 
 function openMenu() {
-  sidebar?.classList.add("open")
-  menuOverlay?.classList.add("visible")
-
-  document.body.style.overflow = "hidden"
+  sidebar?.classList.add("open");
+  menuOverlay?.classList.add("visible");
+  document.body.style.overflow = "hidden";
 }
-
 
 function closeMenu() {
-  sidebar?.classList.remove("open")
-  menuOverlay?.classList.remove("visible")
-
-  document.body.style.overflow = ""
+  sidebar?.classList.remove("open");
+  menuOverlay?.classList.remove("visible");
+  document.body.style.overflow = "";
 }
-
 
 openMenuButton?.addEventListener(
   "click",
   openMenu
-)
-
+);
 
 closeMenuButton?.addEventListener(
   "click",
   closeMenu
-)
-
+);
 
 menuOverlay?.addEventListener(
   "click",
   closeMenu
-)
-
+);
 
 window.addEventListener(
   "resize",
   function () {
     if (window.innerWidth >= 1024) {
-      closeMenu()
+      closeMenu();
     }
   }
-)
+);
 
 
-/* =====================================================
-   USUÁRIO LOGADO
-===================================================== */
+/* =========================
+   USUÁRIO
+========================= */
 
-function obterNomeUsuario(usuario) {
-  if (!usuario) {
-    return "Usuário"
+function getUserName(user) {
+  if (!user) {
+    return "Usuário";
   }
 
-  const nomeCompleto = [
-    usuario.first_name,
-    usuario.last_name,
+  const completeName = [
+    user.first_name,
+    user.last_name
   ]
     .filter(Boolean)
     .join(" ")
-    .trim()
+    .trim();
 
   return (
-    nomeCompleto ||
-    usuario.username ||
+    completeName ||
+    user.username ||
     "Usuário"
-  )
+  );
 }
 
 
-function obterIniciais(nome) {
-  const palavras = String(nome || "")
+function getInitials(name) {
+  const words = String(name || "")
     .trim()
     .split(" ")
-    .filter(Boolean)
+    .filter(Boolean);
 
-  if (palavras.length === 0) {
-    return "US"
+  if (!words.length) {
+    return "US";
   }
 
-  if (palavras.length === 1) {
-    return palavras[0]
+  if (words.length === 1) {
+    return words[0]
       .slice(0, 2)
-      .toUpperCase()
+      .toUpperCase();
   }
 
   return (
-    palavras[0][0] +
-    palavras[palavras.length - 1][0]
-  ).toUpperCase()
+    words[0][0] +
+    words[words.length - 1][0]
+  ).toUpperCase();
 }
 
 
-function preencherUsuario(usuario) {
-  const nome =
-    obterNomeUsuario(usuario)
+function fillCurrentUser(user) {
+  const name = getUserName(user);
+  const initials = getInitials(name);
 
-  const iniciais =
-    obterIniciais(nome)
-
-  const tipo =
-    usuario.tipo === "ADMINISTRADOR"
+  const profileType =
+    user.tipo === "ADMINISTRADOR"
       ? "Administrador geral"
-      : "Cadastrador"
+      : "Cadastrador";
 
   if (registeredBy) {
-    registeredBy.textContent = nome
+    registeredBy.textContent = name;
   }
 
   if (loggedUser) {
-    loggedUser.textContent = nome
+    loggedUser.textContent = name;
   }
 
   document
     .querySelectorAll(
       ".sidebar-user-info strong"
     )
-    .forEach(function (elemento) {
-      elemento.textContent = nome
-    })
+    .forEach(function (element) {
+      element.textContent = name;
+    });
 
   document
     .querySelectorAll(
       ".sidebar-user-info span, .profile-info small"
     )
-    .forEach(function (elemento) {
-      elemento.textContent = tipo
-    })
+    .forEach(function (element) {
+      element.textContent = profileType;
+    });
 
   document
     .querySelectorAll(
       ".user-avatar, .profile-avatar"
     )
-    .forEach(function (elemento) {
-      elemento.textContent = iniciais
-    })
+    .forEach(function (element) {
+      element.textContent = initials;
+    });
 }
 
 
-/* =====================================================
-   MENU DO CADASTRADOR
-===================================================== */
-
-function configurarMenuPorPerfil(usuario) {
+function configureMenuByProfile(user) {
   if (
-    usuario.tipo !== "CADASTRADOR"
+    user.tipo !== "CADASTRADOR"
   ) {
-    return
+    return;
   }
 
-  const linksAdministrador = [
+  const administratorLinks = [
     'a[href="painel.html"]',
     'a[href="usuarios.html"]',
     'a[href="regioes.html"]',
     'a[href="relatorios.html"]',
-    'a[href="auditoria.html"]',
     'a[href="configuracoes.html"]',
-  ]
+    'a[href="auditoria.html"]'
+  ];
 
   document
     .querySelectorAll(
-      linksAdministrador.join(", ")
+      administratorLinks.join(", ")
     )
     .forEach(function (link) {
-      link.style.display = "none"
-    })
+      link.style.display = "none";
+    });
 }
 
 
-/* =====================================================
-   TELEFONE
-===================================================== */
+/* =========================
+   MÁSCARA DO TELEFONE
+========================= */
 
 phoneInput?.addEventListener(
   "input",
   function () {
-    let numeros =
-      phoneInput.value.replace(
-        /\D/g,
-        ""
-      )
+    let numbers = phoneInput.value
+      .replace(/\D/g, "")
+      .slice(0, 11);
 
-    numeros =
-      numeros.slice(0, 11)
+    if (numbers.length > 10) {
+      phoneInput.value = numbers.replace(
+        /^(\d{2})(\d{5})(\d{0,4})/,
+        "($1) $2-$3"
+      );
 
-    if (numeros.length > 7) {
-      phoneInput.value =
-        numeros.replace(
-          /^(\d{2})(\d{5})(\d{0,4})/,
-          "($1) $2-$3"
-        )
-
-      return
+      return;
     }
 
-    if (numeros.length > 2) {
-      phoneInput.value =
-        numeros.replace(
-          /^(\d{2})(\d{0,5})/,
-          "($1) $2"
-        )
+    if (numbers.length > 6) {
+      phoneInput.value = numbers.replace(
+        /^(\d{2})(\d{4})(\d{0,4})/,
+        "($1) $2-$3"
+      );
 
-      return
+      return;
     }
 
-    if (numeros.length > 0) {
-      phoneInput.value =
-        `(${numeros}`
+    if (numbers.length > 2) {
+      phoneInput.value = numbers.replace(
+        /^(\d{2})(\d{0,5})/,
+        "($1) $2"
+      );
 
-      return
+      return;
     }
 
-    phoneInput.value = ""
+    phoneInput.value = numbers
+      ? `(${numbers}`
+      : "";
   }
-)
+);
 
 
-/* =====================================================
+/* =========================
    CPF
-===================================================== */
+========================= */
 
-cpfInput?.addEventListener(
-  "input",
-  function () {
-    let numeros =
-      cpfInput.value.replace(
-        /\D/g,
-        ""
-      )
-
-    numeros =
-      numeros.slice(0, 11)
-
-    cpfInput.value =
-      numeros
-        .replace(
-          /(\d{3})(\d)/,
-          "$1.$2"
-        )
-        .replace(
-          /(\d{3})(\d)/,
-          "$1.$2"
-        )
-        .replace(
-          /(\d{3})(\d{1,2})$/,
-          "$1-$2"
-        )
-
-    resetarConfirmacaoCpf()
-  }
-)
-
-
-birthDateInput?.addEventListener(
-  "change",
-  resetarConfirmacaoCpf
-)
-
-
-function resetarConfirmacaoCpf() {
+function resetCpfConfirmation() {
   if (cpfConfirmed) {
-    cpfConfirmed.checked = false
+    cpfConfirmed.checked = false;
   }
 
   if (cpfValidationStatus) {
     cpfValidationStatus.textContent =
-      "CPF ainda não conferido."
+      "CPF ainda não conferido.";
 
     cpfValidationStatus.classList.remove(
       "confirmed"
-    )
+    );
   }
 }
 
 
-/* =====================================================
-   ABRIR CONSULTA DA RECEITA
-===================================================== */
+cpfInput?.addEventListener(
+  "input",
+  function () {
+    let numbers = cpfInput.value
+      .replace(/\D/g, "")
+      .slice(0, 11);
+
+    cpfInput.value = numbers
+      .replace(
+        /(\d{3})(\d)/,
+        "$1.$2"
+      )
+      .replace(
+        /(\d{3})(\d)/,
+        "$1.$2"
+      )
+      .replace(
+        /(\d{3})(\d{1,2})$/,
+        "$1-$2"
+      );
+
+    resetCpfConfirmation();
+  }
+);
+
+
+birthDateInput?.addEventListener(
+  "change",
+  resetCpfConfirmation
+);
+
 
 validateCpfButton?.addEventListener(
   "click",
-  function () {
+  async function () {
     const cpf =
       cpfInput.value.replace(
         /\D/g,
         ""
-      )
+      );
 
-    const nascimento =
-      birthDateInput.value
+    const birthDate =
+      birthDateInput.value;
 
     if (cpf.length !== 11) {
-      window.alert(
-        "Informe um CPF com 11 dígitos antes de consultar."
-      )
+      await showMessage({
+        title:
+          "CPF incompleto",
 
-      cpfInput.focus()
-      return
+        message:
+          "Informe um CPF com 11 números antes de consultar.",
+
+        type:
+          "warning"
+      });
+
+      cpfInput.focus();
+      return;
     }
 
-    if (!nascimento) {
-      window.alert(
-        "Informe a data de nascimento antes de consultar."
-      )
+    if (!birthDate) {
+      await showMessage({
+        title:
+          "Data de nascimento",
 
-      birthDateInput.focus()
-      return
+        message:
+          "Informe a data de nascimento antes de consultar o CPF.",
+
+        type:
+          "warning"
+      });
+
+      birthDateInput.focus();
+      return;
     }
 
     sessionStorage.setItem(
       "cpfEmValidacao",
       cpf
-    )
+    );
 
     sessionStorage.setItem(
       "nascimentoEmValidacao",
-      nascimento
-    )
+      birthDate
+    );
 
     window.open(
       "https://servicos.receita.fazenda.gov.br/servicos/cpf/consultasituacao/consultapublica.asp",
       "_blank",
       "noopener,noreferrer"
-    )
+    );
   }
-)
+);
 
 
 cpfConfirmed?.addEventListener(
   "change",
   function () {
+    if (!cpfValidationStatus) {
+      return;
+    }
+
     if (cpfConfirmed.checked) {
       cpfValidationStatus.textContent =
-        "Consulta realizada e CPF conferido."
+        "Consulta realizada e CPF conferido.";
 
       cpfValidationStatus.classList.add(
         "confirmed"
-      )
+      );
 
-      return
+      return;
     }
 
-    cpfValidationStatus.textContent =
-      "CPF ainda não conferido."
-
-    cpfValidationStatus.classList.remove(
-      "confirmed"
-    )
+    resetCpfConfirmation();
   }
-)
+);
 
 
-/* =====================================================
+/* =========================
+   TÍTULO ELEITORAL / TSE
+========================= */
+
+function setVoterTitleStatus(
+  message,
+  type = ""
+) {
+  if (!voterTitleStatus) {
+    return;
+  }
+
+  voterTitleStatus.textContent =
+    message;
+
+  voterTitleStatus.classList.remove(
+    "success",
+    "error"
+  );
+
+  if (type) {
+    voterTitleStatus.classList.add(
+      type
+    );
+  }
+}
+
+
+function resetVoterTitleConfirmation() {
+  if (voterTitleConfirmed) {
+    voterTitleConfirmed.checked =
+      false;
+  }
+
+  if (
+    voterTitleValidationStatus
+  ) {
+    voterTitleValidationStatus
+      .textContent =
+      "Título ainda não conferido.";
+
+    voterTitleValidationStatus
+      .classList
+      .remove(
+        "confirmed"
+      );
+  }
+}
+
+
+function clearElectoralData() {
+  if (electoralZoneInput) {
+    electoralZoneInput.value =
+      "";
+  }
+
+  if (electoralSectionInput) {
+    electoralSectionInput.value =
+      "";
+  }
+
+  if (electoralMunicipalityInput) {
+    electoralMunicipalityInput.value =
+      "";
+  }
+
+  resetVoterTitleConfirmation();
+}
+
+
+voterTitleInput?.addEventListener(
+  "input",
+  function () {
+    const numbers =
+      voterTitleInput.value
+        .replace(/\D/g, "")
+        .slice(0, 12);
+
+    voterTitleInput.value =
+      numbers;
+
+    resetVoterTitleConfirmation();
+
+    if (!numbers.length) {
+      setVoterTitleStatus(
+        "Digite o título e consulte no site oficial do TSE."
+      );
+
+      return;
+    }
+
+    if (
+      numbers.length < 12
+    ) {
+      setVoterTitleStatus(
+        `${numbers.length} de 12 números digitados.`
+      );
+
+      return;
+    }
+
+    setVoterTitleStatus(
+      "Título completo. Clique em “Consultar no TSE”."
+    );
+  }
+);
+
+
+validateVoterTitleButton
+  ?.addEventListener(
+    "click",
+    async function () {
+      const titulo =
+        voterTitleInput
+          ?.value
+          .replace(
+            /\D/g,
+            ""
+          ) || "";
+
+      if (
+        titulo.length !== 12
+      ) {
+        await showMessage({
+          title:
+            "Título incompleto",
+
+          message:
+            "Informe os 12 números do título de eleitor antes de consultar.",
+
+          type:
+            "warning"
+        });
+
+        voterTitleInput?.focus();
+
+        return;
+      }
+
+      sessionStorage.setItem(
+        "tituloEmValidacao",
+        titulo
+      );
+
+      setVoterTitleStatus(
+        "Consulta aberta no site oficial do TSE.",
+        "success"
+      );
+
+      window.open(
+        "https://www.tse.jus.br/servicos-eleitorais/autoatendimento-eleitoral",
+        "_blank",
+        "noopener,noreferrer"
+      );
+    }
+  );
+
+
+voterTitleConfirmed
+  ?.addEventListener(
+    "change",
+    function () {
+      if (
+        !voterTitleValidationStatus
+      ) {
+        return;
+      }
+
+      if (
+        voterTitleConfirmed.checked
+      ) {
+        voterTitleValidationStatus
+          .textContent =
+          "Consulta realizada e título conferido.";
+
+        voterTitleValidationStatus
+          .classList
+          .add(
+            "confirmed"
+          );
+
+        return;
+      }
+
+      resetVoterTitleConfirmation();
+    }
+  );
+
+
+[
+  electoralZoneInput,
+  electoralSectionInput,
+  electoralMunicipalityInput
+]
+  .filter(Boolean)
+  .forEach(
+    function (field) {
+      field.addEventListener(
+        "input",
+        function () {
+          resetVoterTitleConfirmation();
+        }
+      );
+    }
+  );
+
+
+/* =========================
    OBSERVAÇÕES
-===================================================== */
+========================= */
 
 observationsInput?.addEventListener(
   "input",
   function () {
     if (characterTotal) {
       characterTotal.textContent =
-        observationsInput.value.length
+        observationsInput.value.length;
     }
   }
-)
+);
 
 
-/* =====================================================
-   FUNÇÃO AUXILIAR PARA RESULTADOS PAGINADOS
-===================================================== */
+/* =========================
+   RESPOSTAS PAGINADAS
+========================= */
 
-function obterLista(dados) {
-  if (Array.isArray(dados)) {
-    return dados
+function getList(data) {
+  if (Array.isArray(data)) {
+    return data;
   }
 
   if (
-    dados &&
-    Array.isArray(dados.results)
+    data &&
+    Array.isArray(
+      data.results
+    )
   ) {
-    return dados.results
+    return data.results;
   }
 
-  return []
+  return [];
 }
 
 
-/* =====================================================
-   REGIÕES
-===================================================== */
+function addSelectOption(
+  select,
+  value,
+  text
+) {
+  const option =
+    document.createElement(
+      "option"
+    );
 
-async function carregarRegioes() {
-  regionSelect.disabled = true
+  option.value =
+    value;
+
+  option.textContent =
+    text;
+
+  select.appendChild(
+    option
+  );
+}
+
+
+/* =========================
+   REGIÕES
+========================= */
+
+async function loadRegions() {
+  regionSelect.disabled =
+    true;
 
   regionSelect.innerHTML = `
     <option value="">
       Carregando regiões...
     </option>
-  `
+  `;
 
   const response =
     await apiFetch(
       "/regioes/"
-    )
+    );
 
   if (!response.ok) {
     throw new Error(
       "Não foi possível carregar as regiões."
-    )
+    );
   }
 
-  const dados =
-    await response.json()
-
-  const regioes =
-    obterLista(dados)
+  const regions =
+    getList(
+      await response.json()
+    );
 
   regionSelect.innerHTML = `
     <option value="">
       Selecione a região
     </option>
-  `
+  `;
 
-  regioes.forEach(
-    function (regiao) {
-      const option =
-        document.createElement(
-          "option"
-        )
-
-      option.value =
-        regiao.id
-
-      option.textContent =
-        regiao.nome
-
-      regionSelect.appendChild(
-        option
-      )
+  regions.forEach(
+    function (region) {
+      addSelectOption(
+        regionSelect,
+        region.id,
+        region.nome
+      );
     }
-  )
+  );
 
-  regionSelect.disabled = false
+  regionSelect.disabled =
+    false;
 }
 
 
-/* =====================================================
+/* =========================
    LOCALIDADES
-===================================================== */
+========================= */
 
-async function carregarLocalidades(
-  regiaoId
+async function loadNeighborhoods(
+  regionId
 ) {
   neighborhoodSelect.disabled =
-    true
+    true;
 
   streetSelect.disabled =
-    true
+    true;
 
   neighborhoodSelect.innerHTML = `
     <option value="">
       Carregando localidades...
     </option>
-  `
+  `;
 
   streetSelect.innerHTML = `
     <option value="">
       Selecione primeiro a localidade
     </option>
-  `
+  `;
 
-  if (!regiaoId) {
+  if (!regionId) {
     neighborhoodSelect.innerHTML = `
       <option value="">
         Selecione primeiro a região
       </option>
-    `
+    `;
 
-    return
+    return;
   }
 
   const response =
     await apiFetch(
-      `/localidades/?regiao=${regiaoId}`
-    )
+      `/localidades/?regiao=${encodeURIComponent(
+        regionId
+      )}`
+    );
 
   if (!response.ok) {
     throw new Error(
       "Não foi possível carregar as localidades."
-    )
+    );
   }
 
-  const dados =
-    await response.json()
-
-  const localidades =
-    obterLista(dados)
+  const neighborhoods =
+    getList(
+      await response.json()
+    );
 
   neighborhoodSelect.innerHTML = `
     <option value="">
       Selecione a localidade
     </option>
-  `
+  `;
 
-  localidades.forEach(
-    function (localidade) {
-      const option =
-        document.createElement(
-          "option"
-        )
-
-      option.value =
-        localidade.id
-
-      const tipo =
-        localidade.tipo_display ||
-        localidade.tipo_nome ||
-        localidade.tipo ||
-        ""
-
-      if (tipo) {
-        option.textContent =
-          `${localidade.nome} - ${tipo}`
-      } else {
-        option.textContent =
-          localidade.nome
-      }
-
-      neighborhoodSelect.appendChild(
-        option
-      )
+  neighborhoods.forEach(
+    function (neighborhood) {
+      addSelectOption(
+        neighborhoodSelect,
+        neighborhood.id,
+        neighborhood.nome
+      );
     }
-  )
+  );
 
   neighborhoodSelect.disabled =
-    false
+    false;
 }
 
 
-/* =====================================================
+/* =========================
    RUAS
-===================================================== */
+========================= */
 
-async function carregarRuas(
-  localidadeId
+async function loadStreets(
+  neighborhoodId
 ) {
-  streetSelect.disabled = true
+  streetSelect.disabled =
+    true;
 
   streetSelect.innerHTML = `
     <option value="">
       Carregando ruas...
     </option>
-  `
+  `;
 
-  if (!localidadeId) {
+  if (!neighborhoodId) {
     streetSelect.innerHTML = `
       <option value="">
         Selecione primeiro a localidade
       </option>
-    `
+    `;
 
-    return
+    return;
   }
 
   const response =
     await apiFetch(
-      `/ruas/?localidade=${localidadeId}`
-    )
+      `/ruas/?localidade=${encodeURIComponent(
+        neighborhoodId
+      )}`
+    );
 
   if (!response.ok) {
     throw new Error(
       "Não foi possível carregar as ruas."
-    )
+    );
   }
 
-  const dados =
-    await response.json()
-
-  const ruas =
-    obterLista(dados)
+  const streets =
+    getList(
+      await response.json()
+    );
 
   streetSelect.innerHTML = `
     <option value="">
       Selecione a rua
     </option>
-  `
+  `;
 
-  ruas.forEach(
-    function (rua) {
-      const option =
-        document.createElement(
-          "option"
-        )
-
-      option.value =
-        rua.id
-
-      option.textContent =
-        rua.nome
-
-      streetSelect.appendChild(
-        option
-      )
+  streets.forEach(
+    function (street) {
+      addSelectOption(
+        streetSelect,
+        street.id,
+        street.nome
+      );
     }
-  )
+  );
 
-  streetSelect.disabled = false
+  streetSelect.disabled =
+    false;
 }
 
 
@@ -701,217 +915,423 @@ regionSelect?.addEventListener(
   "change",
   async function () {
     try {
-      await carregarLocalidades(
+      await loadNeighborhoods(
         regionSelect.value
-      )
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
 
-      window.alert(
-        error.message
-      )
+      await showMessage({
+        title:
+          "Erro ao carregar",
+
+        message:
+          error.message,
+
+        type:
+          "warning"
+      });
     }
   }
-)
+);
 
 
-neighborhoodSelect?.addEventListener(
-  "change",
-  async function () {
-    try {
-      await carregarRuas(
-        neighborhoodSelect.value
-      )
-    } catch (error) {
-      console.error(error)
+neighborhoodSelect
+  ?.addEventListener(
+    "change",
+    async function () {
+      try {
+        await loadStreets(
+          neighborhoodSelect.value
+        );
+      } catch (error) {
+        console.error(error);
 
-      window.alert(
-        error.message
-      )
+        await showMessage({
+          title:
+            "Erro ao carregar",
+
+          message:
+            error.message,
+
+          type:
+            "warning"
+        });
+      }
     }
-  }
-)
+  );
 
 
-/* =====================================================
-   LIMPAR ERROS
-===================================================== */
+/* =========================
+   ERROS DOS CAMPOS
+========================= */
 
-function clearFieldErrors() {
-  registrationForm
-    ?.querySelectorAll(
-      ".invalid"
-    )
-    .forEach(
-      function (campo) {
-        campo.classList.remove(
-          "invalid"
-        )
-      }
-    )
-
-  registrationForm
-    ?.querySelectorAll(
-      ".field-error"
-    )
-    .forEach(
-      function (erro) {
-        erro.textContent = ""
-
-        erro.classList.remove(
-          "visible"
-        )
-      }
-    )
-}
-
-
-function mostrarErroCampo(
-  campo,
-  mensagem
+function clearFieldError(
+  field
 ) {
-  if (!campo) {
-    return
+  if (!field) {
+    return;
   }
 
-  campo.classList.add(
+  field.classList.remove(
     "invalid"
-  )
+  );
 
-  const formField =
-    campo.closest(
+  const fieldContainer =
+    field.closest(
       ".form-field"
-    )
+    );
 
-  const erro =
-    formField?.querySelector(
-      ".field-error"
-    )
+  const errorElement =
+    fieldContainer
+      ?.querySelector(
+        ".field-error"
+      );
 
-  if (erro) {
-    erro.textContent =
-      mensagem
+  if (errorElement) {
+    errorElement.textContent =
+      "";
 
-    erro.classList.add(
+    errorElement.classList.remove(
       "visible"
-    )
+    );
   }
 }
 
 
-/* =====================================================
-   VALIDAR FORMULÁRIO
-===================================================== */
+function showFieldError(
+  field,
+  message
+) {
+  if (!field) {
+    return;
+  }
 
-function validarFormulario() {
-  clearFieldErrors()
+  field.classList.add(
+    "invalid"
+  );
 
-  let valido = true
-  let primeiroErro = null
+  const fieldContainer =
+    field.closest(
+      ".form-field"
+    );
 
-  const obrigatorios =
-    Array.from(
-      registrationForm
-        .querySelectorAll(
-          "[required]"
-        )
+  const errorElement =
+    fieldContainer
+      ?.querySelector(
+        ".field-error"
+      );
+
+  if (errorElement) {
+    errorElement.textContent =
+      message;
+
+    errorElement.classList.add(
+      "visible"
+    );
+  }
+}
+
+
+function clearAllFieldErrors() {
+  registrationForm
+    ?.querySelectorAll(
+      "input, select, textarea"
     )
+    .forEach(
+      clearFieldError
+    );
+}
 
-  obrigatorios.forEach(
-    function (campo) {
-      if (
-        !String(
-          campo.value
-        ).trim()
-      ) {
-        valido = false
 
-        mostrarErroCampo(
-          campo,
-          "Este campo é obrigatório."
-        )
-
-        if (!primeiroErro) {
-          primeiroErro =
-            campo
-        }
-      }
-    }
+registrationForm
+  ?.querySelectorAll(
+    "input, select, textarea"
   )
+  .forEach(
+    function (field) {
+      field.addEventListener(
+        "input",
+        function () {
+          clearFieldError(
+            field
+          );
+        }
+      );
+
+      field.addEventListener(
+        "change",
+        function () {
+          clearFieldError(
+            field
+          );
+        }
+      );
+    }
+  );
+
+
+/* =========================
+   VALIDAÇÃO
+========================= */
+
+function validateForm() {
+  clearAllFieldErrors();
+
+  let valid = true;
+  let firstError = null;
+
+  const fullName =
+    fullNameInput.value.trim();
 
   const cpf =
-    cpfInput.value.replace(
-      /\D/g,
-      ""
-    )
+    cpfInput.value
+      .replace(/\D/g, "");
 
-  if (cpf.length !== 11) {
-    valido = false
+  const phone =
+    phoneInput.value
+      .replace(/\D/g, "");
 
-    mostrarErroCampo(
+  const voterTitle =
+    voterTitleInput
+      ?.value
+      .replace(
+        /\D/g,
+        ""
+      ) || "";
+
+
+  if (
+    fullName.length < 3
+  ) {
+    valid = false;
+
+    showFieldError(
+      fullNameInput,
+      "Digite o nome completo."
+    );
+
+    firstError ||=
+      fullNameInput;
+  }
+
+
+  if (
+    cpf.length !== 11
+  ) {
+    valid = false;
+
+    showFieldError(
       cpfInput,
-      "Digite um CPF com 11 dígitos."
-    )
+      "Digite um CPF com 11 números."
+    );
 
-    if (!primeiroErro) {
-      primeiroErro =
-        cpfInput
+    firstError ||=
+      cpfInput;
+  }
+
+
+  if (
+    !birthDateInput.value
+  ) {
+    valid = false;
+
+    showFieldError(
+      birthDateInput,
+      "Informe a data de nascimento."
+    );
+
+    firstError ||=
+      birthDateInput;
+  }
+
+
+  if (
+    voterTitle &&
+    voterTitle.length !== 12
+  ) {
+    valid = false;
+
+    showFieldError(
+      voterTitleInput,
+      "O título deve possuir 12 números."
+    );
+
+    firstError ||=
+      voterTitleInput;
+  }
+
+
+  if (voterTitle) {
+
+    if (
+      !electoralZoneInput
+        ?.value
+        .trim()
+    ) {
+      valid = false;
+
+      showFieldError(
+        electoralZoneInput,
+        "Informe a zona eleitoral consultada no TSE."
+      );
+
+      firstError ||=
+        electoralZoneInput;
+    }
+
+
+    if (
+      !electoralSectionInput
+        ?.value
+        .trim()
+    ) {
+      valid = false;
+
+      showFieldError(
+        electoralSectionInput,
+        "Informe a seção eleitoral consultada no TSE."
+      );
+
+      firstError ||=
+        electoralSectionInput;
+    }
+
+
+    if (
+      !electoralMunicipalityInput
+        ?.value
+        .trim()
+    ) {
+      valid = false;
+
+      showFieldError(
+        electoralMunicipalityInput,
+        "Informe o município eleitoral consultado no TSE."
+      );
+
+      firstError ||=
+        electoralMunicipalityInput;
+    }
+
+
+    if (
+      voterTitleConfirmed &&
+      !voterTitleConfirmed.checked
+    ) {
+      valid = false;
+
+      showMessage({
+        title:
+          "Conferência do título",
+
+        message:
+          "Consulte o título no site oficial do TSE, preencha zona, seção e município e confirme os dados antes de salvar.",
+
+        type:
+          "information"
+      });
     }
   }
 
-  const telefone =
-    phoneInput.value.replace(
-      /\D/g,
-      ""
-    )
 
-  if (telefone.length < 10) {
-    valido = false
+  if (
+    phone.length < 10
+  ) {
+    valid = false;
 
-    mostrarErroCampo(
+    showFieldError(
       phoneInput,
       "Digite um telefone válido."
-    )
+    );
 
-    if (!primeiroErro) {
-      primeiroErro =
-        phoneInput
-    }
+    firstError ||=
+      phoneInput;
   }
+
+
+  if (
+    !regionSelect.value
+  ) {
+    valid = false;
+
+    showFieldError(
+      regionSelect,
+      "Selecione uma região."
+    );
+
+    firstError ||=
+      regionSelect;
+  }
+
+
+  if (
+    !neighborhoodSelect.value
+  ) {
+    valid = false;
+
+    showFieldError(
+      neighborhoodSelect,
+      "Selecione uma localidade."
+    );
+
+    firstError ||=
+      neighborhoodSelect;
+  }
+
+
+  if (
+    !streetSelect.value
+  ) {
+    valid = false;
+
+    showFieldError(
+      streetSelect,
+      "Selecione uma rua."
+    );
+
+    firstError ||=
+      streetSelect;
+  }
+
 
   if (
     cpfConfirmed &&
     !cpfConfirmed.checked
   ) {
-    valido = false
+    valid = false;
 
-    window.alert(
-      "Consulte o CPF na Receita Federal e confirme a conferência antes de salvar."
-    )
+    showMessage({
+      title:
+        "Conferência do CPF",
+
+      message:
+        "Consulte o CPF na Receita Federal e confirme os dados antes de salvar o cadastro.",
+
+      type:
+        "information"
+    });
   }
 
-  if (primeiroErro) {
-    primeiroErro.focus()
-  }
 
-  return valido
+  firstError?.focus();
+
+  return valid;
 }
 
 
-/* =====================================================
-   MONTAR DADOS PARA O DJANGO
-===================================================== */
+/* =========================
+   DADOS DO CADASTRO
+========================= */
 
-function montarDadosCadastro() {
+function buildRegistrationData() {
   return {
     nome_completo:
       fullNameInput.value.trim(),
 
     cpf:
-      cpfInput.value.replace(
-        /\D/g,
-        ""
-      ),
+      cpfInput.value
+        .replace(/\D/g, ""),
 
     data_nascimento:
       birthDateInput.value,
@@ -919,14 +1339,29 @@ function montarDadosCadastro() {
     titulo_eleitor:
       voterTitleInput
         ?.value
-        .replace(/\D/g, "")
-      || "",
+        .replace(
+          /\D/g,
+          ""
+        ) || "",
+
+    zona_eleitoral:
+      electoralZoneInput
+        ?.value
+        .trim() || "",
+
+    secao_eleitoral:
+      electoralSectionInput
+        ?.value
+        .trim() || "",
+
+    municipio_eleitoral:
+      electoralMunicipalityInput
+        ?.value
+        .trim() || "",
 
     telefone:
-      phoneInput.value.replace(
-        /\D/g,
-        ""
-      ),
+      phoneInput.value
+        .replace(/\D/g, ""),
 
     regiao:
       Number(
@@ -949,14 +1384,12 @@ function montarDadosCadastro() {
     complemento:
       complementInput
         ?.value
-        .trim()
-      || "",
+        .trim() || "",
 
     observacoes:
       observationsInput
         ?.value
-        .trim()
-      || "",
+        .trim() || "",
 
     status:
       "ATIVO",
@@ -967,19 +1400,28 @@ function montarDadosCadastro() {
         : "NAO_VERIFICADO",
 
     status_verificacao_titulo:
-      "NAO_VERIFICADO",
-  }
+      voterTitleInput
+        ?.value
+        .replace(
+          /\D/g,
+          ""
+        ) &&
+      voterTitleConfirmed
+        ?.checked
+        ? "CONSULTADO"
+        : "NAO_VERIFICADO"
+  };
 }
 
 
-/* =====================================================
+/* =========================
    ERROS DO BACKEND
-===================================================== */
+========================= */
 
-function mostrarErrosBackend(
-  erros
+function showBackendErrors(
+  errors
 ) {
-  const campos = {
+  const fields = {
     nome_completo:
       fullNameInput,
 
@@ -991,6 +1433,15 @@ function mostrarErrosBackend(
 
     titulo_eleitor:
       voterTitleInput,
+
+    zona_eleitoral:
+      electoralZoneInput,
+
+    secao_eleitoral:
+      electoralSectionInput,
+
+    municipio_eleitoral:
+      electoralMunicipalityInput,
 
     telefone:
       phoneInput,
@@ -1011,269 +1462,313 @@ function mostrarErrosBackend(
       complementInput,
 
     observacoes:
-      observationsInput,
-  }
+      observationsInput
+  };
+
 
   Object.entries(
-    erros
+    errors
   ).forEach(
-    function (
-      [nomeCampo, mensagens]
-    ) {
-      const campo =
-        campos[nomeCampo]
+    function ([
+      fieldName,
+      messages
+    ]) {
+      const field =
+        fields[fieldName];
 
-      const mensagem =
-        Array.isArray(mensagens)
-          ? mensagens.join(" ")
-          : String(mensagens)
-
-      if (campo) {
-        mostrarErroCampo(
-          campo,
-          mensagem
+      const message =
+        Array.isArray(
+          messages
         )
+          ? messages.join(" ")
+          : String(messages);
+
+      if (field) {
+        showFieldError(
+          field,
+          message
+        );
       } else {
         console.error(
-          nomeCampo,
-          mensagem
-        )
+          fieldName,
+          message
+        );
       }
     }
-  )
+  );
 }
 
 
-/* =====================================================
-   SALVAR NO BANCO
-===================================================== */
+/* =========================
+   SALVAR
+========================= */
 
-async function salvarCadastro() {
-  const dados =
-    montarDadosCadastro()
-
-  console.log(
-    "Dados enviados:",
-    dados
-  )
+async function saveRegistration() {
+  const data =
+    buildRegistrationData();
 
   const response =
     await apiFetch(
       "/pessoas/",
       {
-        method: "POST",
+        method:
+          "POST",
 
         body:
           JSON.stringify(
-            dados
-          ),
+            data
+          )
       }
-    )
+    );
 
-  if (response.status === 201) {
-    return response.json()
+  if (
+    response.status === 201
+  ) {
+    return response.json();
   }
 
-  let erros = {}
+  let errors = {};
 
   try {
-    erros =
-      await response.json()
-  } catch {
-    throw new Error(
-      "Não foi possível salvar o cadastro."
-    )
+    errors =
+      await response.json();
+  } catch (error) {
+    console.error(
+      "Resposta do cadastro sem JSON:",
+      error
+    );
   }
 
-  console.error(
-    "Erro retornado pelo backend:",
-    erros
-  )
-
-  if (response.status === 400) {
-    mostrarErrosBackend(
-      erros
-    )
-
-    throw new Error(
-      "Verifique os campos informados."
-    )
-  }
-
-  if (response.status === 401) {
-    throw new Error(
-      "Sua sessão expirou. Entre novamente."
-    )
-  }
-
-  if (response.status === 403) {
-    throw new Error(
-      "Você não possui permissão para cadastrar."
-    )
+  if (
+    errors &&
+    typeof errors ===
+      "object"
+  ) {
+    showBackendErrors(
+      errors
+    );
   }
 
   throw new Error(
-    erros.detail ||
+    errors.detail ||
+    errors.mensagem ||
     "Não foi possível salvar o cadastro."
-  )
+  );
 }
 
 
-/* =====================================================
-   SUBMIT
-===================================================== */
+/* =========================
+   ENVIO DO FORMULÁRIO
+========================= */
 
 registrationForm?.addEventListener(
   "submit",
   async function (event) {
-    event.preventDefault()
+    event.preventDefault();
 
-    if (!validarFormulario()) {
-      return
+    if (!validateForm()) {
+      return;
     }
 
-    saveButton.disabled = true
+    saveButton.disabled =
+      true;
 
-    const textoBotao =
+    const buttonText =
       saveButton.querySelector(
         "span"
-      )
+      );
 
-    if (textoBotao) {
-      textoBotao.textContent =
-        "Salvando..."
+    if (buttonText) {
+      buttonText.textContent =
+        "Salvando...";
     }
 
     try {
-      await salvarCadastro()
+      await saveRegistration();
 
       sessionStorage.removeItem(
         "cpfEmValidacao"
-      )
+      );
 
       sessionStorage.removeItem(
         "nascimentoEmValidacao"
-      )
+      );
+
+      sessionStorage.removeItem(
+        "tituloEmValidacao"
+      );
 
       if (successModal) {
         successModal.classList.add(
           "visible"
-        )
+        );
 
         document.body.style.overflow =
-          "hidden"
+          "hidden";
+
       } else {
-        window.alert(
-          "Cadastro realizado com sucesso."
-        )
+        await showMessage({
+          title:
+            "Cadastro realizado",
+
+          message:
+            "A pessoa foi cadastrada com sucesso.",
+
+          type:
+            "success"
+        });
       }
+
     } catch (error) {
       console.error(
         "Erro ao cadastrar:",
         error
-      )
+      );
 
-      window.alert(
-        error.message
-      )
+      await showMessage({
+        title:
+          "Erro ao cadastrar",
+
+        message:
+          error.message ||
+          "Não foi possível salvar o cadastro.",
+
+        type:
+          "warning"
+      });
+
     } finally {
-      saveButton.disabled = false
+      saveButton.disabled =
+        false;
 
-      if (textoBotao) {
-        textoBotao.textContent =
-          "Salvar cadastro"
+      if (buttonText) {
+        buttonText.textContent =
+          "Salvar cadastro";
       }
     }
   }
-)
+);
 
 
-/* =====================================================
-   NOVO CADASTRO APÓS SUCESSO
-===================================================== */
+/* =========================
+   NOVO CADASTRO
+========================= */
 
-newRegistrationButton?.addEventListener(
-  "click",
-  function () {
-    registrationForm.reset()
+newRegistrationButton
+  ?.addEventListener(
+    "click",
+    function () {
+      registrationForm.reset();
 
-    neighborhoodSelect.innerHTML = `
-      <option value="">
-        Selecione primeiro a região
-      </option>
-    `
+      clearElectoralData();
 
-    streetSelect.innerHTML = `
-      <option value="">
-        Selecione primeiro a localidade
-      </option>
-    `
+      setVoterTitleStatus(
+        "Digite o título e consulte no site oficial do TSE."
+      );
 
-    neighborhoodSelect.disabled =
-      true
+      neighborhoodSelect.innerHTML = `
+        <option value="">
+          Selecione primeiro a região
+        </option>
+      `;
 
-    streetSelect.disabled =
-      true
+      streetSelect.innerHTML = `
+        <option value="">
+          Selecione primeiro a localidade
+        </option>
+      `;
 
-    if (characterTotal) {
-      characterTotal.textContent =
-        "0"
+      neighborhoodSelect.disabled =
+        true;
+
+      streetSelect.disabled =
+        true;
+
+      if (characterTotal) {
+        characterTotal.textContent =
+          "0";
+      }
+
+      resetCpfConfirmation();
+
+      resetVoterTitleConfirmation();
+
+      clearAllFieldErrors();
+
+      sessionStorage.removeItem(
+        "cpfEmValidacao"
+      );
+
+      sessionStorage.removeItem(
+        "nascimentoEmValidacao"
+      );
+
+      sessionStorage.removeItem(
+        "tituloEmValidacao"
+      );
+
+      successModal
+        ?.classList
+        .remove(
+          "visible"
+        );
+
+      document.body.style.overflow =
+        "";
+
+      fullNameInput.focus();
     }
-
-    resetarConfirmacaoCpf()
-
-    clearFieldErrors()
-
-    successModal?.classList.remove(
-      "visible"
-    )
-
-    document.body.style.overflow =
-      ""
-
-    fullNameInput.focus()
-  }
-)
+  );
 
 
-/* =====================================================
-   LOGOUT
-===================================================== */
+/* =========================
+   LOGOUT DE SEGURANÇA
+========================= */
 
 logoutButton?.addEventListener(
   "click",
-  function () {
-    const confirmar =
-      window.confirm(
-        "Deseja realmente sair do sistema?"
-      )
+  async function () {
+    /*
+      modal.js controla normalmente.
+      Este trecho é fallback.
+    */
 
-    if (!confirmar) {
-      return
+    if (window.SystemModal) {
+      return;
     }
 
-    fazerLogout()
+    const confirmLogout =
+      window.confirm(
+        "Deseja realmente sair do sistema?"
+      );
+
+    if (confirmLogout) {
+      fazerLogout();
+    }
   }
-)
+);
 
 
-/* =====================================================
+/* =========================
    NOTIFICAÇÕES
-===================================================== */
+========================= */
 
-notificationButton?.addEventListener(
-  "click",
-  function () {
-    window.alert(
-      "Você não possui novas notificações no momento."
-    )
-  }
-)
+notificationButton
+  ?.addEventListener(
+    "click",
+    function () {
+      if (!window.SystemModal) {
+        window.alert(
+          "Você não possui novas notificações."
+        );
+      }
+    }
+  );
 
 
-/* =====================================================
-   ESC
-===================================================== */
+/* =========================
+   TECLADO
+========================= */
 
 document.addEventListener(
   "keydown",
@@ -1282,79 +1777,82 @@ document.addEventListener(
       event.key === "Escape" &&
       successModal
         ?.classList
-        .contains("visible")
+        .contains(
+          "visible"
+        )
     ) {
       successModal.classList.remove(
         "visible"
-      )
+      );
 
       document.body.style.overflow =
-        ""
+        "";
     }
 
     if (
       event.key === "Escape"
     ) {
-      closeMenu()
+      closeMenu();
     }
   }
-)
+);
 
 
-/* =====================================================
-   INICIAR PÁGINA
-===================================================== */
+/* =========================
+   INICIALIZAÇÃO
+========================= */
 
-async function iniciarPagina() {
+async function initializePage() {
   try {
-    usuarioAtual =
-      await buscarUsuarioLogado()
+    currentUser =
+      await buscarUsuarioLogado();
 
-    if (!usuarioAtual) {
+    if (!currentUser) {
       throw new Error(
         "Usuário não autenticado."
-      )
+      );
     }
 
     if (
-      usuarioAtual.tipo !==
+      currentUser.tipo !==
         "ADMINISTRADOR" &&
-      usuarioAtual.tipo !==
+      currentUser.tipo !==
         "CADASTRADOR"
     ) {
       throw new Error(
         "Perfil sem permissão."
-      )
+      );
     }
 
-    preencherUsuario(
-      usuarioAtual
-    )
+    fillCurrentUser(
+      currentUser
+    );
 
-    configurarMenuPorPerfil(
-      usuarioAtual
-    )
+    configureMenuByProfile(
+      currentUser
+    );
 
-    await carregarRegioes()
+    await loadRegions();
 
     if (window.lucide) {
-      window.lucide.createIcons()
+      window.lucide.createIcons();
     }
+
   } catch (error) {
     console.error(
       "Erro ao iniciar página:",
       error
-    )
+    );
 
-    limparSessao()
+    limparSessao();
 
     window.location.href =
-      "index.html"
+      "index.html";
   }
 }
 
 
 document.addEventListener(
   "DOMContentLoaded",
-  iniciarPagina
-)
+  initializePage
+);
