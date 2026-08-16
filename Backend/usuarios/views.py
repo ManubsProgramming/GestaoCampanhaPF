@@ -1,4 +1,7 @@
-from django.db.models import Count
+from datetime import timedelta
+
+from django.db.models import Count, Q
+from django.utils import timezone
 
 from rest_framework import (
     filters,
@@ -53,12 +56,58 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     ]
 
     def get_queryset(self):
+        agora = timezone.now()
+
+        inicio_hoje = agora.replace(
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
+        )
+
+        inicio_semana = (
+            inicio_hoje
+            - timedelta(days=6)
+        )
+
+        inicio_mes = inicio_hoje.replace(
+            day=1
+        )
+
         return (
             Usuario.objects
             .annotate(
                 total_cadastros=Count(
-                    "pessoas_cadastradas"
-                )
+                    "pessoas_cadastradas",
+                    distinct=True,
+                ),
+
+                cadastros_hoje=Count(
+                    "pessoas_cadastradas",
+                    filter=Q(
+                        pessoas_cadastradas__criado_em__gte=
+                        inicio_hoje
+                    ),
+                    distinct=True,
+                ),
+
+                cadastros_semana=Count(
+                    "pessoas_cadastradas",
+                    filter=Q(
+                        pessoas_cadastradas__criado_em__gte=
+                        inicio_semana
+                    ),
+                    distinct=True,
+                ),
+
+                cadastros_mes=Count(
+                    "pessoas_cadastradas",
+                    filter=Q(
+                        pessoas_cadastradas__criado_em__gte=
+                        inicio_mes
+                    ),
+                    distinct=True,
+                ),
             )
             .order_by(
                 "first_name",
@@ -91,12 +140,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     )
     def me(self, request):
         usuario = (
-            Usuario.objects
-            .annotate(
-                total_cadastros=Count(
-                    "pessoas_cadastradas"
-                )
-            )
+            self.get_queryset()
             .get(
                 pk=request.user.pk
             )
