@@ -112,13 +112,20 @@ if not DEBUG:
 
 
 
-    
 CORS_ALLOW_ALL_ORIGINS = False
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:5500",
-    "http://127.0.0.1:5500",
+    origin.strip()
+    for origin in os.environ.get(
+        "CORS_ALLOWED_ORIGINS",
+        (
+            "http://localhost:5173,"
+            "http://127.0.0.1:5173,"
+            "http://localhost:5500,"
+            "http://127.0.0.1:5500"
+        ),
+    ).split(",")
+    if origin.strip()
 ]
 ROOT_URLCONF = 'GestaoPF.urls'
 
