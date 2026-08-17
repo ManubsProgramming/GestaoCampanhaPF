@@ -21,6 +21,13 @@
   font-size: 0.76rem;
   line-height: 1.5;
 }
+body.auth-loading .sidebar-user {
+  visibility: hidden;
+}
+
+body.auth-ready .sidebar-user {
+  visibility: visible;
+}
 
 .back-button {
   width: 100%;
