@@ -1,8 +1,13 @@
+/* =========================================
+   INTRODUÇÃO
+========================================= */
+
 .page-introduction {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 16px;
+  width: 100%;
   margin-bottom: 20px;
 }
 
@@ -16,13 +21,19 @@
   margin: 5px 0 0;
   color: var(--text-secondary);
   font-size: 0.76rem;
-}body.auth-loading .sidebar-user {
+}
+
+body.auth-loading .sidebar-user {
   visibility: hidden;
 }
 
 body.auth-ready .sidebar-user {
   visibility: visible;
 }
+
+/* =========================================
+   BOTÃO NOVO CADASTRO
+========================================= */
 
 .new-person-button {
   display: inline-flex;
@@ -38,10 +49,17 @@ body.auth-ready .sidebar-user {
   font-weight: 700;
   text-decoration: none;
   box-shadow: var(--shadow-small);
+  transition:
+    background-color var(--transition),
+    transform var(--transition);
 }
 
 .new-person-button:hover {
   background: var(--primary-dark);
+}
+
+.new-person-button:active {
+  transform: scale(0.98);
 }
 
 .new-person-button svg {
@@ -49,14 +67,20 @@ body.auth-ready .sidebar-user {
   height: 18px;
 }
 
+/* =========================================
+   RESUMO
+========================================= */
+
 .people-summary {
   display: grid;
   grid-template-columns: 1fr;
   gap: 10px;
+  width: 100%;
   margin-bottom: 14px;
 }
 
 .people-summary article {
+  min-width: 0;
   padding: 16px;
   border: 1px solid var(--border);
   border-radius: var(--radius-medium);
@@ -77,8 +101,15 @@ body.auth-ready .sidebar-user {
   font-size: 1.4rem;
 }
 
+/* =========================================
+   CARDS
+========================================= */
+
 .filters-card,
 .people-card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   border: 1px solid var(--border);
   border-radius: var(--radius-medium);
   background: var(--surface);
@@ -89,6 +120,10 @@ body.auth-ready .sidebar-user {
   padding: 18px;
   margin-bottom: 14px;
 }
+
+/* =========================================
+   FILTROS
+========================================= */
 
 .filters-header {
   display: flex;
@@ -113,6 +148,7 @@ body.auth-ready .sidebar-user {
 }
 
 .clear-filters-button {
+  flex-shrink: 0;
   padding: 3px;
   border: 0;
   background: transparent;
@@ -123,14 +159,21 @@ body.auth-ready .sidebar-user {
   white-space: nowrap;
 }
 
+.clear-filters-button:hover {
+  color: var(--primary-dark);
+}
+
 .filters-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 14px;
+  width: 100%;
+  min-width: 0;
 }
 
 .filter-field {
   display: flex;
+  min-width: 0;
   flex-direction: column;
   gap: 7px;
 }
@@ -145,6 +188,7 @@ body.auth-ready .sidebar-user {
 .filter-field select {
   width: 100%;
   height: 44px;
+  min-width: 0;
   padding: 0 12px;
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -162,6 +206,7 @@ body.auth-ready .sidebar-user {
 
 .field-with-icon {
   position: relative;
+  width: 100%;
 }
 
 .field-with-icon svg {
@@ -179,18 +224,33 @@ body.auth-ready .sidebar-user {
   padding-left: 38px;
 }
 
+/* =========================================
+   CARD DA TABELA
+========================================= */
+
 .people-card {
   overflow: hidden;
 }
 
 .people-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   padding: 18px;
   border-bottom: 1px solid var(--border);
 }
 
 .table-container {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
 }
+
+/* =========================================
+   TABELA NO CELULAR
+========================================= */
 
 .people-table {
   display: block;
@@ -251,6 +311,10 @@ body.auth-ready .sidebar-user {
   padding-bottom: 0;
 }
 
+/* =========================================
+   PESSOA
+========================================= */
+
 .person-name {
   display: flex;
   align-items: center;
@@ -277,6 +341,10 @@ body.auth-ready .sidebar-user {
   font-size: 0.77rem;
 }
 
+/* =========================================
+   STATUS
+========================================= */
+
 .status {
   display: inline-flex;
   align-items: center;
@@ -298,6 +366,10 @@ body.auth-ready .sidebar-user {
   background: #f1f5f9;
   color: #64748b;
 }
+
+/* =========================================
+   AÇÕES DA TABELA
+========================================= */
 
 .table-actions {
   display: flex;
@@ -336,6 +408,10 @@ body.auth-ready .sidebar-user {
   height: 15px;
 }
 
+/* =========================================
+   ESTADO VAZIO
+========================================= */
+
 .empty-state {
   display: none;
   padding: 50px 20px;
@@ -364,6 +440,56 @@ body.auth-ready .sidebar-user {
   font-size: 0.7rem;
 }
 
+/* =========================================
+   DETALHES DA PESSOA
+========================================= */
+
+.person-details-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 8px;
+  text-align: left;
+}
+
+.person-details-section {
+  padding-bottom: 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.person-details-section:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.person-details-section h4 {
+  margin: 0 0 14px;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.person-details-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px 22px;
+}
+
+.person-details-grid > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.person-details-grid > div.full {
+  grid-column: auto;
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
 @media (min-width: 600px) {
   .page-introduction {
     flex-direction: row;
@@ -376,7 +502,7 @@ body.auth-ready .sidebar-user {
   }
 
   .people-summary {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 13px;
   }
 
@@ -387,51 +513,9 @@ body.auth-ready .sidebar-user {
   .search-field {
     grid-column: 1 / -1;
   }
-}
-
-@media (min-width: 1000px) {
-  /*
-   * regras desktop...
-   */
-
-  .person-details-modal {
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-    text-align: left;
-    margin-top: 8px;
-  }
-
-  .person-details-section {
-    padding-bottom: 18px;
-    border-bottom: 1px solid #e5e7eb;
-  }
-
-  .person-details-section:last-child {
-    padding-bottom: 0;
-    border-bottom: 0;
-  }
-
-  .person-details-section h4 {
-    margin: 0 0 14px;
-    font-size: 15px;
-    font-weight: 700;
-    color: #111827;
-  }
 
   .person-details-grid {
-    display: grid;
-
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-
-    gap: 14px 22px;
-  }
-
-  .person-details-grid > div {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .person-details-grid > div.full {
@@ -439,50 +523,115 @@ body.auth-ready .sidebar-user {
   }
 }
 
-
-/*
- * Este media query precisa ficar FORA
- * do min-width: 1000px.
- */
-@media (max-width: 640px) {
-
-  .person-details-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .person-details-grid > div.full {
-    grid-column: auto;
-  }
-  /* =========================================
-   SEGURANÇA DE LAYOUT
+/* =========================================
+   COMPUTADOR
 ========================================= */
 
-.page-introduction,
-.people-summary,
-.filters-card,
-.people-card {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
+@media (min-width: 1000px) {
+  .filters-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .search-field {
+    grid-column: span 2;
+  }
+
+  /* Tabela normal no computador */
+
+  .people-table {
+    display: table;
+    width: 100%;
+    min-width: 1050px;
+    border-collapse: collapse;
+  }
+
+  .people-table thead {
+    display: table-header-group;
+  }
+
+  .people-table tbody {
+    display: table-row-group;
+  }
+
+  .people-table tr {
+    display: table-row;
+    padding: 0;
+  }
+
+  .people-table th {
+    padding: 14px 16px;
+    background: #f8fafc;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 0.67rem;
+    font-weight: 700;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .people-table td {
+    display: table-cell;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  .people-table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .people-table td::before {
+    display: none;
+  }
+
+  .people-table td:first-child {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .people-table tbody tr:last-child td:first-child {
+    border-bottom: 0;
+  }
+
+  .people-table td:last-child {
+    padding: 14px 16px;
+  }
+
+  .person-name {
+    margin-right: 0;
+  }
+
+  .table-actions {
+    justify-content: flex-start;
+  }
 }
 
-.people-summary > article {
-  min-width: 0;
-}
+/* =========================================
+   CELULAR PEQUENO
+========================================= */
 
-.filters-grid {
-  width: 100%;
-  min-width: 0;
-}
+@media (max-width: 480px) {
+  .filters-card {
+    padding: 15px;
+  }
 
-.filter-field {
-  min-width: 0;
-}
+  .filters-header {
+    flex-direction: column;
+  }
 
-.table-container {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: auto;
-}
+  .clear-filters-button {
+    align-self: flex-start;
+  }
+
+  .people-card-header {
+    padding: 15px;
+  }
+
+  .people-table tr {
+    padding: 15px;
+  }
 }
