@@ -16,6 +16,12 @@
   margin: 5px 0 0;
   color: var(--text-secondary);
   font-size: 0.76rem;
+}body.auth-loading .sidebar-user {
+  visibility: hidden;
+}
+
+body.auth-ready .sidebar-user {
+  visibility: visible;
 }
 
 .new-person-button {
