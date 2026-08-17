@@ -741,15 +741,28 @@ body {
   }
 
   .app-content {
+    width: calc(100% - 280px);
+    min-width: 0;
+    min-height: 100vh;
     margin-left: 280px;
+    padding: 0;
   }
 
   .topbar {
+    position: sticky;
+    top: 0;
+    width: 100%;
     padding: 11px 28px;
   }
 
   .main-content {
+    display: block;
+    width: 100%;
+    max-width: 1500px;
+    min-width: 0;
+    margin: 0 auto;
     padding: 28px;
+    transform: none;
   }
 
   .statistics-grid {
@@ -775,114 +788,5 @@ body {
 
   .ranking-item:nth-last-child(-n + 2) {
     border-bottom: 0;
-
   }
-  /* =========================================
-   CORREÇÃO GLOBAL DO LAYOUT DESKTOP
-========================================= */
-
-@media (min-width: 1024px) {
-
-  .app-content {
-    margin-left: 280px;
-    width: calc(100% - 280px);
-    min-width: 0;
-  }
-
-  .topbar {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .main-content {
-    width: 100%;
-    max-width: 1500px;
-    min-width: 0;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-}
-/* =========================================
-   CORREÇÃO GLOBAL DO LAYOUT DESKTOP
-========================================= */
-@media (min-width: 1024px) {
-
-  .sidebar {
-    transform: translateX(0);
-    box-shadow: none;
-  }
-
-  .close-menu,
-  .open-menu,
-  .menu-overlay {
-    display: none;
-  }
-
-  /*
-   * Não deslocamos mais o app-content
-   * com margin-left.
-   */
-  .app-content {
-    margin-left: 0;
-    width: 100%;
-    padding-left: 280px;
-    min-width: 0;
-  }
-
-  .topbar {
-    width: 100%;
-    padding: 11px 28px;
-  }
-
-  .main-content {
-    width: 100%;
-    max-width: 1500px;
-    min-width: 0;
-
-    margin-left: auto;
-    margin-right: auto;
-
-    padding: 28px;
-  }
-
-  .statistics-grid {
-    grid-template-columns:
-      repeat(
-        4,
-        minmax(0, 1fr)
-      );
-
-    gap: 17px;
-  }
-
-  .dashboard-grid {
-    grid-template-columns:
-      minmax(0, 1.5fr)
-      minmax(300px, 1fr);
-
-    gap: 17px;
-    margin-top: 17px;
-  }
-
-  .ranking-card {
-    margin-top: 17px;
-  }
-
-  .ranking-list {
-    display: grid;
-
-    grid-template-columns:
-      repeat(
-        2,
-        minmax(0, 1fr)
-      );
-
-    column-gap: 28px;
-  }
-
-  .ranking-item:nth-last-child(-n + 2) {
-    border-bottom: 0;
-  }
-}
 }

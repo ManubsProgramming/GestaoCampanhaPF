@@ -20,49 +20,54 @@
     href="assets/imagens/prefeitura-icon.png"
   >
 
-  <link rel="stylesheet" href="css/global.css">
-  <link rel="stylesheet" href="css/painel.css">
-  <link rel="stylesheet" href="css/novo-cadastro.css">
-  <link rel="stylesheet" href="css/modal.css">
+  <!-- ESTILOS -->
+  <link rel="stylesheet" href="css/global.css?v=10">
+  <link rel="stylesheet" href="css/painel.css?v=10">
+  <link rel="stylesheet" href="css/novo-cadastro.css?v=10">
+  <link rel="stylesheet" href="css/modal.css?v=10">
 
+  <!-- ÍCONES -->
   <script
     src="https://unpkg.com/lucide@0.468.0"
     defer
   ></script>
 
-  <script src="js/api.js" defer></script>
-  <script src="js/auth.js" defer></script>
-  <script src="js/modal.js" defer></script>
-  <script src="js/novo-cadastro.js" defer></script>
+  <!-- JAVASCRIPT -->
+  <script src="js/api.js?v=10" defer></script>
+  <script src="js/auth.js?v=10" defer></script>
+  <script src="js/modal.js?v=10" defer></script>
+  <script src="js/novo-cadastro.js?v=10" defer></script>
 </head>
 
 <body
   class="auth-loading"
   data-auth="authenticated"
 >
+  <!-- FUNDO DO MENU NO CELULAR -->
+
   <div
     id="menu-overlay"
     class="menu-overlay"
   ></div>
+
+  <!-- MENU LATERAL -->
 
   <aside
     id="sidebar"
     class="sidebar"
     aria-label="Menu principal"
   >
-
     <div class="sidebar-brand">
-
       <img
         src="assets/imagens/prefeitura-icon.png"
         alt="Logo do sistema"
         class="sidebar-logo"
       >
 
-     <div>
-  <strong>Gestão de Cadastros</strong>
-  <span>Sistema de gestão</span>
-</div>
+      <div>
+        <strong>Gestão de Cadastros</strong>
+        <span>Sistema de gestão</span>
+      </div>
 
       <button
         id="close-menu"
@@ -72,113 +77,111 @@
       >
         <i data-lucide="x"></i>
       </button>
-
     </div>
 
     <nav class="sidebar-navigation">
-
       <span class="sidebar-section-title">
         Menu principal
       </span>
 
       <a
-  href="painel.html"
-  class="sidebar-link"
-  data-admin-only
->
-  <i data-lucide="layout-dashboard"></i>
-  <span>Dashboard</span>
-</a>
+        href="painel.html"
+        class="sidebar-link"
+        data-admin-only
+      >
+        <i data-lucide="layout-dashboard"></i>
+        <span>Dashboard</span>
+      </a>
 
-<a
-  href="pessoas.html"
-  class="sidebar-link"
->
-  <i data-lucide="users"></i>
-  <span>Pessoas cadastradas</span>
-</a>
+      <a
+        href="pessoas.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="users"></i>
+        <span>Pessoas cadastradas</span>
+      </a>
 
-<a
-  href="novo-cadastro.html"
-  class="sidebar-link active"
->
-  <i data-lucide="user-plus"></i>
-  <span>Novo cadastro</span>
-</a>
+      <a
+        href="novo-cadastro.html"
+        class="sidebar-link active"
+      >
+        <i data-lucide="user-plus"></i>
+        <span>Novo cadastro</span>
+      </a>
 
-<a
-  href="usuarios.html"
-  class="sidebar-link"
-  data-admin-only
->
-  <i data-lucide="user-cog"></i>
-  <span>Usuários</span>
-</a>
+      <a
+        href="usuarios.html"
+        class="sidebar-link"
+        data-admin-only
+      >
+        <i data-lucide="user-cog"></i>
+        <span>Usuários</span>
+      </a>
 
-<a
-  href="regioes.html"
-  class="sidebar-link"
-  data-admin-only
->
-  <i data-lucide="map-pinned"></i>
-  <span>Regiões</span>
-</a>
+      <a
+        href="regioes.html"
+        class="sidebar-link"
+        data-admin-only
+      >
+        <i data-lucide="map-pinned"></i>
+        <span>Regiões</span>
+      </a>
 
-<a
-  href="relatorios.html"
-  class="sidebar-link"
-  data-admin-only
->
-  <i data-lucide="file-chart-column"></i>
-  <span>Relatórios</span>
-</a>
+      <a
+        href="relatorios.html"
+        class="sidebar-link"
+        data-admin-only
+      >
+        <i data-lucide="file-chart-column"></i>
+        <span>Relatórios</span>
+      </a>
 
-<a
-  href="configuracoes.html"
-  class="sidebar-link"
-  data-admin-only
->
-  <i data-lucide="settings"></i>
-  <span>Configurações</span>
-</a>
+      <a
+        href="configuracoes.html"
+        class="sidebar-link"
+        data-admin-only
+      >
+        <i data-lucide="settings"></i>
+        <span>Configurações</span>
+      </a>
 
-<a
-  href="auditoria.html"
-  class="sidebar-link"
-  data-admin-only
->
-  <i data-lucide="file-clock"></i>
-  <span>Auditoria</span>
-</a>
-
+      <a
+        href="auditoria.html"
+        class="sidebar-link"
+        data-admin-only
+      >
+        <i data-lucide="file-clock"></i>
+        <span>Auditoria</span>
+      </a>
     </nav>
-<div class="sidebar-user">
-  <div class="user-avatar">
-    --
-  </div>
 
-  <div class="sidebar-user-info">
-    <strong>Carregando...</strong>
-    <span>Verificando perfil...</span>
-  </div>
+    <div class="sidebar-user">
+      <div class="user-avatar">
+        --
+      </div>
 
-  <button
-    class="logout-button"
-    type="button"
-    title="Sair"
-  >
-    <i data-lucide="log-out"></i>
-  </button>
-</div>
+      <div class="sidebar-user-info">
+        <strong>Carregando...</strong>
+        <span>Verificando perfil...</span>
+      </div>
 
+      <button
+        class="logout-button"
+        type="button"
+        title="Sair"
+      >
+        <i data-lucide="log-out"></i>
+      </button>
+    </div>
   </aside>
 
+  <!-- CONTEÚDO DA PÁGINA -->
+
   <div class="app-content">
+    <!-- CABEÇALHO -->
 
     <header class="topbar">
-
       <div class="topbar-left">
-
         <button
           id="open-menu"
           class="icon-button open-menu"
@@ -192,11 +195,9 @@
           <h1>Novo cadastro</h1>
           <p>Cadastre uma nova pessoa no sistema</p>
         </div>
-
       </div>
 
       <div class="topbar-actions">
-
         <button
           class="notification-button"
           type="button"
@@ -211,34 +212,29 @@
           type="button"
           aria-label="Abrir perfil"
         >
-
           <span class="profile-avatar">
             AD
           </span>
 
-           <span class="profile-info">
-    <strong id="logged-user">
-      Carregando...
-    </strong>
+          <span class="profile-info">
+            <strong id="logged-user">
+              Carregando...
+            </strong>
 
-    <small>
-      Verificando perfil...
-    </small>
-  </span>
+            <small>
+              Verificando perfil...
+            </small>
+          </span>
 
-  <i data-lucide="chevron-down"></i>
-</div>
-
+          <i data-lucide="chevron-down"></i>
         </button>
-
       </div>
-
     </header>
 
+    <!-- CONTEÚDO PRINCIPAL -->
+
     <main class="main-content">
-
       <section class="page-introduction">
-
         <div>
           <h2>Cadastro de pessoa</h2>
 
@@ -255,21 +251,19 @@
           <i data-lucide="arrow-left"></i>
           <span>Voltar</span>
         </a>
-
       </section>
+
+      <!-- FORMULÁRIO -->
 
       <form
         id="registration-form"
         class="registration-form"
         novalidate
       >
-
         <!-- DADOS PESSOAIS -->
 
         <section class="form-card">
-
           <header class="form-card-header">
-
             <div class="form-card-icon">
               <i data-lucide="user"></i>
             </div>
@@ -281,15 +275,12 @@
                 Informações básicas da pessoa cadastrada.
               </p>
             </div>
-
           </header>
 
           <div class="form-grid">
-
             <!-- NOME -->
 
             <div class="form-field form-field-full">
-
               <label for="full-name">
                 Nome completo
                 <span class="required">*</span>
@@ -305,20 +296,17 @@
               >
 
               <span class="field-error"></span>
-
             </div>
 
             <!-- CPF -->
 
             <div class="form-field">
-
               <label for="cpf">
                 CPF
                 <span class="required">*</span>
               </label>
 
               <div class="field-action-row">
-
                 <input
                   id="cpf"
                   name="cpf"
@@ -338,17 +326,14 @@
                   <i data-lucide="shield-check"></i>
                   <span>Validar na Receita</span>
                 </button>
-
               </div>
 
               <span class="field-error"></span>
-
             </div>
 
             <!-- DATA DE NASCIMENTO -->
 
             <div class="form-field">
-
               <label for="birth-date">
                 Data de nascimento
                 <span class="required">*</span>
@@ -362,19 +347,16 @@
               >
 
               <span class="field-error"></span>
-
             </div>
 
-            <!-- DADOS ELEITORAIS -->
+            <!-- TÍTULO DE ELEITOR -->
 
             <div class="form-field form-field-full">
-
               <label for="voter-title">
                 Título de eleitor
               </label>
 
               <div class="field-action-row">
-
                 <input
                   id="voter-title"
                   name="titulo_eleitor"
@@ -393,7 +375,6 @@
                   <i data-lucide="external-link"></i>
                   <span>Consultar no TSE</span>
                 </button>
-
               </div>
 
               <span class="field-error"></span>
@@ -405,10 +386,10 @@
                 Digite o título e consulte no site oficial do TSE.
               </p>
 
+              <!-- DADOS ELEITORAIS -->
+
               <div class="electoral-data-grid">
-
                 <div class="form-field">
-
                   <label for="electoral-zone">
                     Zona eleitoral
                   </label>
@@ -420,11 +401,9 @@
                     inputmode="numeric"
                     placeholder="Ex.: 001"
                   >
-
                 </div>
 
                 <div class="form-field">
-
                   <label for="electoral-section">
                     Seção eleitoral
                   </label>
@@ -436,11 +415,9 @@
                     inputmode="numeric"
                     placeholder="Ex.: 0234"
                   >
-
                 </div>
 
                 <div class="form-field">
-
                   <label for="electoral-municipality">
                     Município eleitoral
                   </label>
@@ -449,20 +426,18 @@
                     id="electoral-municipality"
                     name="municipio_eleitoral"
                     type="text"
-                    placeholder="Ex.: Manaus"
+                    placeholder="Ex.: Presidente Figueiredo"
                   >
-
                 </div>
-
               </div>
+
+              <!-- CONFERÊNCIA DO TÍTULO -->
 
               <div
                 class="cpf-validation-box"
                 style="margin-top: 16px;"
               >
-
                 <div class="cpf-validation-header">
-
                   <i data-lucide="badge-check"></i>
 
                   <div>
@@ -474,11 +449,9 @@
                       a conferência.
                     </p>
                   </div>
-
                 </div>
 
                 <label class="cpf-validation-check">
-
                   <input
                     id="voter-title-confirmed"
                     type="checkbox"
@@ -488,7 +461,6 @@
                     Confirmo que consultei os dados no site
                     oficial do TSE.
                   </span>
-
                 </label>
 
                 <p
@@ -497,15 +469,12 @@
                 >
                   Título ainda não conferido.
                 </p>
-
               </div>
-
             </div>
 
             <!-- TELEFONE -->
 
             <div class="form-field">
-
               <label for="phone">
                 Telefone
                 <span class="required">*</span>
@@ -522,9 +491,7 @@
               >
 
               <span class="field-error"></span>
-
             </div>
-
           </div>
 
           <!-- CONFERÊNCIA DO CPF -->
@@ -533,9 +500,7 @@
             id="cpf-validation-box"
             class="cpf-validation-box"
           >
-
             <div class="cpf-validation-header">
-
               <i data-lucide="badge-check"></i>
 
               <div>
@@ -548,11 +513,9 @@
                   depois retorne ao sistema.
                 </p>
               </div>
-
             </div>
 
             <label class="cpf-validation-check">
-
               <input
                 id="cpf-confirmed"
                 type="checkbox"
@@ -563,7 +526,6 @@
                 oficial da Receita Federal e conferi os
                 dados apresentados.
               </span>
-
             </label>
 
             <p
@@ -572,17 +534,13 @@
             >
               CPF ainda não conferido.
             </p>
-
           </div>
-
         </section>
 
         <!-- ENDEREÇO -->
 
         <section class="form-card">
-
           <header class="form-card-header">
-
             <div class="form-card-icon">
               <i data-lucide="map-pin"></i>
             </div>
@@ -594,13 +552,12 @@
                 Informe a localização da pessoa cadastrada.
               </p>
             </div>
-
           </header>
 
           <div class="form-grid">
+            <!-- REGIÃO -->
 
             <div class="form-field">
-
               <label for="region">
                 Região
                 <span class="required">*</span>
@@ -617,11 +574,11 @@
               </select>
 
               <span class="field-error"></span>
-
             </div>
 
-            <div class="form-field">
+            <!-- LOCALIDADE -->
 
+            <div class="form-field">
               <label for="neighborhood">
                 Localidade
                 <span class="required">*</span>
@@ -639,11 +596,11 @@
               </select>
 
               <span class="field-error"></span>
-
             </div>
 
-            <div class="form-field">
+            <!-- RUA -->
 
+            <div class="form-field">
               <label for="street">
                 Rua
                 <span class="required">*</span>
@@ -661,11 +618,11 @@
               </select>
 
               <span class="field-error"></span>
-
             </div>
 
-            <div class="form-field">
+            <!-- NÚMERO -->
 
+            <div class="form-field">
               <label for="number">
                 Número
               </label>
@@ -678,11 +635,11 @@
               >
 
               <span class="field-error"></span>
-
             </div>
 
-            <div class="form-field form-field-full">
+            <!-- COMPLEMENTO -->
 
+            <div class="form-field form-field-full">
               <label for="complement">
                 Complemento
               </label>
@@ -695,19 +652,14 @@
               >
 
               <span class="field-error"></span>
-
             </div>
-
           </div>
-
         </section>
 
         <!-- OBSERVAÇÕES -->
 
         <section class="form-card">
-
           <header class="form-card-header">
-
             <div class="form-card-icon">
               <i data-lucide="message-square-text"></i>
             </div>
@@ -719,11 +671,9 @@
                 Informações adicionais sobre o cadastro.
               </p>
             </div>
-
           </header>
 
           <div class="form-field">
-
             <label for="observations">
               Observações
             </label>
@@ -737,24 +687,19 @@
             ></textarea>
 
             <div class="textarea-footer">
-
               <span class="field-error"></span>
 
               <span class="character-counter">
                 <span id="character-total">0</span>
                 /1000
               </span>
-
             </div>
-
           </div>
-
         </section>
 
-        <!-- RESPONSÁVEL -->
+        <!-- RESPONSÁVEL PELO CADASTRO -->
 
         <section class="registration-responsible">
-
           <div>
             <span>Cadastro realizado por</span>
 
@@ -767,13 +712,11 @@
             O responsável é definido automaticamente
             pelo usuário autenticado.
           </p>
-
         </section>
 
-        <!-- BOTÕES -->
+        <!-- BOTÕES DO FORMULÁRIO -->
 
         <div class="form-actions">
-
           <a
             href="pessoas.html"
             class="cancel-button"
@@ -789,13 +732,9 @@
             <i data-lucide="save"></i>
             <span>Salvar cadastro</span>
           </button>
-
         </div>
-
       </form>
-
     </main>
-
   </div>
 
   <!-- MODAL DE SUCESSO -->
@@ -807,9 +746,7 @@
     aria-modal="true"
     aria-labelledby="success-title"
   >
-
     <div class="success-modal">
-
       <div class="success-icon">
         <i data-lucide="circle-check-big"></i>
       </div>
@@ -823,7 +760,6 @@
       </p>
 
       <div class="success-actions">
-
         <button
           id="new-registration-button"
           class="primary-button"
@@ -839,12 +775,8 @@
         >
           Ver pessoas cadastradas
         </a>
-
       </div>
-
     </div>
-
   </div>
-
 </body>
 </html>

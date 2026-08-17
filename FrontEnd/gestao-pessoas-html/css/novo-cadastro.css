@@ -741,3 +741,120 @@ body.auth-ready .sidebar-user {
     animation: none;
   }
 }
+/* =========================================
+   CORREÇÃO DA PÁGINA NOVO CADASTRO
+========================================= */
+
+html,
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100% !important;
+}
+
+body {
+  display: block !important;
+  overflow-x: hidden !important;
+}
+
+.app-content {
+  display: block !important;
+  min-height: 100vh !important;
+  padding: 0 !important;
+}
+
+.topbar {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 50 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+
+  width: 100% !important;
+  height: 68px !important;
+  min-height: 68px !important;
+  max-height: 68px !important;
+
+  margin: 0 !important;
+  padding: 10px 28px !important;
+
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  overflow: visible !important;
+}
+
+.topbar-left,
+.topbar-actions {
+  position: static !important;
+  display: flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+
+.main-content {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+
+  display: block !important;
+  width: 100% !important;
+  max-width: 1500px !important;
+  min-height: 0 !important;
+
+  margin: 0 auto !important;
+  padding: 28px !important;
+
+  transform: none !important;
+}
+
+.page-introduction {
+  position: static !important;
+  width: 100% !important;
+  margin: 0 0 20px !important;
+  padding: 0 !important;
+  transform: none !important;
+}
+
+.registration-form {
+  position: static !important;
+  width: 100% !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+
+@media (min-width: 1024px) {
+  .app-content {
+    width: calc(100% - 280px) !important;
+    margin: 0 0 0 280px !important;
+  }
+
+  .main-content {
+    width: 100% !important;
+    max-width: 1500px !important;
+    margin: 0 auto !important;
+    padding: 28px !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .app-content {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  .topbar {
+    height: 68px !important;
+    min-height: 68px !important;
+    padding: 10px 14px !important;
+  }
+
+  .main-content {
+    padding: 20px 14px 32px !important;
+  }
+}
+body {
+  background: red !important;
+}

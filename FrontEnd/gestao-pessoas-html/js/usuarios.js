@@ -913,6 +913,7 @@ userModal?.addEventListener(
    CADASTRAR USUÁRIO
 ========================================= */
 
+
 newUserForm?.addEventListener(
   "submit",
   async function (event) {
@@ -1009,7 +1010,7 @@ newUserForm?.addEventListener(
           erro =
             await response.json()
         } catch {
-          // sem json
+          // Resposta sem JSON
         }
 
         const primeiraMensagem =
@@ -1033,9 +1034,47 @@ newUserForm?.addEventListener(
         )
       }
 
+      /*
+        O usuário já foi cadastrado.
+
+        Primeiro fechamos o modal
+        de cadastro.
+      */
+
       fecharModalUsuario()
 
+      /*
+        Atualiza a lista de usuários
+        para mostrar o novo usuário.
+      */
+
       await carregarUsuarios()
+
+      /*
+        IMPORTANTE:
+
+        O loading precisa ser fechado
+        ANTES de abrir o modal de sucesso.
+
+        Antes ele só era fechado no
+        finally, mas SystemModal.success()
+        usa await e espera o usuário
+        clicar no botão.
+
+        Isso fazia o loading ficar
+        por cima do modal de sucesso.
+      */
+
+      if (
+        window.SystemModal?.loading
+      ) {
+        SystemModal.loading.hide()
+      }
+
+      /*
+        Agora mostramos a mensagem
+        de sucesso.
+      */
 
       if (
         window.SystemModal
@@ -1056,10 +1095,56 @@ newUserForm?.addEventListener(
         error
       )
 
+      /*
+        Fecha o loading imediatamente
+        caso aconteça algum erro.
+      */
+
+      if (
+        window.SystemModal?.loading
+      ) {
+        SystemModal.loading.hide()
+      }
+
       newUserMessage.textContent =
         error.message
 
+      /*
+        Se o modal de cadastro tiver
+        sido fechado por algum motivo,
+        também mostramos o erro em
+        um modal do sistema.
+      */
+
+      if (
+        window.SystemModal &&
+        !userModal
+          ?.classList
+          .contains("visible")
+      ) {
+        await SystemModal.alert({
+          title:
+            "Erro ao cadastrar usuário",
+
+          message:
+            error.message ||
+            "Não foi possível cadastrar o usuário.",
+
+          type:
+            "warning",
+        })
+      }
+
     } finally {
+
+      /*
+        Segurança adicional.
+
+        Mesmo que aconteça qualquer
+        erro inesperado, o loading
+        será fechado.
+      */
+
       if (
         window.SystemModal?.loading
       ) {
@@ -1074,8 +1159,6 @@ newUserForm?.addEventListener(
     }
   }
 )
-
-
 /* =========================================
    TECLADO
 ========================================= */
