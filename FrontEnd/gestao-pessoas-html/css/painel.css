@@ -775,5 +775,58 @@ body {
 
   .ranking-item:nth-last-child(-n + 2) {
     border-bottom: 0;
+
   }
+  /* =========================================
+   CORREÇÃO GLOBAL DO LAYOUT DESKTOP
+========================================= */
+
+@media (min-width: 1024px) {
+
+  .app-content {
+    margin-left: 280px;
+    width: calc(100% - 280px);
+    min-width: 0;
+  }
+
+  .topbar {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .main-content {
+    width: 100%;
+    max-width: 1500px;
+    min-width: 0;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+}
+/* =========================================
+   CORREÇÃO GLOBAL DO LAYOUT DESKTOP
+========================================= */
+
+@media (min-width: 1024px) {
+
+  .app-content {
+    margin-left: 280px;
+    width: calc(100% - 280px);
+    min-width: 0;
+  }
+
+  .topbar {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .main-content {
+    width: 100%;
+    max-width: 1500px;
+    min-width: 0;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+}
 }
