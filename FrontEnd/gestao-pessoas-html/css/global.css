@@ -162,7 +162,15 @@ a {
 body.auth-loading {
   visibility: hidden;
 }
+body.auth-loading .profile-button,
+body.auth-loading .sidebar-user {
+  visibility: hidden;
+}
 
+body.auth-ready .profile-button,
+body.auth-ready .sidebar-user {
+  visibility: visible;
+}
 
 /*
  * Depois da validação,
