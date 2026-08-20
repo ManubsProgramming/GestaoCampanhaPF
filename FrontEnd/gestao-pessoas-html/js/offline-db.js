@@ -177,4 +177,59 @@ async function buscarListaOffline(
         };
     }
   );
+async function substituirListaOffline(
+  storeName,
+  items
+) {
+  const db =
+    await openOfflineDb();
+
+  return new Promise(
+    function (
+      resolve,
+      reject
+    ) {
+      const transaction =
+        db.transaction(
+          storeName,
+          "readwrite"
+        );
+
+      const store =
+        transaction.objectStore(
+          storeName
+        );
+
+      const clearRequest =
+        store.clear();
+
+      clearRequest.onsuccess =
+        function () {
+          items.forEach(
+            function (
+              item
+            ) {
+              store.put(
+                item
+              );
+            }
+          );
+        };
+
+      transaction.oncomplete =
+        function () {
+          resolve();
+        };
+
+      transaction.onerror =
+        function () {
+          reject(
+            transaction.error
+          );
+        };
+    }
+  );
+}
+
+
 }

@@ -1713,6 +1713,174 @@ async function loadPersonForEditing() {
       pessoa.localidade
     );
   }
+async function sincronizarEnderecosOffline() {
+  if (!navigator.onLine) {
+    console.log(
+      "Sem internet. Sincronização de endereços ignorada."
+    );
+
+    return;
+  }
+
+  try {
+    console.log(
+      "Iniciando sincronização de endereços offline..."
+    );
+
+    /*
+     * =========================
+     * REGIÕES
+     * =========================
+     */
+
+    const regionsResponse =
+      await apiFetch(
+        "/regioes/"
+      );
+
+    if (!regionsResponse.ok) {
+      throw new Error(
+        "Não foi possível carregar as regiões."
+      );
+    }
+
+    const regions =
+      getList(
+        await regionsResponse.json()
+      );
+
+    await substituirListaOffline(
+      "regioes",
+      regions
+    );
+
+
+    /*
+     * =========================
+     * LOCALIDADES
+     * =========================
+     */
+
+    const allNeighborhoods = [];
+
+    for (
+      const region
+      of regions
+    ) {
+      const response =
+        await apiFetch(
+          `/localidades/?regiao=${region.id}`
+        );
+
+      if (!response.ok) {
+        throw new Error(
+          `Não foi possível carregar localidades da região ${region.nome}.`
+        );
+      }
+
+      const neighborhoods =
+        getList(
+          await response.json()
+        );
+
+      neighborhoods.forEach(
+        function (
+          neighborhood
+        ) {
+          allNeighborhoods.push({
+            ...neighborhood,
+
+            regiao: Number(
+              neighborhood.regiao ||
+              region.id
+            )
+          });
+        }
+      );
+    }
+
+    await substituirListaOffline(
+      "localidades",
+      allNeighborhoods
+    );
+
+
+    /*
+     * =========================
+     * RUAS
+     * =========================
+     */
+
+    const allStreets = [];
+
+    for (
+      const neighborhood
+      of allNeighborhoods
+    ) {
+      const response =
+        await apiFetch(
+          `/ruas/?localidade=${neighborhood.id}`
+        );
+
+      if (!response.ok) {
+        throw new Error(
+          `Não foi possível carregar ruas de ${neighborhood.nome}.`
+        );
+      }
+
+      const streets =
+        getList(
+          await response.json()
+        );
+
+      streets.forEach(
+        function (
+          street
+        ) {
+          allStreets.push({
+            ...street,
+
+            localidade: Number(
+              street.localidade ||
+              neighborhood.id
+            )
+          });
+        }
+      );
+    }
+
+    await substituirListaOffline(
+      "ruas",
+      allStreets
+    );
+
+    console.log(
+      "Sincronização offline concluída."
+    );
+
+    console.log(
+      "Regiões:",
+      regions.length
+    );
+
+    console.log(
+      "Localidades:",
+      allNeighborhoods.length
+    );
+
+    console.log(
+      "Ruas:",
+      allStreets.length
+    );
+
+  } catch (error) {
+    console.error(
+      "Erro ao sincronizar endereços offline:",
+      error
+    );
+  }
+}
+
 
   if (pessoa.rua) {
     streetSelect.value =
@@ -2316,7 +2484,7 @@ async function initializePage() {
 
     await loadRegions();
 
-
+await sincronizarEnderecosOffline();
     /*
      * Se a URL for:
      *
