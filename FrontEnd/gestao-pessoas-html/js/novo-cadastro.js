@@ -2509,20 +2509,37 @@ await sincronizarEnderecosOffline();
       error
     );
 
+    const mensagem =
+      String(
+        error?.message || ""
+      ).toLowerCase();
+
+    const erroDeAutenticacao =
+      mensagem.includes(
+        "não autenticado"
+      ) ||
+      mensagem.includes(
+        "unauthorized"
+      ) ||
+      mensagem.includes(
+        "401"
+      ) ||
+      mensagem.includes(
+        "token"
+      );
 
     /*
      * Se estamos editando e a pessoa
      * não pôde ser carregada, não queremos
      * necessariamente apagar uma sessão válida.
      */
-
-    if (isEditing) {
+    if (isEditing)
       await showMessage({
         title:
           "Não foi possível editar",
 
         message:
-          error.message ||
+          error?.message ||
           "Não foi possível carregar o cadastro.",
 
         type:
@@ -2535,13 +2552,37 @@ await sincronizarEnderecosOffline();
       return;
     }
 
+    if (
+      erroDeAutenticacao
+    ) {
+      limparSessao();
 
-    limparSessao();
+      window.location.href =
+        "index.html";
 
-    window.location.href =
-      "index.html";
+      return;
+    }
+
+    await showMessage({
+      title:
+        "Erro ao carregar",
+
+      message:
+        error?.message ||
+        "Não foi possível carregar a página.",
+
+      type:
+        "warning"
+    });
+
+    document.body.classList.remove(
+      "auth-loading"
+    );
+
+    document.body.classList.add(
+      "auth-ready"
+    );
   }
-}
 
 
 document.addEventListener(
