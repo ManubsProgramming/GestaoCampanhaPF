@@ -1065,7 +1065,22 @@ async function trySelectAddressFromCep(address) {
     normalizeAddressText(
       address.bairro
     );
+console.log(
+  "ENTROU NO PREENCHIMENTO DO CEP",
+  address
+);
 
+console.log(
+  "OPÇÕES DE REGIÃO:",
+  Array.from(
+    regionSelect.options
+  ).map(
+    option => ({
+      value: option.value,
+      text: option.textContent
+    })
+  )
+);
   const ruaCep =
     normalizeAddressText(
       address.logradouro
@@ -1076,38 +1091,51 @@ async function trySelectAddressFromCep(address) {
    * a região Zona Urbana.
    */
   if (!regionSelect.value) {
-    const urbanRegion =
-      Array.from(
-        regionSelect.options
-      ).find(
-        function (option) {
-          return (
-            normalizeAddressText(
-              option.textContent
-            ) === "zona urbana"
-          );
-        }
-      );
 
-    if (urbanRegion) {
-      regionSelect.value =
-        urbanRegion.value;
-    }
-  }
-
-  /*
-   * Se mesmo assim não encontrou região,
-   * deixa o usuário escolher manualmente.
-   */
-  if (!regionSelect.value) {
-    setCepStatus(
-      "CEP encontrado. Selecione a região para continuar.",
-      "success"
+  const urbanRegion =
+    Array.from(
+      regionSelect.options
+    ).find(
+      function (option) {
+        return (
+          normalizeAddressText(
+            option.textContent
+          ) === "zona urbana"
+        );
+      }
     );
 
-    return;
-  }
+  console.log(
+    "OPÇÕES DE REGIÃO:",
+    Array.from(
+      regionSelect.options
+    ).map(
+      option => ({
+        value:
+          option.value,
 
+        text:
+          option.textContent
+      })
+    )
+  );
+
+  console.log(
+    "REGIÃO URBANA ENCONTRADA:",
+    urbanRegion
+  );
+
+  if (urbanRegion) {
+
+    regionSelect.value =
+      urbanRegion.value;
+
+    console.log(
+      "REGIÃO SELECIONADA:",
+      regionSelect.value
+    );
+  }
+}
   /*
    * 2. Carrega as localidades
    * da região selecionada.
