@@ -33,6 +33,7 @@ class Localidade(models.Model):
     class Tipo(models.TextChoices):
         BAIRRO = "BAIRRO", "Bairro"
         COMUNIDADE = "COMUNIDADE", "Comunidade"
+        DISTRITO = "DISTRITO", "Distrito"
 
     regiao = models.ForeignKey(
         Regiao,
