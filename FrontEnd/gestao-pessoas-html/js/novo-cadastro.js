@@ -45,20 +45,7 @@ const neighborhoodSelect = document.querySelector(
 const streetSelect = document.querySelector("#street");
 const numberInput = document.querySelector("#number");
 const complementInput = document.querySelector("#complement");
-const cepInput =
-  document.querySelector(
-    "#cep"
-  );
 
-const searchCepButton =
-  document.querySelector(
-    "#search-cep-button"
-  );
-
-const cepStatus =
-  document.querySelector(
-    "#cep-status"
-  );
 const observationsInput = document.querySelector(
   "#observations"
 );
@@ -769,685 +756,6 @@ function addSelectOption(
   );
 }
 
-/* =========================
-   CEP
-========================= */
-
-function onlyNumbers(
-  value
-) {
-  return String(
-    value || ""
-  ).replace(
-    /\D/g,
-    ""
-  );
-}
-
-
-function formatCepValue(
-  value
-) {
-  const numbers =
-    onlyNumbers(
-      value
-    ).slice(
-      0,
-      8
-    );
-
-  if (
-    numbers.length <= 5
-  ) {
-    return numbers;
-  }
-
-  return (
-    numbers.slice(
-      0,
-      5
-    ) +
-    "-" +
-    numbers.slice(5)
-  );
-}
-
-
-function setCepStatus(
-  message,
-  type = ""
-) {
-  if (!cepStatus) {
-    return;
-  }
-
-  cepStatus.textContent =
-    message;
-
-  cepStatus.classList.remove(
-    "success",
-    "error"
-  );
-
-  if (type) {
-    cepStatus.classList.add(
-      type
-    );
-  }
-}
-
-
-cepInput?.addEventListener(
-  "input",
-  function () {
-    cepInput.value =
-      formatCepValue(
-        cepInput.value
-      );
-
-    setCepStatus(
-      "Informe o CEP para consultar o endereço."
-    );
-  }
-);
-
-
-async function searchCep() {
-  console.log(
-    "ENTROU EM searchCep"
-  );
-
-  const cep =
-    onlyNumbers(
-      cepInput?.value
-    );
-
-  console.log(
-    "CEP LIDO:",
-    cep
-  );
-
-  // continue com o código que já existe aqui
-
-
-  if (
-    cep.length !== 8
-  ) {
-    setCepStatus(
-      "Informe um CEP válido com 8 números.",
-      "error"
-    );
-
-    showFieldError(
-      cepInput,
-      "Informe um CEP válido."
-    );
-
-    cepInput?.focus();
-
-    return;
-  }
-
-  clearFieldError(
-    cepInput
-  );
-
-  searchCepButton.disabled =
-    true;
-
-  const buttonText =
-    searchCepButton
-      ?.querySelector(
-        "span"
-      );
-
-  if (buttonText) {
-    buttonText.textContent =
-      "Buscando...";
-  }
-
-  setCepStatus(
-    "Consultando CEP..."
-  );
-
-  try {
-    const response =
-      await fetch(
-        `https://viacep.com.br/ws/${cep}/json/`
-      );
-
-    if (!response.ok) {
-      throw new Error(
-        "Não foi possível consultar o CEP."
-      );
-    }
-
-    const address =
-      await response.json();
-
-    if (
-      address.erro
-    ) {
-      throw new Error(
-        "CEP não encontrado."
-      );
-    }
-
-    const parts = [
-      address.logradouro,
-      address.bairro,
-      address.localidade,
-      address.uf
-    ].filter(Boolean);
-
-    setCepStatus(
-      parts.join(" - ") ||
-      "CEP localizado.",
-      "success"
-    );
-
-    /*
-     * Município eleitoral:
-     * não alteramos automaticamente,
-     * pois ele pertence aos dados
-     * eleitorais, não necessariamente
-     * ao endereço residencial.
-     */
-
-    /*
-     * Tenta encontrar automaticamente
-     * localidade e rua entre as opções
-     * já cadastradas no sistema.
-     */
-
-    await trySelectAddressFromCep(
-      address
-    );
-
-  } catch (error) {
-    console.error(
-      "Erro ao consultar CEP:",
-      error
-    );
-
-    setCepStatus(
-      error.message ||
-      "Não foi possível consultar o CEP.",
-      "error"
-    );
-
-  } finally {
-    searchCepButton.disabled =
-      false;
-
-    if (buttonText) {
-      buttonText.textContent =
-        "Buscar CEP";
-    }
-  }
-}
-
-
-
-
-
-cepInput?.addEventListener(
-  "blur",
-  function () {
-    const cep =
-      onlyNumbers(
-        cepInput.value
-      );
-
-    if (
-      cep.length === 8
-    ) {
-      searchCep();
-    }
-  }
-  
-);
-
-
-function normalizeAddressText(
-  value
-) {
-  return String(
-    value || ""
-  )
-    .normalize("NFD")
-    .replace(
-      /[\u0300-\u036f]/g,
-      ""
-    )
-    .toLowerCase()
-    .replace(
-      /^(rua|avenida|av\.?|travessa|estrada|rodovia)\s+/,
-      ""
-    )
-    .trim();
-}
-
-
-function findSelectOption(
-  select,
-  text
-) {
-  if (
-    !select ||
-    !text
-  ) {
-    return null;
-  }
-
-  const target =
-    normalizeAddressText(
-      text
-    );
-
-  return Array.from(
-    select.options
-  ).find(
-    function (
-      option
-    ) {
-      const optionText =
-        normalizeAddressText(
-          option.textContent
-        );
-
-      return (
-        optionText ===
-          target ||
-        optionText.includes(
-          target
-        ) ||
-        target.includes(
-          optionText
-        )
-      );
-    }
-  );
-}
-
-
-async function trySelectAddressFromCep(address) {
-  console.log(
-    "ENDEREÇO RECEBIDO:",
-    address
-  );
-
-  const bairroCep =
-    normalizeAddressText(
-      address.bairro
-    );
-
-  const ruaCep =
-    normalizeAddressText(
-      address.logradouro
-    );
-
-  console.log(
-    "BAIRRO NORMALIZADO:",
-    bairroCep
-  );
-
-  console.log(
-    "RUA NORMALIZADA:",
-    ruaCep
-  );
-
-  /*
-   * =========================
-   * 1. REGIÃO
-   * =========================
-   */
-
-  const regionOptions =
-    Array.from(
-      regionSelect.options
-    ).filter(
-      option => option.value
-    );
-
-  console.log(
-    "REGIÕES DISPONÍVEIS:",
-    regionOptions.map(
-      option => ({
-        id: option.value,
-        nome: option.textContent.trim()
-      })
-    )
-  );
-
-  let selectedRegion = null;
-
-  /*
-   * Primeiro tenta encontrar
-   * uma região urbana pelo nome.
-   */
-  selectedRegion =
-    regionOptions.find(
-      option => {
-        const nome =
-          normalizeAddressText(
-            option.textContent
-          );
-
-        return (
-          nome.includes("urbana") ||
-          nome.includes("urbano")
-        );
-      }
-    );
-
-  /*
-   * Se só existir uma região
-   * cadastrada, usa essa região.
-   */
-  if (
-    !selectedRegion &&
-    regionOptions.length === 1
-  ) {
-    selectedRegion =
-      regionOptions[0];
-  }
-
-  if (!selectedRegion) {
-    console.warn(
-      "Não foi possível determinar a região."
-    );
-
-    setCepStatus(
-      "CEP encontrado. Selecione a região para continuar.",
-      "success"
-    );
-
-    return;
-  }
-
-  regionSelect.value =
-    selectedRegion.value;
-
-  console.log(
-    "REGIÃO SELECIONADA:",
-    selectedRegion.value,
-    selectedRegion.textContent.trim()
-  );
-
-
-  /*
-   * =========================
-   * 2. LOCALIDADES
-   * =========================
-   */
-
-  await loadNeighborhoods(
-    selectedRegion.value
-  );
-
-  const neighborhoodOptions =
-    Array.from(
-      neighborhoodSelect.options
-    ).filter(
-      option => option.value
-    );
-
-  console.log(
-    "LOCALIDADES DISPONÍVEIS:",
-    neighborhoodOptions.map(
-      option => ({
-        id: option.value,
-        nome: option.textContent.trim()
-      })
-    )
-  );
-
-  /*
-   * Se o CEP não trouxe bairro,
-   * não temos informação suficiente
-   * para escolher uma localidade.
-   */
-  if (!bairroCep) {
-    setCepStatus(
-      "CEP encontrado. Região preenchida. Selecione a localidade.",
-      "success"
-    );
-
-    return;
-  }
-
-  const selectedNeighborhood =
-    neighborhoodOptions.find(
-      option => {
-        const nome =
-          normalizeAddressText(
-            option.textContent
-          );
-
-        return (
-          nome === bairroCep ||
-          nome.includes(bairroCep) ||
-          bairroCep.includes(nome)
-        );
-      }
-    );
-
-  if (!selectedNeighborhood) {
-    console.warn(
-      "Localidade não encontrada para:",
-      address.bairro
-    );
-
-    setCepStatus(
-      `CEP encontrado. Região preenchida, mas a localidade "${address.bairro}" não existe no sistema.`,
-      "success"
-    );
-
-    return;
-  }
-
-  neighborhoodSelect.value =
-    selectedNeighborhood.value;
-
-  console.log(
-    "LOCALIDADE SELECIONADA:",
-    selectedNeighborhood.value,
-    selectedNeighborhood.textContent.trim()
-  );
-
-
-  /*
-   * =========================
-   * 3. RUAS
-   * =========================
-   */
-
-  await loadStreets(
-    selectedNeighborhood.value
-  );
-
-  const streetOptions =
-    Array.from(
-      streetSelect.options
-    ).filter(
-      option => option.value
-    );
-
-  console.log(
-    "RUAS DISPONÍVEIS:",
-    streetOptions.map(
-      option => ({
-        id: option.value,
-        nome: option.textContent.trim()
-      })
-    )
-  );
-
-  if (!ruaCep) {
-    setCepStatus(
-      "CEP encontrado. Região e localidade preenchidas. Selecione a rua.",
-      "success"
-    );
-
-    return;
-  }
-
-  const selectedStreet =
-    streetOptions.find(
-      option => {
-        const nome =
-          normalizeAddressText(
-            option.textContent
-          );
-
-        return (
-          nome === ruaCep ||
-          nome.includes(ruaCep) ||
-          ruaCep.includes(nome)
-        );
-      }
-    );
-
-  if (!selectedStreet) {
-    console.warn(
-      "Rua não encontrada para:",
-      address.logradouro
-    );
-
-    setCepStatus(
-      `CEP encontrado. Região e localidade preenchidas, mas a rua "${address.logradouro}" não existe no sistema.`,
-      "success"
-    );
-
-    return;
-  }
-
-  streetSelect.value =
-    selectedStreet.value;
-
-  console.log(
-    "RUA SELECIONADA:",
-    selectedStreet.value,
-    selectedStreet.textContent.trim()
-  );
-
-  setCepStatus(
-    "CEP encontrado e endereço preenchido automaticamente.",
-    "success"
-  );
-
-  numberInput?.focus();
-}
-  /*
-   * 2. Carrega as localidades
-   * da região selecionada.
-   */
-  await loadNeighborhoods(
-    regionSelect.value
-  );
-
-  /*
-   * 3. Procura a localidade
-   * pelo bairro retornado pelo CEP.
-   */
-  let neighborhoodOption =
-    Array.from(
-      neighborhoodSelect.options
-    ).find(
-      function (option) {
-        const optionText =
-          normalizeAddressText(
-            option.textContent
-          );
-
-        return (
-          optionText === bairroCep ||
-          optionText.includes(
-            bairroCep
-          ) ||
-          bairroCep.includes(
-            optionText
-          )
-        );
-      }
-    );
-
-  /*
-   * Se o ViaCEP não retornar bairro,
-   * não temos como descobrir a localidade.
-   */
-  if (!bairroCep) {
-    setCepStatus(
-      "CEP encontrado. Região selecionada. Escolha a localidade.",
-      "success"
-    );
-
-    return;
-  }
-
-  if (!neighborhoodOption) {
-    setCepStatus(
-      `CEP encontrado. Região selecionada, mas a localidade "${address.bairro}" não foi encontrada no sistema.`,
-      "success"
-    );
-
-    return;
-  }
-
-  neighborhoodSelect.value =
-    neighborhoodOption.value;
-
-  /*
-   * 4. Carrega as ruas da localidade.
-   */
-  await loadStreets(
-    neighborhoodOption.value
-  );
-
-  /*
-   * 5. Procura a rua.
-   */
-  const streetOption =
-    Array.from(
-      streetSelect.options
-    ).find(
-      function (option) {
-        const optionText =
-          normalizeAddressText(
-            option.textContent
-          );
-
-        return (
-          optionText === ruaCep ||
-          optionText.includes(
-            ruaCep
-          ) ||
-          ruaCep.includes(
-            optionText
-          )
-        );
-      }
-    );
-
-  if (streetOption) {
-    streetSelect.value =
-      streetOption.value;
-
-    setCepStatus(
-      "CEP encontrado e endereço preenchido automaticamente.",
-      "success"
-    );
-
-    numberInput?.focus();
-
-    return;
-  }
-
-  setCepStatus(
-    `CEP encontrado. Região e localidade preenchidas, mas a rua "${address.logradouro}" não foi encontrada no sistema.`,
-    "success"
-  );
 
 /* =========================
    REGIÕES
@@ -1472,7 +780,77 @@ async function loadRegions() {
     throw new Error(
       "Não foi possível carregar as regiões."
     );
+  }async function loadRegions() {
+  regionSelect.disabled =
+    true;
+
+  regionSelect.innerHTML = `
+    <option value="">
+      Carregando regiões...
+    </option>
+  `;
+
+  let regions = [];
+
+  try {
+    const response =
+      await apiFetch(
+        "/regioes/"
+      );
+
+    if (!response.ok) {
+      throw new Error(
+        "API indisponível."
+      );
+    }
+
+    regions =
+      getList(
+        await response.json()
+      );
+
+    await salvarListaOffline(
+      "regioes",
+      regions
+    );
+
+    console.log(
+      "Regiões atualizadas no cache offline."
+    );
+
+  } catch (error) {
+    console.warn(
+      "Usando regiões offline:",
+      error
+    );
+
+    regions =
+      await buscarListaOffline(
+        "regioes"
+      );
   }
+
+  regionSelect.innerHTML = `
+    <option value="">
+      Selecione a região
+    </option>
+  `;
+
+  regions.forEach(
+    function (
+      region
+    ) {
+      addSelectOption(
+        regionSelect,
+        region.id,
+        region.nome
+      );
+    }
+  );
+
+  regionSelect.disabled =
+    false;
+}
 
   const regions =
     getList(
@@ -2089,10 +1467,7 @@ function buildRegistrationData() {
     telefone:
       phoneInput.value
         .replace(/\D/g, ""),
-    cep:
-      cepInput
-        ?.value
-       .trim() || "",
+
     regiao:
       Number(
         regionSelect.value
@@ -2175,9 +1550,6 @@ function showBackendErrors(
 
     telefone:
       phoneInput,
-    
-    cep:
-      cepInput,
 
     regiao:
       regionSelect,
@@ -2287,13 +1659,7 @@ async function loadPersonForEditing() {
     formatPhoneValue(
       pessoa.telefone
     );
-    
-    if (cepInput) {
-  cepInput.value =
-    formatCepValue(
-      pessoa.cep || ""
-    );
-}
+
 
   /* =========================
      DADOS ELEITORAIS
@@ -2769,13 +2135,7 @@ newRegistrationButton
       }
 
       registrationForm.reset();
-      if (cepInput) {
-       cepInput.value = "";
-      }
 
-setCepStatus(
-  "Informe o CEP para consultar o endereço."
-);
       clearElectoralData();
 
       setVoterTitleStatus(
