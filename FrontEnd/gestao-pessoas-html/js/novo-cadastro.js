@@ -45,7 +45,20 @@ const neighborhoodSelect = document.querySelector(
 const streetSelect = document.querySelector("#street");
 const numberInput = document.querySelector("#number");
 const complementInput = document.querySelector("#complement");
+const cepInput =
+  document.querySelector(
+    "#cep"
+  );
 
+const searchCepButton =
+  document.querySelector(
+    "#search-cep-button"
+  );
+
+const cepStatus =
+  document.querySelector(
+    "#cep-status"
+  );
 const observationsInput = document.querySelector(
   "#observations"
 );
@@ -756,6 +769,386 @@ function addSelectOption(
   );
 }
 
+/* =========================
+   CEP
+========================= */
+
+function onlyNumbers(
+  value
+) {
+  return String(
+    value || ""
+  ).replace(
+    /\D/g,
+    ""
+  );
+}
+
+
+function formatCepValue(
+  value
+) {
+  const numbers =
+    onlyNumbers(
+      value
+    ).slice(
+      0,
+      8
+    );
+
+  if (
+    numbers.length <= 5
+  ) {
+    return numbers;
+  }
+
+  return (
+    numbers.slice(
+      0,
+      5
+    ) +
+    "-" +
+    numbers.slice(5)
+  );
+}
+
+
+function setCepStatus(
+  message,
+  type = ""
+) {
+  if (!cepStatus) {
+    return;
+  }
+
+  cepStatus.textContent =
+    message;
+
+  cepStatus.classList.remove(
+    "success",
+    "error"
+  );
+
+  if (type) {
+    cepStatus.classList.add(
+      type
+    );
+  }
+}
+
+
+cepInput?.addEventListener(
+  "input",
+  function () {
+    cepInput.value =
+      formatCepValue(
+        cepInput.value
+      );
+
+    setCepStatus(
+      "Informe o CEP para consultar o endereço."
+    );
+  }
+);
+
+
+async function searchCep() {
+  const cep =
+    onlyNumbers(
+      cepInput?.value
+    );
+
+  if (
+    cep.length !== 8
+  ) {
+    setCepStatus(
+      "Informe um CEP válido com 8 números.",
+      "error"
+    );
+
+    showFieldError(
+      cepInput,
+      "Informe um CEP válido."
+    );
+
+    cepInput?.focus();
+
+    return;
+  }
+
+  clearFieldError(
+    cepInput
+  );
+
+  searchCepButton.disabled =
+    true;
+
+  const buttonText =
+    searchCepButton
+      ?.querySelector(
+        "span"
+      );
+
+  if (buttonText) {
+    buttonText.textContent =
+      "Buscando...";
+  }
+
+  setCepStatus(
+    "Consultando CEP..."
+  );
+
+  try {
+    const response =
+      await fetch(
+        `https://viacep.com.br/ws/${cep}/json/`
+      );
+
+    if (!response.ok) {
+      throw new Error(
+        "Não foi possível consultar o CEP."
+      );
+    }
+
+    const address =
+      await response.json();
+
+    if (
+      address.erro
+    ) {
+      throw new Error(
+        "CEP não encontrado."
+      );
+    }
+
+    const parts = [
+      address.logradouro,
+      address.bairro,
+      address.localidade,
+      address.uf
+    ].filter(Boolean);
+
+    setCepStatus(
+      parts.join(" - ") ||
+      "CEP localizado.",
+      "success"
+    );
+
+    /*
+     * Município eleitoral:
+     * não alteramos automaticamente,
+     * pois ele pertence aos dados
+     * eleitorais, não necessariamente
+     * ao endereço residencial.
+     */
+
+    /*
+     * Tenta encontrar automaticamente
+     * localidade e rua entre as opções
+     * já cadastradas no sistema.
+     */
+
+    await trySelectAddressFromCep(
+      address
+    );
+
+  } catch (error) {
+    console.error(
+      "Erro ao consultar CEP:",
+      error
+    );
+
+    setCepStatus(
+      error.message ||
+      "Não foi possível consultar o CEP.",
+      "error"
+    );
+
+  } finally {
+    searchCepButton.disabled =
+      false;
+
+    if (buttonText) {
+      buttonText.textContent =
+        "Buscar CEP";
+    }
+  }
+}
+
+
+searchCepButton
+  ?.addEventListener(
+    "click",
+    searchCep
+  );
+
+
+cepInput?.addEventListener(
+  "blur",
+  function () {
+    const cep =
+      onlyNumbers(
+        cepInput.value
+      );
+
+    if (
+      cep.length === 8
+    ) {
+      searchCep();
+    }
+  }
+);
+function normalizeAddressText(
+  value
+) {
+  return String(
+    value || ""
+  )
+    .normalize("NFD")
+    .replace(
+      /[\u0300-\u036f]/g,
+      ""
+    )
+    .toLowerCase()
+    .replace(
+      /^(rua|avenida|av\.?|travessa|estrada|rodovia)\s+/,
+      ""
+    )
+    .trim();
+}
+
+
+function findSelectOption(
+  select,
+  text
+) {
+  if (
+    !select ||
+    !text
+  ) {
+    return null;
+  }
+
+  const target =
+    normalizeAddressText(
+      text
+    );
+
+  return Array.from(
+    select.options
+  ).find(
+    function (
+      option
+    ) {
+      const optionText =
+        normalizeAddressText(
+          option.textContent
+        );
+
+      return (
+        optionText ===
+          target ||
+        optionText.includes(
+          target
+        ) ||
+        target.includes(
+          optionText
+        )
+      );
+    }
+  );
+}
+
+
+async function trySelectAddressFromCep(
+  address
+) {
+  /*
+   * Para escolher automaticamente uma
+   * localidade precisamos primeiro ter
+   * uma região selecionada.
+   *
+   * Se não estiver, o usuário seleciona
+   * a região manualmente.
+   */
+
+  if (
+    !regionSelect.value
+  ) {
+    setCepStatus(
+      `${
+        address.logradouro || ""
+      } - ${
+        address.bairro || ""
+      }. Selecione a região para continuar.`,
+      "success"
+    );
+
+    return;
+  }
+
+  await loadNeighborhoods(
+    regionSelect.value
+  );
+
+
+  const neighborhoodOption =
+    findSelectOption(
+      neighborhoodSelect,
+      address.bairro
+    );
+
+
+  if (
+    neighborhoodOption
+  ) {
+    neighborhoodSelect.value =
+      neighborhoodOption.value;
+
+    await loadStreets(
+      neighborhoodOption.value
+    );
+
+
+    const streetOption =
+      findSelectOption(
+        streetSelect,
+        address.logradouro
+      );
+
+
+    if (
+      streetOption
+    ) {
+      streetSelect.value =
+        streetOption.value;
+
+      setCepStatus(
+        "CEP encontrado e endereço selecionado automaticamente.",
+        "success"
+      );
+
+      numberInput?.focus();
+
+      return;
+    }
+
+
+    setCepStatus(
+      "CEP encontrado. A localidade foi selecionada, mas escolha a rua.",
+      "success"
+    );
+
+    return;
+  }
+
+
+  setCepStatus(
+    "CEP encontrado. Selecione a localidade e a rua correspondentes.",
+    "success"
+  );
+}
+
 
 /* =========================
    REGIÕES
@@ -1397,7 +1790,10 @@ function buildRegistrationData() {
     telefone:
       phoneInput.value
         .replace(/\D/g, ""),
-
+    cep:
+      cepInput
+        ?.value
+       .trim() || "",
     regiao:
       Number(
         regionSelect.value
@@ -1480,6 +1876,9 @@ function showBackendErrors(
 
     telefone:
       phoneInput,
+    
+    cep:
+      cepInput,
 
     regiao:
       regionSelect,
@@ -1589,7 +1988,13 @@ async function loadPersonForEditing() {
     formatPhoneValue(
       pessoa.telefone
     );
-
+    
+    if (cepInput) {
+  cepInput.value =
+    formatCepValue(
+      pessoa.cep || ""
+    );
+}
 
   /* =========================
      DADOS ELEITORAIS
@@ -2065,7 +2470,13 @@ newRegistrationButton
       }
 
       registrationForm.reset();
+      if (cepInput) {
+       cepInput.value = "";
+      }
 
+setCepStatus(
+  "Informe o CEP para consultar o endereço."
+);
       clearElectoralData();
 
       setVoterTitleStatus(

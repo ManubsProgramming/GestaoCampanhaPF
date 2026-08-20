@@ -555,6 +555,43 @@
           </header>
 
           <div class="form-grid">
+            <!-- CEP -->
+
+<div class="form-field">
+  <label for="cep">
+    CEP
+  </label>
+
+  <div class="field-action-row">
+    <input
+      id="cep"
+      name="cep"
+      type="text"
+      inputmode="numeric"
+      maxlength="9"
+      placeholder="00000-000"
+      autocomplete="postal-code"
+    >
+
+    <button
+      id="search-cep-button"
+      class="secondary-button"
+      type="button"
+    >
+      <i data-lucide="search"></i>
+      <span>Buscar CEP</span>
+    </button>
+  </div>
+
+  <span class="field-error"></span>
+
+  <p
+    id="cep-status"
+    class="voter-title-status"
+  >
+    Informe o CEP para consultar o endereço.
+  </p>
+</div>
             <!-- REGIÃO -->
 
             <div class="form-field">
