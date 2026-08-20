@@ -1060,96 +1060,164 @@ function findSelectOption(
 }
 
 
-async function trySelectAddressFromCep(
-  address
-) {
-  /*
-   * Para escolher automaticamente uma
-   * localidade precisamos primeiro ter
-   * uma região selecionada.
-   *
-   * Se não estiver, o usuário seleciona
-   * a região manualmente.
-   */
+async function trySelectAddressFromCep(address) {
+  const bairroCep =
+    normalizeAddressText(
+      address.bairro
+    );
 
-  if (
-    !regionSelect.value
-  ) {
+  const ruaCep =
+    normalizeAddressText(
+      address.logradouro
+    );
+
+  /*
+   * 1. Tenta selecionar automaticamente
+   * a região Zona Urbana.
+   */
+  if (!regionSelect.value) {
+    const urbanRegion =
+      Array.from(
+        regionSelect.options
+      ).find(
+        function (option) {
+          return (
+            normalizeAddressText(
+              option.textContent
+            ) === "zona urbana"
+          );
+        }
+      );
+
+    if (urbanRegion) {
+      regionSelect.value =
+        urbanRegion.value;
+    }
+  }
+
+  /*
+   * Se mesmo assim não encontrou região,
+   * deixa o usuário escolher manualmente.
+   */
+  if (!regionSelect.value) {
     setCepStatus(
-      `${
-        address.logradouro || ""
-      } - ${
-        address.bairro || ""
-      }. Selecione a região para continuar.`,
+      "CEP encontrado. Selecione a região para continuar.",
       "success"
     );
 
     return;
   }
 
+  /*
+   * 2. Carrega as localidades
+   * da região selecionada.
+   */
   await loadNeighborhoods(
     regionSelect.value
   );
 
+  /*
+   * 3. Procura a localidade
+   * pelo bairro retornado pelo CEP.
+   */
+  let neighborhoodOption =
+    Array.from(
+      neighborhoodSelect.options
+    ).find(
+      function (option) {
+        const optionText =
+          normalizeAddressText(
+            option.textContent
+          );
 
-  const neighborhoodOption =
-    findSelectOption(
-      neighborhoodSelect,
-      address.bairro
+        return (
+          optionText === bairroCep ||
+          optionText.includes(
+            bairroCep
+          ) ||
+          bairroCep.includes(
+            optionText
+          )
+        );
+      }
     );
 
-
-  if (
-    neighborhoodOption
-  ) {
-    neighborhoodSelect.value =
-      neighborhoodOption.value;
-
-    await loadStreets(
-      neighborhoodOption.value
-    );
-
-
-    const streetOption =
-      findSelectOption(
-        streetSelect,
-        address.logradouro
-      );
-
-
-    if (
-      streetOption
-    ) {
-      streetSelect.value =
-        streetOption.value;
-
-      setCepStatus(
-        "CEP encontrado e endereço selecionado automaticamente.",
-        "success"
-      );
-
-      numberInput?.focus();
-
-      return;
-    }
-
-
+  /*
+   * Se o ViaCEP não retornar bairro,
+   * não temos como descobrir a localidade.
+   */
+  if (!bairroCep) {
     setCepStatus(
-      "CEP encontrado. A localidade foi selecionada, mas escolha a rua.",
+      "CEP encontrado. Região selecionada. Escolha a localidade.",
       "success"
     );
 
     return;
   }
 
+  if (!neighborhoodOption) {
+    setCepStatus(
+      `CEP encontrado. Região selecionada, mas a localidade "${address.bairro}" não foi encontrada no sistema.`,
+      "success"
+    );
+
+    return;
+  }
+
+  neighborhoodSelect.value =
+    neighborhoodOption.value;
+
+  /*
+   * 4. Carrega as ruas da localidade.
+   */
+  await loadStreets(
+    neighborhoodOption.value
+  );
+
+  /*
+   * 5. Procura a rua.
+   */
+  const streetOption =
+    Array.from(
+      streetSelect.options
+    ).find(
+      function (option) {
+        const optionText =
+          normalizeAddressText(
+            option.textContent
+          );
+
+        return (
+          optionText === ruaCep ||
+          optionText.includes(
+            ruaCep
+          ) ||
+          ruaCep.includes(
+            optionText
+          )
+        );
+      }
+    );
+
+  if (streetOption) {
+    streetSelect.value =
+      streetOption.value;
+
+    setCepStatus(
+      "CEP encontrado e endereço preenchido automaticamente.",
+      "success"
+    );
+
+    numberInput?.focus();
+
+    return;
+  }
 
   setCepStatus(
-    "CEP encontrado. Selecione a localidade e a rua correspondentes.",
+    `CEP encontrado. Região e localidade preenchidas, mas a rua "${address.logradouro}" não foi encontrada no sistema.`,
     "success"
   );
 }
-
-
 /* =========================
    REGIÕES
 ========================= */
