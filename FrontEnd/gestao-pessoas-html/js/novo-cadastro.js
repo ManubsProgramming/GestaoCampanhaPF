@@ -853,10 +853,22 @@ cepInput?.addEventListener(
 
 
 async function searchCep() {
+  console.log(
+    "ENTROU EM searchCep"
+  );
+
   const cep =
     onlyNumbers(
       cepInput?.value
     );
+
+  console.log(
+    "CEP LIDO:",
+    cep
+  );
+
+  // continue com o código que já existe aqui
+
 
   if (
     cep.length !== 8
@@ -976,11 +988,7 @@ async function searchCep() {
 }
 
 
-searchCepButton
-  ?.addEventListener(
-    "click",
-    searchCep
-  );
+
 
 
 cepInput?.addEventListener(
@@ -997,7 +1005,10 @@ cepInput?.addEventListener(
       searchCep();
     }
   }
+  
 );
+
+
 function normalizeAddressText(
   value
 ) {
@@ -1061,80 +1072,272 @@ function findSelectOption(
 
 
 async function trySelectAddressFromCep(address) {
+  console.log(
+    "ENDEREÇO RECEBIDO:",
+    address
+  );
+
   const bairroCep =
     normalizeAddressText(
       address.bairro
     );
-console.log(
-  "ENTROU NO PREENCHIMENTO DO CEP",
-  address
-);
 
-console.log(
-  "OPÇÕES DE REGIÃO:",
-  Array.from(
-    regionSelect.options
-  ).map(
-    option => ({
-      value: option.value,
-      text: option.textContent
-    })
-  )
-);
   const ruaCep =
     normalizeAddressText(
       address.logradouro
     );
 
-  /*
-   * 1. Tenta selecionar automaticamente
-   * a região Zona Urbana.
-   */
-  if (!regionSelect.value) {
+  console.log(
+    "BAIRRO NORMALIZADO:",
+    bairroCep
+  );
 
-  const urbanRegion =
+  console.log(
+    "RUA NORMALIZADA:",
+    ruaCep
+  );
+
+  /*
+   * =========================
+   * 1. REGIÃO
+   * =========================
+   */
+
+  const regionOptions =
     Array.from(
       regionSelect.options
-    ).find(
-      function (option) {
-        return (
-          normalizeAddressText(
-            option.textContent
-          ) === "zona urbana"
-        );
-      }
+    ).filter(
+      option => option.value
     );
 
   console.log(
-    "OPÇÕES DE REGIÃO:",
-    Array.from(
-      regionSelect.options
-    ).map(
+    "REGIÕES DISPONÍVEIS:",
+    regionOptions.map(
       option => ({
-        value:
-          option.value,
-
-        text:
-          option.textContent
+        id: option.value,
+        nome: option.textContent.trim()
       })
     )
   );
 
+  let selectedRegion = null;
+
+  /*
+   * Primeiro tenta encontrar
+   * uma região urbana pelo nome.
+   */
+  selectedRegion =
+    regionOptions.find(
+      option => {
+        const nome =
+          normalizeAddressText(
+            option.textContent
+          );
+
+        return (
+          nome.includes("urbana") ||
+          nome.includes("urbano")
+        );
+      }
+    );
+
+  /*
+   * Se só existir uma região
+   * cadastrada, usa essa região.
+   */
+  if (
+    !selectedRegion &&
+    regionOptions.length === 1
+  ) {
+    selectedRegion =
+      regionOptions[0];
+  }
+
+  if (!selectedRegion) {
+    console.warn(
+      "Não foi possível determinar a região."
+    );
+
+    setCepStatus(
+      "CEP encontrado. Selecione a região para continuar.",
+      "success"
+    );
+
+    return;
+  }
+
+  regionSelect.value =
+    selectedRegion.value;
+
   console.log(
-    "REGIÃO URBANA ENCONTRADA:",
-    urbanRegion
+    "REGIÃO SELECIONADA:",
+    selectedRegion.value,
+    selectedRegion.textContent.trim()
   );
 
-  if (urbanRegion) {
 
-    regionSelect.value =
-      urbanRegion.value;
+  /*
+   * =========================
+   * 2. LOCALIDADES
+   * =========================
+   */
 
-    console.log(
-      "REGIÃO SELECIONADA:",
-      regionSelect.value
+  await loadNeighborhoods(
+    selectedRegion.value
+  );
+
+  const neighborhoodOptions =
+    Array.from(
+      neighborhoodSelect.options
+    ).filter(
+      option => option.value
     );
+
+  console.log(
+    "LOCALIDADES DISPONÍVEIS:",
+    neighborhoodOptions.map(
+      option => ({
+        id: option.value,
+        nome: option.textContent.trim()
+      })
+    )
+  );
+
+  /*
+   * Se o CEP não trouxe bairro,
+   * não temos informação suficiente
+   * para escolher uma localidade.
+   */
+  if (!bairroCep) {
+    setCepStatus(
+      "CEP encontrado. Região preenchida. Selecione a localidade.",
+      "success"
+    );
+
+    return;
   }
+
+  const selectedNeighborhood =
+    neighborhoodOptions.find(
+      option => {
+        const nome =
+          normalizeAddressText(
+            option.textContent
+          );
+
+        return (
+          nome === bairroCep ||
+          nome.includes(bairroCep) ||
+          bairroCep.includes(nome)
+        );
+      }
+    );
+
+  if (!selectedNeighborhood) {
+    console.warn(
+      "Localidade não encontrada para:",
+      address.bairro
+    );
+
+    setCepStatus(
+      `CEP encontrado. Região preenchida, mas a localidade "${address.bairro}" não existe no sistema.`,
+      "success"
+    );
+
+    return;
+  }
+
+  neighborhoodSelect.value =
+    selectedNeighborhood.value;
+
+  console.log(
+    "LOCALIDADE SELECIONADA:",
+    selectedNeighborhood.value,
+    selectedNeighborhood.textContent.trim()
+  );
+
+
+  /*
+   * =========================
+   * 3. RUAS
+   * =========================
+   */
+
+  await loadStreets(
+    selectedNeighborhood.value
+  );
+
+  const streetOptions =
+    Array.from(
+      streetSelect.options
+    ).filter(
+      option => option.value
+    );
+
+  console.log(
+    "RUAS DISPONÍVEIS:",
+    streetOptions.map(
+      option => ({
+        id: option.value,
+        nome: option.textContent.trim()
+      })
+    )
+  );
+
+  if (!ruaCep) {
+    setCepStatus(
+      "CEP encontrado. Região e localidade preenchidas. Selecione a rua.",
+      "success"
+    );
+
+    return;
+  }
+
+  const selectedStreet =
+    streetOptions.find(
+      option => {
+        const nome =
+          normalizeAddressText(
+            option.textContent
+          );
+
+        return (
+          nome === ruaCep ||
+          nome.includes(ruaCep) ||
+          ruaCep.includes(nome)
+        );
+      }
+    );
+
+  if (!selectedStreet) {
+    console.warn(
+      "Rua não encontrada para:",
+      address.logradouro
+    );
+
+    setCepStatus(
+      `CEP encontrado. Região e localidade preenchidas, mas a rua "${address.logradouro}" não existe no sistema.`,
+      "success"
+    );
+
+    return;
+  }
+
+  streetSelect.value =
+    selectedStreet.value;
+
+  console.log(
+    "RUA SELECIONADA:",
+    selectedStreet.value,
+    selectedStreet.textContent.trim()
+  );
+
+  setCepStatus(
+    "CEP encontrado e endereço preenchido automaticamente.",
+    "success"
+  );
+
+  numberInput?.focus();
 }
   /*
    * 2. Carrega as localidades
@@ -1245,7 +1448,7 @@ console.log(
     `CEP encontrado. Região e localidade preenchidas, mas a rua "${address.logradouro}" não foi encontrada no sistema.`,
     "success"
   );
-}
+
 /* =========================
    REGIÕES
 ========================= */
