@@ -35,6 +35,29 @@ class PessoaSerializer(
     cadastrada_por_nome = (
         serializers.SerializerMethodField()
     )
+def validate_cep(
+    self,
+    value,
+):
+    cep = "".join(
+        filter(
+            str.isdigit,
+            value or "",
+        )
+    )
+
+    if cep and len(cep) != 8:
+        raise serializers.ValidationError(
+            "CEP deve conter 8 números."
+        )
+
+    if not cep:
+        return ""
+
+    return (
+        f"{cep[:5]}-"
+        f"{cep[5:]}"
+      )
 
     class Meta:
         model = Pessoa
@@ -51,6 +74,7 @@ class PessoaSerializer(
             "municipio_eleitoral",
 
             "telefone",
+             "cep",
 
             "regiao",
             "regiao_nome",

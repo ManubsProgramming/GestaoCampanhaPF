@@ -111,7 +111,11 @@ class Pessoa(models.Model):
         max_length=20,
         blank=True,
     )
-
+    cep = models.CharField(
+    max_length=9,
+    blank=True,
+    default="",
+    )
     regiao = models.ForeignKey(
         Regiao,
         on_delete=models.PROTECT,
