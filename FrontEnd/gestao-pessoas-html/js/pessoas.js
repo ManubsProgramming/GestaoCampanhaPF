@@ -1266,47 +1266,91 @@ logoutButton?.addEventListener(
 
 async function iniciarPagina() {
   try {
+    /*
+     * =========================
+     * USUÁRIO
+     * =========================
+     */
+
     usuarioAtual =
-      await buscarUsuarioLogado()
+      await buscarUsuarioLogado();
 
     if (!usuarioAtual) {
-      throw new Error(
-        "Usuário não autenticado."
-      )
+      limparSessao();
+
+      window.location.href =
+        "index.html";
+
+      return;
     }
 
     preencherUsuario(
       usuarioAtual
-    )
+    );
 
-    await carregarPessoas()
+
+    /*
+     * =========================
+     * PESSOAS
+     * =========================
+     */
+
+    try {
+      await carregarPessoas();
+
+    } catch (error) {
+      console.error(
+        "Erro ao carregar pessoas:",
+        error
+      );
+
+      await mostrarAviso({
+        title:
+          "Não foi possível carregar",
+
+        message:
+          "Não foi possível carregar a lista de pessoas cadastradas. Tente atualizar a página.",
+
+        type:
+          "warning"
+      });
+    }
+
+
+    /*
+     * =========================
+     * LIBERA A PÁGINA
+     * =========================
+     */
 
     document.body.classList.remove(
       "auth-loading"
-    )
+    );
 
     document.body.classList.add(
       "auth-ready"
-    )
+    );
 
     if (window.lucide) {
-      window.lucide.createIcons()
+      window.lucide.createIcons();
     }
+
   } catch (error) {
     console.error(
-      "Erro ao iniciar página:",
+      "Erro de autenticação:",
       error
-    )
+    );
 
-    if (
-      typeof limparSessao ===
-      "function"
-    ) {
-      limparSessao()
-    }
+    /*
+     * Só limpa a sessão se
+     * realmente não conseguiu
+     * identificar o usuário.
+     */
+
+    limparSessao();
 
     window.location.href =
-      "index.html"
+      "index.html";
   }
 }
 
@@ -1314,4 +1358,4 @@ async function iniciarPagina() {
 document.addEventListener(
   "DOMContentLoaded",
   iniciarPagina
-)
+);

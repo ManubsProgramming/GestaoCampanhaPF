@@ -1,111 +1,106 @@
 const reportPeriod =
-  document.querySelector("#report-period")
+  document.querySelector("#report-period");
 
 const reportStartDate =
-  document.querySelector("#report-start-date")
+  document.querySelector("#report-start-date");
 
 const reportEndDate =
-  document.querySelector("#report-end-date")
+  document.querySelector("#report-end-date");
 
 const startDateField =
-  document.querySelector("#start-date-field")
+  document.querySelector("#start-date-field");
 
 const endDateField =
-  document.querySelector("#end-date-field")
+  document.querySelector("#end-date-field");
 
 const reportRegion =
-  document.querySelector("#report-region")
+  document.querySelector("#report-region");
 
 const reportNeighborhood =
-  document.querySelector("#report-neighborhood")
+  document.querySelector("#report-neighborhood");
 
 const reportStreet =
-  document.querySelector("#report-street")
+  document.querySelector("#report-street");
 
 const reportUser =
-  document.querySelector("#report-user")
+  document.querySelector("#report-user");
 
 const reportSearchInput =
-  document.querySelector("#report-search-input")
-
+  document.querySelector("#report-search-input");
 
 const reportTableBody =
-  document.querySelector("#report-table-body")
+  document.querySelector("#report-table-body");
 
 const reportVisibleTotal =
-  document.querySelector("#report-visible-total")
+  document.querySelector("#report-visible-total");
 
 const reportEmptyState =
-  document.querySelector("#report-empty-state")
-
+  document.querySelector("#report-empty-state");
 
 const reportTotal =
-  document.querySelector("#report-total")
+  document.querySelector("#report-total");
 
 const reportNeighborhoodTotal =
   document.querySelector(
     "#report-neighborhood-total"
-  )
+  );
 
 const reportStreetTotal =
   document.querySelector(
     "#report-street-total"
-  )
+  );
 
 const reportUserTotal =
   document.querySelector(
     "#report-user-total"
-  )
-
+  );
 
 const localityChart =
   document.querySelector(
     "#report-locality-chart"
-  )
+  );
 
 const userChart =
   document.querySelector(
     "#report-user-chart"
-  )
-
+  );
 
 const clearReportFilters =
   document.querySelector(
     "#clear-report-filters"
-  )
+  );
 
 const exportExcelButton =
-  document.querySelector("#export-excel")
+  document.querySelector("#export-excel");
 
 const exportPdfButton =
-  document.querySelector("#export-pdf")
-
+  document.querySelector("#export-pdf");
 
 const sidebar =
-  document.querySelector("#sidebar")
+  document.querySelector("#sidebar");
 
 const menuOverlay =
-  document.querySelector("#menu-overlay")
+  document.querySelector("#menu-overlay");
 
 const openMenuButton =
-  document.querySelector("#open-menu")
+  document.querySelector("#open-menu");
 
 const closeMenuButton =
-  document.querySelector("#close-menu")
+  document.querySelector("#close-menu");
 
 const loggedUser =
-  document.querySelector("#logged-user")
+  document.querySelector("#logged-user");
 
 
-let regioes = []
-let localidades = []
-let ruas = []
-let usuarios = []
+let regioes = [];
+let localidades = [];
+let ruas = [];
+let usuarios = [];
 
-let pessoas = []
-let relatorio = null
+let pessoas = [];
+let relatorio = null;
 
-let usuarioAtual = null
+let usuarioAtual = null;
 
 
 /* =========================================
@@ -114,10 +109,10 @@ let usuarioAtual = null
 
 function obterLista(dados) {
   if (Array.isArray(dados)) {
-    return dados
+    return dados;
   }
 
-  return dados?.results || []
+  return dados?.results || [];
 }
 
 
@@ -129,7 +124,7 @@ function normalizar(texto) {
       ""
     )
     .toLowerCase()
-    .trim()
+    .trim();
 }
 
 
@@ -139,37 +134,37 @@ function escaparHtml(valor) {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;")
+    .replaceAll("'", "&#039;");
 }
 
 
 function formatarDataISO(data) {
   const ano =
-    data.getFullYear()
+    data.getFullYear();
 
   const mes =
     String(
       data.getMonth() + 1
-    ).padStart(2, "0")
+    ).padStart(2, "0");
 
   const dia =
     String(
       data.getDate()
-    ).padStart(2, "0")
+    ).padStart(2, "0");
 
-  return `${ano}-${mes}-${dia}`
+  return `${ano}-${mes}-${dia}`;
 }
 
 
 function formatarData(data) {
   if (!data) {
-    return "-"
+    return "-";
   }
 
   return new Date(data)
     .toLocaleDateString(
       "pt-BR"
-    )
+    );
 }
 
 
@@ -185,7 +180,7 @@ function obterNomeUsuario(usuario) {
       .trim() ||
     usuario?.username ||
     "Usuário"
-  )
+  );
 }
 
 
@@ -194,22 +189,22 @@ function obterIniciais(nome) {
     String(nome || "")
       .trim()
       .split(" ")
-      .filter(Boolean)
+      .filter(Boolean);
 
   if (!partes.length) {
-    return "AD"
+    return "AD";
   }
 
   if (partes.length === 1) {
     return partes[0]
       .slice(0, 2)
-      .toUpperCase()
+      .toUpperCase();
   }
 
   return (
     partes[0][0] +
     partes[partes.length - 1][0]
-  ).toUpperCase()
+  ).toUpperCase();
 }
 
 
@@ -218,43 +213,43 @@ function obterIniciais(nome) {
 ========================================= */
 
 function abrirMenu() {
-  sidebar?.classList.add("open")
+  sidebar?.classList.add("open");
 
   menuOverlay?.classList.add(
     "visible"
-  )
+  );
 
   document.body.style.overflow =
-    "hidden"
+    "hidden";
 }
 
 
 function fecharMenu() {
-  sidebar?.classList.remove("open")
+  sidebar?.classList.remove("open");
 
   menuOverlay?.classList.remove(
     "visible"
-  )
+  );
 
   document.body.style.overflow =
-    ""
+    "";
 }
 
 
 openMenuButton?.addEventListener(
   "click",
   abrirMenu
-)
+);
 
 closeMenuButton?.addEventListener(
   "click",
   fecharMenu
-)
+);
 
 menuOverlay?.addEventListener(
   "click",
   fecharMenu
-)
+);
 
 
 /* =========================================
@@ -265,17 +260,15 @@ function preencherUsuarioLogado(
   usuario
 ) {
   const nome =
-    obterNomeUsuario(usuario)
+    obterNomeUsuario(usuario);
 
   const iniciais =
-    obterIniciais(nome)
-
+    obterIniciais(nome);
 
   if (loggedUser) {
     loggedUser.textContent =
-      nome
+      nome;
   }
-
 
   document
     .querySelectorAll(
@@ -283,9 +276,8 @@ function preencherUsuarioLogado(
     )
     .forEach(function (elemento) {
       elemento.textContent =
-        nome
-    })
-
+        nome;
+    });
 
   document
     .querySelectorAll(
@@ -293,8 +285,8 @@ function preencherUsuarioLogado(
     )
     .forEach(function (elemento) {
       elemento.textContent =
-        iniciais
-    })
+        iniciais;
+    });
 }
 
 
@@ -313,8 +305,7 @@ async function carregarOpcoes() {
     apiFetch("/localidades/"),
     apiFetch("/ruas/"),
     apiFetch("/usuarios/"),
-  ])
-
+  ]);
 
   if (
     !respostaRegioes.ok ||
@@ -324,35 +315,33 @@ async function carregarOpcoes() {
   ) {
     throw new Error(
       "Não foi possível carregar os filtros do relatório."
-    )
+    );
   }
-
 
   regioes =
     obterLista(
       await respostaRegioes.json()
-    )
+    );
 
   localidades =
     obterLista(
       await respostaLocalidades.json()
-    )
+    );
 
   ruas =
     obterLista(
       await respostaRuas.json()
-    )
+    );
 
   usuarios =
     obterLista(
       await respostaUsuarios.json()
-    )
+    );
 
-
-  preencherRegioes()
-  preencherLocalidades()
-  preencherRuas()
-  preencherUsuarios()
+  preencherRegioes();
+  preencherLocalidades();
+  preencherRuas();
+  preencherUsuarios();
 }
 
 
@@ -365,27 +354,26 @@ function preencherRegioes() {
     <option value="">
       Todas as regiões
     </option>
-  `
-
+  `;
 
   regioes.forEach(
     function (regiao) {
       const option =
         document.createElement(
           "option"
-        )
+        );
 
       option.value =
-        regiao.id
+        regiao.id;
 
       option.textContent =
-        regiao.nome
+        regiao.nome;
 
       reportRegion.appendChild(
         option
-      )
+      );
     }
-  )
+  );
 }
 
 
@@ -395,8 +383,7 @@ function preencherRegioes() {
 
 function preencherLocalidades() {
   const regiaoId =
-    reportRegion.value
-
+    reportRegion.value;
 
   const lista =
     localidades.filter(
@@ -407,31 +394,28 @@ function preencherLocalidades() {
             localidade.regiao
           ) ===
           Number(regiaoId)
-        )
+        );
       }
-    )
-
+    );
 
   const valorAtual =
-    reportNeighborhood.value
-
+    reportNeighborhood.value;
 
   reportNeighborhood.innerHTML = `
     <option value="">
       Todas as localidades
     </option>
-  `
-
+  `;
 
   lista.forEach(
     function (localidade) {
       const option =
         document.createElement(
           "option"
-        )
+        );
 
       option.value =
-        localidade.id
+        localidade.id;
 
       option.textContent =
         `${
@@ -439,25 +423,23 @@ function preencherLocalidades() {
         } (${
           localidade.tipo_nome ||
           localidade.tipo
-        })`
+        })`;
 
       reportNeighborhood
-        .appendChild(option)
+        .appendChild(option);
     }
-  )
-
+  );
 
   const aindaExiste =
     lista.some(
       item =>
         String(item.id) ===
         String(valorAtual)
-    )
-
+    );
 
   if (aindaExiste) {
     reportNeighborhood.value =
-      valorAtual
+      valorAtual;
   }
 }
 
@@ -468,14 +450,12 @@ function preencherLocalidades() {
 
 function preencherRuas() {
   const localidadeId =
-    reportNeighborhood.value
+    reportNeighborhood.value;
 
   const regiaoId =
-    reportRegion.value
+    reportRegion.value;
 
-
-  let lista = ruas
-
+  let lista = ruas;
 
   if (localidadeId) {
     lista =
@@ -483,7 +463,7 @@ function preencherRuas() {
         rua =>
           Number(rua.localidade) ===
           Number(localidadeId)
-      )
+      );
 
   } else if (regiaoId) {
     lista =
@@ -491,39 +471,35 @@ function preencherRuas() {
         rua =>
           Number(rua.regiao_id) ===
           Number(regiaoId)
-      )
+      );
   }
 
-
   const valorAtual =
-    reportStreet.value
-
+    reportStreet.value;
 
   reportStreet.innerHTML = `
     <option value="">
       Todas as ruas
     </option>
-  `
-
+  `;
 
   lista.forEach(
     function (rua) {
       const option =
         document.createElement(
           "option"
-        )
+        );
 
       option.value =
-        rua.id
+        rua.id;
 
       option.textContent =
-        rua.nome
+        rua.nome;
 
       reportStreet
-        .appendChild(option)
+        .appendChild(option);
     }
-  )
-
+  );
 
   if (
     lista.some(
@@ -533,7 +509,7 @@ function preencherRuas() {
     )
   ) {
     reportStreet.value =
-      valorAtual
+      valorAtual;
   }
 }
 
@@ -547,8 +523,7 @@ function preencherUsuarios() {
     <option value="">
       Todos os usuários
     </option>
-  `
-
+  `;
 
   usuarios
     .filter(
@@ -556,7 +531,7 @@ function preencherUsuarios() {
         return (
           usuario.tipo ===
           "CADASTRADOR"
-        )
+        );
       }
     )
     .forEach(
@@ -564,21 +539,21 @@ function preencherUsuarios() {
         const option =
           document.createElement(
             "option"
-          )
+          );
 
         option.value =
-          usuario.id
+          usuario.id;
 
         option.textContent =
           obterNomeUsuario(
             usuario
-          )
+          );
 
         reportUser.appendChild(
           option
-        )
+        );
       }
-    )
+    );
 }
 
 
@@ -588,16 +563,14 @@ function preencherUsuarios() {
 
 function obterDatasPeriodo() {
   const periodo =
-    reportPeriod.value
-
+    reportPeriod.value;
 
   if (!periodo) {
     return {
       inicio: "",
       fim: "",
-    }
+    };
   }
-
 
   if (
     periodo ===
@@ -609,33 +582,30 @@ function obterDatasPeriodo() {
 
       fim:
         reportEndDate.value,
-    }
+    };
   }
 
-
   const hoje =
-    new Date()
+    new Date();
 
   const fim =
-    formatarDataISO(hoje)
-
+    formatarDataISO(hoje);
 
   if (periodo === "hoje") {
     return {
       inicio: fim,
       fim,
-    }
+    };
   }
-
 
   if (periodo === "semana") {
     const inicio =
-      new Date(hoje)
+      new Date(hoje);
 
     inicio.setDate(
       hoje.getDate() -
       hoje.getDay()
-    )
+    );
 
     return {
       inicio:
@@ -644,9 +614,8 @@ function obterDatasPeriodo() {
         ),
 
       fim,
-    }
+    };
   }
-
 
   if (periodo === "mes") {
     const inicio =
@@ -654,7 +623,7 @@ function obterDatasPeriodo() {
         hoje.getFullYear(),
         hoje.getMonth(),
         1
-      )
+      );
 
     return {
       inicio:
@@ -663,14 +632,13 @@ function obterDatasPeriodo() {
         ),
 
       fim,
-    }
+    };
   }
-
 
   return {
     inicio: "",
     fim: "",
-  }
+  };
 }
 
 
@@ -680,35 +648,31 @@ function obterDatasPeriodo() {
 
 function montarParametros() {
   const params =
-    new URLSearchParams()
+    new URLSearchParams();
 
   const datas =
-    obterDatasPeriodo()
-
+    obterDatasPeriodo();
 
   if (datas.inicio) {
     params.set(
       "data_inicio",
       datas.inicio
-    )
+    );
   }
-
 
   if (datas.fim) {
     params.set(
       "data_fim",
       datas.fim
-    )
+    );
   }
-
 
   if (reportRegion.value) {
     params.set(
       "regiao",
       reportRegion.value
-    )
+    );
   }
-
 
   if (
     reportNeighborhood.value
@@ -716,27 +680,24 @@ function montarParametros() {
     params.set(
       "localidade",
       reportNeighborhood.value
-    )
+    );
   }
-
 
   if (reportStreet.value) {
     params.set(
       "rua",
       reportStreet.value
-    )
+    );
   }
-
 
   if (reportUser.value) {
     params.set(
       "cadastrada_por",
       reportUser.value
-    )
+    );
   }
 
-
-  return params
+  return params;
 }
 
 
@@ -746,57 +707,137 @@ function montarParametros() {
 
 async function carregarRelatorio() {
   const params =
-    montarParametros()
+    montarParametros();
 
   const query =
-    params.toString()
+    params.toString();
 
 
-  const [
-    respostaRelatorio,
-    respostaPessoas,
-  ] = await Promise.all([
-    apiFetch(
+  /*
+   * =========================
+   * RELATÓRIO PRINCIPAL
+   * =========================
+   */
+
+  const respostaRelatorio =
+    await apiFetch(
       `/relatorios/cadastros/${
-        query ? `?${query}` : ""
+        query
+          ? `?${query}`
+          : ""
       }`
-    ),
-
-    apiFetch(
-      `/pessoas/${
-        query ? `?${query}` : ""
-      }`
-    ),
-  ])
+    );
 
 
-  if (!respostaRelatorio.ok) {
+  if (
+    !respostaRelatorio.ok
+  ) {
+    console.error(
+      "Erro relatório:",
+      respostaRelatorio.status
+    );
+
     throw new Error(
       "Não foi possível carregar o relatório."
-    )
-  }
-
-
-  if (!respostaPessoas.ok) {
-    throw new Error(
-      "Não foi possível carregar o relatório detalhado."
-    )
+    );
   }
 
 
   relatorio =
-    await respostaRelatorio.json()
+    await respostaRelatorio.json();
 
 
-  pessoas =
-    obterLista(
-      await respostaPessoas.json()
-    )
+  /*
+   * =========================
+   * LISTA DETALHADA
+   * =========================
+   *
+   * A falha desta consulta
+   * NÃO derruba mais o relatório.
+   */
+
+  let respostaPessoas =
+    await apiFetch(
+      `/pessoas/${
+        query
+          ? `?${query}`
+          : ""
+      }`
+    );
 
 
-  atualizarResumo()
-  renderizarGraficos()
-  filtrarPesquisa()
+  /*
+   * Se a API de pessoas não
+   * aceitar algum parâmetro do
+   * relatório, tenta novamente
+   * sem filtros.
+   */
+
+  if (
+    !respostaPessoas.ok
+  ) {
+    console.warn(
+      "Consulta /pessoas/ com filtros falhou.",
+      "Status:",
+      respostaPessoas.status
+    );
+
+    respostaPessoas =
+      await apiFetch(
+        "/pessoas/"
+      );
+  }
+
+
+  if (
+    respostaPessoas.ok
+  ) {
+    try {
+      const dadosPessoas =
+        await respostaPessoas.json();
+
+      pessoas =
+        obterLista(
+          dadosPessoas
+        );
+
+    } catch (error) {
+      console.error(
+        "Erro ao interpretar pessoas:",
+        error
+      );
+
+      pessoas = [];
+    }
+
+  } else {
+    console.error(
+      "Não foi possível carregar /pessoas/.",
+      "Status:",
+      respostaPessoas.status
+    );
+
+    /*
+     * Não mostramos modal aqui.
+     * O relatório principal
+     * continua funcionando.
+     */
+
+    pessoas = [];
+  }
+
+
+  /*
+   * =========================
+   * ATUALIZA A TELA
+   * =========================
+   */
+
+  atualizarResumo();
+
+  renderizarGraficos();
+
+  filtrarPesquisa();
 }
 
 
@@ -808,37 +849,33 @@ function atualizarResumo() {
   const localidadesComCadastro =
     relatorio
       ?.cadastros_por_localidade
-      ?.length || 0
+      ?.length || 0;
 
   const ruasComCadastro =
     relatorio
       ?.cadastros_por_rua
-      ?.length || 0
+      ?.length || 0;
 
   const usuariosComCadastro =
     relatorio
       ?.pessoas_cadastradas_por_usuario
-      ?.length || 0
-
+      ?.length || 0;
 
   reportTotal.textContent =
     relatorio
       ?.resumo
       ?.total_pessoas_cadastradas ||
-    0
-
+    0;
 
   reportNeighborhoodTotal
     .textContent =
-    localidadesComCadastro
-
+    localidadesComCadastro;
 
   reportStreetTotal.textContent =
-    ruasComCadastro
-
+    ruasComCadastro;
 
   reportUserTotal.textContent =
-    usuariosComCadastro
+    usuariosComCadastro;
 }
 
 
@@ -852,19 +889,17 @@ function criarGrafico(
   obterNome,
   classeCor
 ) {
-  container.innerHTML = ""
-
+  container.innerHTML = "";
 
   if (!dados?.length) {
     container.innerHTML = `
       <p>
         Nenhum dado encontrado.
       </p>
-    `
+    `;
 
-    return
+    return;
   }
-
 
   const maior =
     Math.max(
@@ -872,15 +907,14 @@ function criarGrafico(
         item =>
           Number(item.total || 0)
       )
-    )
-
+    );
 
   dados
     .slice(0, 10)
     .forEach(
       function (item) {
         const total =
-          Number(item.total || 0)
+          Number(item.total || 0);
 
         const percentual =
           maior
@@ -890,17 +924,15 @@ function criarGrafico(
                   maior
                 ) * 100
               )
-            : 0
-
+            : 0;
 
         const elemento =
           document.createElement(
             "div"
-          )
+          );
 
         elemento.className =
-          "report-bar-item"
-
+          "report-bar-item";
 
         elemento.innerHTML = `
           <div>
@@ -930,14 +962,13 @@ function criarGrafico(
               "
             ></div>
           </div>
-        `
-
+        `;
 
         container.appendChild(
           elemento
-        )
+        );
       }
-    )
+    );
 }
 
 
@@ -954,15 +985,15 @@ function renderizarGraficos() {
         item.localidade__tipo ===
         "COMUNIDADE"
           ? "Comunidade"
-          : "Bairro"
+          : "Bairro";
 
       return (
         `${item.localidade__nome} - ${tipo}`
-      )
+      );
     },
 
     "blue"
-  )
+  );
 
 
   criarGrafico(
@@ -980,17 +1011,17 @@ function renderizarGraficos() {
         ]
           .filter(Boolean)
           .join(" ")
-          .trim()
+          .trim();
 
       return (
         nome ||
         item.cadastrada_por__username ||
         "Usuário"
-      )
+      );
     },
 
     "green"
-  )
+  );
 }
 
 
@@ -1000,28 +1031,24 @@ function renderizarGraficos() {
 
 function renderizarPessoas(lista) {
   reportTableBody.innerHTML =
-    ""
-
+    "";
 
   reportVisibleTotal.textContent =
-    lista.length
-
+    lista.length;
 
   reportEmptyState
     .classList
     .toggle(
       "visible",
       lista.length === 0
-    )
-
+    );
 
   lista.forEach(
     function (pessoa) {
       const linha =
         document.createElement(
           "tr"
-        )
-
+        );
 
       linha.innerHTML = `
         <td data-label="Nome">
@@ -1067,13 +1094,12 @@ function renderizarPessoas(lista) {
             pessoa.criado_em
           )}
         </td>
-      `
-
+      `;
 
       reportTableBody
-        .appendChild(linha)
+        .appendChild(linha);
     }
-  )
+  );
 }
 
 
@@ -1085,17 +1111,15 @@ function filtrarPesquisa() {
   const busca =
     normalizar(
       reportSearchInput.value
-    )
-
+    );
 
   if (!busca) {
     renderizarPessoas(
       pessoas
-    )
+    );
 
-    return
+    return;
   }
-
 
   const filtradas =
     pessoas.filter(
@@ -1109,14 +1133,13 @@ function filtrarPesquisa() {
           ].join(" ")
         ).includes(
           busca
-        )
+        );
       }
-    )
-
+    );
 
   renderizarPessoas(
     filtradas
-  )
+  );
 }
 
 
@@ -1131,13 +1154,16 @@ async function aplicarFiltros() {
     ) {
       SystemModal.loading.show(
         "Atualizando relatório..."
-      )
+      );
     }
 
-    await carregarRelatorio()
+    await carregarRelatorio();
 
   } catch (error) {
-    console.error(error)
+    console.error(
+      "Erro ao aplicar filtros:",
+      error
+    );
 
     if (window.SystemModal) {
       await SystemModal.alert({
@@ -1149,13 +1175,13 @@ async function aplicarFiltros() {
 
         type:
           "warning",
-      })
+      });
     }
 
   } finally {
     window.SystemModal
       ?.loading
-      .hide()
+      .hide();
   }
 }
 
@@ -1165,61 +1191,58 @@ reportPeriod?.addEventListener(
   function () {
     const personalizado =
       reportPeriod.value ===
-      "personalizado"
-
+      "personalizado";
 
     startDateField.classList.toggle(
       "hidden",
       !personalizado
-    )
-
+    );
 
     endDateField.classList.toggle(
       "hidden",
       !personalizado
-    )
-
+    );
 
     if (!personalizado) {
       reportStartDate.value =
-        ""
+        "";
 
       reportEndDate.value =
-        ""
+        "";
 
-      aplicarFiltros()
+      aplicarFiltros();
     }
   }
-)
+);
 
 
 reportStartDate?.addEventListener(
   "change",
   aplicarFiltros
-)
+);
 
 
 reportEndDate?.addEventListener(
   "change",
   aplicarFiltros
-)
+);
 
 
 reportRegion?.addEventListener(
   "change",
   async function () {
     reportNeighborhood.value =
-      ""
+      "";
 
     reportStreet.value =
-      ""
+      "";
 
-    preencherLocalidades()
-    preencherRuas()
+    preencherLocalidades();
+    preencherRuas();
 
-    await aplicarFiltros()
+    await aplicarFiltros();
   }
-)
+);
 
 
 reportNeighborhood
@@ -1227,32 +1250,32 @@ reportNeighborhood
     "change",
     async function () {
       reportStreet.value =
-        ""
+        "";
 
-      preencherRuas()
+      preencherRuas();
 
-      await aplicarFiltros()
+      await aplicarFiltros();
     }
-  )
+  );
 
 
 reportStreet?.addEventListener(
   "change",
   aplicarFiltros
-)
+);
 
 
 reportUser?.addEventListener(
   "change",
   aplicarFiltros
-)
+);
 
 
 reportSearchInput
   ?.addEventListener(
     "input",
     filtrarPesquisa
-  )
+  );
 
 
 /* =========================================
@@ -1264,46 +1287,43 @@ clearReportFilters
     "click",
     async function () {
       reportPeriod.value =
-        ""
+        "";
 
       reportStartDate.value =
-        ""
+        "";
 
       reportEndDate.value =
-        ""
+        "";
 
       reportRegion.value =
-        ""
+        "";
 
       reportNeighborhood.value =
-        ""
+        "";
 
       reportStreet.value =
-        ""
+        "";
 
       reportUser.value =
-        ""
+        "";
 
       reportSearchInput.value =
-        ""
-
+        "";
 
       startDateField
         .classList
-        .add("hidden")
+        .add("hidden");
 
       endDateField
         .classList
-        .add("hidden")
+        .add("hidden");
 
+      preencherLocalidades();
+      preencherRuas();
 
-      preencherLocalidades()
-      preencherRuas()
-
-
-      await aplicarFiltros()
+      await aplicarFiltros();
     }
-  )
+  );
 
 
 /* =========================================
@@ -1315,8 +1335,7 @@ async function baixarArquivo(
   nomePadrao
 ) {
   const token =
-    getAccessToken()
-
+    getAccessToken();
 
   const response =
     await fetch(
@@ -1329,74 +1348,62 @@ async function baixarArquivo(
             }
           : {},
       }
-    )
-
+    );
 
   if (!response.ok) {
     throw new Error(
       "Não foi possível gerar o arquivo."
-    )
+    );
   }
 
-
   const blob =
-    await response.blob()
-
+    await response.blob();
 
   const contentDisposition =
     response.headers.get(
       "Content-Disposition"
-    )
-
+    );
 
   let nomeArquivo =
-    nomePadrao
-
+    nomePadrao;
 
   const resultado =
     contentDisposition
       ?.match(
         /filename="?([^"]+)"?/
-      )
-
+      );
 
   if (resultado?.[1]) {
     nomeArquivo =
-      resultado[1]
+      resultado[1];
   }
-
 
   const url =
     URL.createObjectURL(
       blob
-    )
-
+    );
 
   const link =
     document.createElement(
       "a"
-    )
-
+    );
 
   link.href =
-    url
+    url;
 
   link.download =
-    nomeArquivo
-
+    nomeArquivo;
 
   document.body.appendChild(
     link
-  )
+  );
 
-
-  link.click()
-  link.remove()
-
+  link.click();
+  link.remove();
 
   URL.revokeObjectURL(
     url
-  )
+  );
 }
 
 
@@ -1410,29 +1417,29 @@ exportExcelButton
     async function () {
       try {
         const params =
-          montarParametros()
+          montarParametros();
 
         const query =
-          params.toString()
+          params.toString();
 
+        SystemModal
+          ?.loading
+          .show(
+            "Gerando arquivo Excel..."
+          );
 
-        SystemModal?.loading.show(
-          "Gerando arquivo Excel..."
-        )
-
-
-      await baixarArquivo(
-         `/relatorios/exportar/excel/${
-          query
+        await baixarArquivo(
+          `/relatorios/exportar/excel/${
+            query
               ? `?${query}`
-            : ""
-           }`,
+              : ""
+          }`,
 
           "relatorio_pessoas_cadastradas.xlsx"
-        )
+        );
 
       } catch (error) {
-        console.error(error)
+        console.error(error);
 
         if (window.SystemModal) {
           await SystemModal.alert({
@@ -1444,16 +1451,16 @@ exportExcelButton
 
             type:
               "warning",
-          })
+          });
         }
 
       } finally {
         SystemModal
           ?.loading
-          .hide()
+          .hide();
       }
     }
-  )
+  );
 
 
 /* =========================================
@@ -1466,16 +1473,16 @@ exportPdfButton
     async function () {
       try {
         const params =
-          montarParametros()
+          montarParametros();
 
         const query =
-          params.toString()
+          params.toString();
 
-
-        SystemModal?.loading.show(
-          "Gerando arquivo PDF..."
-        )
-
+        SystemModal
+          ?.loading
+          .show(
+            "Gerando arquivo PDF..."
+          );
 
         await baixarArquivo(
           `/relatorios/exportar/pdf/${
@@ -1485,10 +1492,10 @@ exportPdfButton
           }`,
 
           "relatorio_pessoas_cadastradas.pdf"
-        )
+        );
 
       } catch (error) {
-        console.error(error)
+        console.error(error);
 
         if (window.SystemModal) {
           await SystemModal.alert({
@@ -1500,16 +1507,16 @@ exportPdfButton
 
             type:
               "warning",
-          })
+          });
         }
 
       } finally {
         SystemModal
           ?.loading
-          .hide()
+          .hide();
       }
     }
-  )
+  );
 
 
 /* =========================================
@@ -1518,56 +1525,158 @@ exportPdfButton
 
 async function iniciarPagina() {
   try {
-    usuarioAtual =
-      await buscarUsuarioLogado()
 
+    /*
+     * =========================
+     * AUTENTICAÇÃO
+     * =========================
+     */
+
+    usuarioAtual =
+      await buscarUsuarioLogado();
+
+
+    if (!usuarioAtual) {
+      console.warn(
+        "Usuário não autenticado."
+      );
+
+      limparSessao();
+
+      window.location.href =
+        "index.html";
+
+      return;
+    }
+
+
+    /*
+     * Relatórios são exclusivos
+     * para administrador.
+     */
 
     if (
-      !usuarioAtual ||
       usuarioAtual.tipo !==
-        "ADMINISTRADOR"
+      "ADMINISTRADOR"
     ) {
       window.location.href =
-        "pessoas.html"
+        "pessoas.html";
 
-      return
+      return;
     }
 
 
     preencherUsuarioLogado(
       usuarioAtual
-    )
+    );
 
 
-    await carregarOpcoes()
+    /*
+     * =========================
+     * FILTROS
+     * =========================
+     */
 
-    await carregarRelatorio()
+    try {
+      await carregarOpcoes();
+
+    } catch (error) {
+      console.error(
+        "Erro ao carregar opções:",
+        error
+      );
+
+      /*
+       * Não desloga o usuário
+       * por erro nos filtros.
+       */
+
+      if (window.SystemModal) {
+        await SystemModal.alert({
+          title:
+            "Aviso",
+
+          message:
+            "Não foi possível carregar todos os filtros do relatório.",
+
+          type:
+            "warning",
+        });
+      }
+    }
+
+
+    /*
+     * =========================
+     * RELATÓRIO
+     * =========================
+     */
+
+    try {
+      await carregarRelatorio();
+
+    } catch (error) {
+      console.error(
+        "Erro ao carregar relatório:",
+        error
+      );
+
+      /*
+       * Também não limpa sessão.
+       */
+
+      if (window.SystemModal) {
+        await SystemModal.alert({
+          title:
+            "Não foi possível carregar",
+
+          message:
+            error.message,
+
+          type:
+            "warning",
+        });
+      }
+    }
+
+
+    /*
+     * =========================
+     * PÁGINA PRONTA
+     * =========================
+     */
+
+    document.body.classList.remove(
+      "auth-loading"
+    );
+
+    document.body.classList.add(
+      "auth-ready"
+    );
 
 
     if (window.lucide) {
-      window.lucide.createIcons()
+      window.lucide.createIcons();
     }
 
 
   } catch (error) {
+
+    /*
+     * Este catch fica reservado
+     * para problema real de
+     * autenticação/inicialização.
+     */
+
     console.error(
-      "Erro ao iniciar relatórios:",
+      "Erro de autenticação:",
       error
-    )
+    );
 
+    limparSessao();
 
-    if (window.SystemModal) {
-      await SystemModal.alert({
-        title:
-          "Não foi possível carregar",
-
-        message:
-          error.message,
-
-        type:
-          "warning",
-      })
-    }
+    window.location.href =
+      "index.html";
   }
 }
 
@@ -1575,4 +1684,4 @@ async function iniciarPagina() {
 document.addEventListener(
   "DOMContentLoaded",
   iniciarPagina
-)
+);
