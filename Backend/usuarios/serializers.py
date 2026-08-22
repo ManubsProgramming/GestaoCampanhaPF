@@ -1,25 +1,40 @@
+from django.contrib.auth.password_validation import (
+    validate_password,
+)
 from rest_framework import serializers
 
 from .models import Usuario
 
 
-class UsuarioSerializer(serializers.ModelSerializer):
-    nome_completo = serializers.SerializerMethodField()
-
-    total_cadastros = serializers.IntegerField(
-        read_only=True,
+class UsuarioSerializer(
+    serializers.ModelSerializer
+):
+    nome_completo = (
+        serializers.SerializerMethodField()
     )
 
-    cadastros_hoje = serializers.IntegerField(
-        read_only=True,
+    total_cadastros = (
+        serializers.IntegerField(
+            read_only=True,
+        )
     )
 
-    cadastros_semana = serializers.IntegerField(
-        read_only=True,
+    cadastros_hoje = (
+        serializers.IntegerField(
+            read_only=True,
+        )
     )
 
-    cadastros_mes = serializers.IntegerField(
-        read_only=True,
+    cadastros_semana = (
+        serializers.IntegerField(
+            read_only=True,
+        )
+    )
+
+    cadastros_mes = (
+        serializers.IntegerField(
+            read_only=True,
+        )
     )
 
     class Meta:
@@ -27,6 +42,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
 
         fields = [
             "id",
+            "public_id",
             "username",
             "email",
             "first_name",
@@ -37,30 +53,30 @@ class UsuarioSerializer(serializers.ModelSerializer):
             "ativo",
             "is_active",
             "is_staff",
-
             "total_cadastros",
             "cadastros_hoje",
             "cadastros_semana",
             "cadastros_mes",
-
             "criado_em",
             "atualizado_em",
         ]
 
         read_only_fields = [
             "id",
+            "public_id",
             "is_staff",
-
             "total_cadastros",
             "cadastros_hoje",
             "cadastros_semana",
             "cadastros_mes",
-
             "criado_em",
             "atualizado_em",
         ]
 
-    def get_nome_completo(self, obj):
+    def get_nome_completo(
+        self,
+        obj,
+    ):
         return (
             obj.get_full_name()
             or obj.username
@@ -80,6 +96,7 @@ class UsuarioCriacaoSerializer(
 
         fields = [
             "id",
+            "public_id",
             "username",
             "email",
             "first_name",
@@ -91,9 +108,23 @@ class UsuarioCriacaoSerializer(
 
         read_only_fields = [
             "id",
+            "public_id",
         ]
 
-    def create(self, validated_data):
+    def validate_password(
+        self,
+        value,
+    ):
+        validate_password(
+            value
+        )
+
+        return value
+
+    def create(
+        self,
+        validated_data,
+    ):
         password = validated_data.pop(
             "password"
         )

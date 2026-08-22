@@ -15,6 +15,7 @@ from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(
@@ -72,6 +73,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "configuracoes",
+    "rest_framework_simplejwt.token_blacklist",
 ]
 MEDIA_URL = "/media/"
 
@@ -248,7 +250,11 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
     
 }
 SIMPLE_JWT = {

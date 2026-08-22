@@ -1,12 +1,19 @@
+import uuid
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
 class Usuario(AbstractUser):
-
     class Tipo(models.TextChoices):
         ADMINISTRADOR = "ADMINISTRADOR", "Administrador"
         CADASTRADOR = "CADASTRADOR", "Cadastrador"
+
+    public_id = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+    )
 
     tipo = models.CharField(
         max_length=20,
@@ -36,4 +43,7 @@ class Usuario(AbstractUser):
         verbose_name_plural = "Usuários"
 
     def __str__(self):
-        return self.get_full_name() or self.username
+        return (
+            self.get_full_name()
+            or self.username
+        )
