@@ -1,6 +1,9 @@
 from datetime import timedelta
 
-from django.db.models import Count, Q
+from django.db.models import (
+    Count,
+    Q,
+)
 from django.utils import timezone
 
 from rest_framework import (
@@ -8,23 +11,112 @@ from rest_framework import (
     status,
     viewsets,
 )
+from rest_framework.decorators import (
+    action,
+)
+from rest_framework.permissions import (
+    IsAuthenticated,
+)
+from rest_framework.response import (
+    Response,
+)
+from rest_framework.views import (
+    APIView,
+)
 
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import (
+    RefreshToken,
+)
 
-from auditoria.services import registrar_auditoria
+from auditoria.services import (
+    registrar_auditoria,
+)
 
 from .models import Usuario
-from .permissions import EhAdministrador
-
+from .permissions import (
+    EhAdministrador,
+)
 from .serializers import (
     UsuarioCriacaoSerializer,
     UsuarioSerializer,
 )
 
 
-class UsuarioViewSet(viewsets.ModelViewSet):
+class LogoutView(APIView):
+    permission_classes = [
+        IsAuthenticated
+    ]
+
+    def post(
+        self,
+        request,
+    ):
+        refresh_token = (
+            request.data.get(
+                "refresh"
+            )
+        )
+
+        if not refresh_token:
+            return Response(
+                {
+                    "detail":
+                        "Refresh token não informado."
+                },
+                status=(
+                    status
+                    .HTTP_400_BAD_REQUEST
+                ),
+            )
+
+        try:
+            token = RefreshToken(
+                refresh_token
+            )
+
+            token.blacklist()
+
+        except Exception:
+            return Response(
+                {
+                    "detail":
+                        "Refresh token inválido."
+                },
+                status=(
+                    status
+                    .HTTP_400_BAD_REQUEST
+                ),
+            )
+
+        registrar_auditoria(
+            request=request,
+            acao="LOGOUT",
+            entidade="Usuario",
+            entidade_id=(
+                request.user.id
+            ),
+            descricao=(
+                f"Usuário "
+                f"{request.user.username} "
+                f"encerrou a sessão."
+            ),
+        )
+
+        return Response(
+            {
+                "detail":
+                    "Logout realizado com sucesso."
+            },
+            status=(
+                status
+                .HTTP_200_OK
+            ),
+        )
+
+
+class UsuarioViewSet(
+    viewsets.ModelViewSet
+):
     permission_classes = [
         EhAdministrador
     ]
@@ -55,7 +147,9 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         "username",
     ]
 
-    def get_queryset(self):
+    def get_queryset(
+        self
+    ):
         agora = timezone.now()
 
         inicio_hoje = agora.replace(
@@ -67,11 +161,15 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 
         inicio_semana = (
             inicio_hoje
-            - timedelta(days=6)
+            - timedelta(
+                days=6
+            )
         )
 
-        inicio_mes = inicio_hoje.replace(
-            day=1
+        inicio_mes = (
+            inicio_hoje.replace(
+                day=1
+            )
         )
 
         return (
@@ -85,8 +183,9 @@ class UsuarioViewSet(viewsets.ModelViewSet):
                 cadastros_hoje=Count(
                     "pessoas_cadastradas",
                     filter=Q(
-                        pessoas_cadastradas__criado_em__gte=
-                        inicio_hoje
+                        pessoas_cadastradas__criado_em__gte=(
+                            inicio_hoje
+                        )
                     ),
                     distinct=True,
                 ),
@@ -94,8 +193,9 @@ class UsuarioViewSet(viewsets.ModelViewSet):
                 cadastros_semana=Count(
                     "pessoas_cadastradas",
                     filter=Q(
-                        pessoas_cadastradas__criado_em__gte=
-                        inicio_semana
+                        pessoas_cadastradas__criado_em__gte=(
+                            inicio_semana
+                        )
                     ),
                     distinct=True,
                 ),
@@ -103,8 +203,9 @@ class UsuarioViewSet(viewsets.ModelViewSet):
                 cadastros_mes=Count(
                     "pessoas_cadastradas",
                     filter=Q(
-                        pessoas_cadastradas__criado_em__gte=
-                        inicio_mes
+                        pessoas_cadastradas__criado_em__gte=(
+                            inicio_mes
+                        )
                     ),
                     distinct=True,
                 ),
@@ -115,8 +216,12 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             )
         )
 
-    def get_permissions(self):
-        if self.action == "me":
+    def get_permissions(
+        self
+    ):
+        if (
+            self.action == "me"
+        ):
             return [
                 IsAuthenticated()
             ]
@@ -125,8 +230,12 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             EhAdministrador()
         ]
 
-    def get_serializer_class(self):
-        if self.action == "create":
+    def get_serializer_class(
+        self
+    ):
+        if (
+            self.action == "create"
+        ):
             return (
                 UsuarioCriacaoSerializer
             )
@@ -138,7 +247,10 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         methods=["get"],
         url_path="me",
     )
-    def me(self, request):
+    def me(
+        self,
+        request,
+    ):
         usuario = (
             self.get_queryset()
             .get(
@@ -146,39 +258,57 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             )
         )
 
-        serializer = UsuarioSerializer(
-            usuario
+        serializer = (
+            UsuarioSerializer(
+                usuario
+            )
         )
 
         return Response(
             serializer.data
         )
 
-    def perform_create(self, serializer):
-        usuario = serializer.save()
+    def perform_create(
+        self,
+        serializer,
+    ):
+        usuario = (
+            serializer.save()
+        )
 
         registrar_auditoria(
             request=self.request,
             acao="CRIACAO",
             entidade="Usuario",
-            entidade_id=usuario.id,
+            entidade_id=(
+                usuario.id
+            ),
             descricao=(
                 f"Usuário "
-                f"{usuario.username} criado."
+                f"{usuario.username} "
+                f"criado."
             ),
         )
 
-    def perform_update(self, serializer):
-        usuario = serializer.save()
+    def perform_update(
+        self,
+        serializer,
+    ):
+        usuario = (
+            serializer.save()
+        )
 
         registrar_auditoria(
             request=self.request,
             acao="ALTERACAO",
             entidade="Usuario",
-            entidade_id=usuario.id,
+            entidade_id=(
+                usuario.id
+            ),
             descricao=(
                 f"Usuário "
-                f"{usuario.username} alterado."
+                f"{usuario.username} "
+                f"alterado."
             ),
         )
 
@@ -188,9 +318,14 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         *args,
         **kwargs,
     ):
-        usuario = self.get_object()
+        usuario = (
+            self.get_object()
+        )
 
-        if usuario == request.user:
+        if (
+            usuario
+            == request.user
+        ):
             return Response(
                 {
                     "detail": (
@@ -199,7 +334,8 @@ class UsuarioViewSet(viewsets.ModelViewSet):
                     )
                 },
                 status=(
-                    status.HTTP_400_BAD_REQUEST
+                    status
+                    .HTTP_400_BAD_REQUEST
                 ),
             )
 
@@ -217,10 +353,13 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             request=request,
             acao="DESATIVACAO",
             entidade="Usuario",
-            entidade_id=usuario.id,
+            entidade_id=(
+                usuario.id
+            ),
             descricao=(
                 f"Usuário "
-                f"{usuario.username} desativado."
+                f"{usuario.username} "
+                f"desativado."
             ),
         )
 
@@ -231,7 +370,10 @@ class UsuarioViewSet(viewsets.ModelViewSet):
                     "com sucesso."
                 )
             },
-            status=status.HTTP_200_OK,
+            status=(
+                status
+                .HTTP_200_OK
+            ),
         )
 
     @action(
@@ -244,7 +386,9 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         request,
         pk=None,
     ):
-        usuario = self.get_object()
+        usuario = (
+            self.get_object()
+        )
 
         usuario.ativo = True
         usuario.is_active = True
@@ -260,10 +404,13 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             request=request,
             acao="ATIVACAO",
             entidade="Usuario",
-            entidade_id=usuario.id,
+            entidade_id=(
+                usuario.id
+            ),
             descricao=(
                 f"Usuário "
-                f"{usuario.username} ativado."
+                f"{usuario.username} "
+                f"ativado."
             ),
         )
 
@@ -274,5 +421,8 @@ class UsuarioViewSet(viewsets.ModelViewSet):
                     "com sucesso."
                 )
             },
-            status=status.HTTP_200_OK,
+            status=(
+                status
+                .HTTP_200_OK
+            ),
         )
