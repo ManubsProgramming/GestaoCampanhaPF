@@ -1,11 +1,16 @@
 from rest_framework import serializers
 
 from .models import Pessoa
+import re
 
+from rest_framework import serializers
+
+from .models import Pessoa
 
 class PessoaSerializer(
     serializers.ModelSerializer
 ):
+    
     regiao_nome = serializers.CharField(
         source="regiao.nome",
         read_only=True,
@@ -35,7 +40,83 @@ class PessoaSerializer(
     cadastrada_por_nome = (
         serializers.SerializerMethodField()
     )
-    
+
+    def validar_texto_seguro(
+        self,
+        valor,
+        campo,
+    ):
+        if not valor:
+            return valor
+
+        texto = str(valor).strip()
+
+        padrao_perigoso = re.compile(
+            r"<\s*/?\s*(script|iframe|object|embed|style|img|svg|link|meta)\b",
+            re.IGNORECASE,
+        )
+
+        if padrao_perigoso.search(texto):
+            raise serializers.ValidationError(
+                f"O campo {campo} contém conteúdo não permitido."
+            )
+
+        if re.search(
+            r"javascript\s*:",
+            texto,
+            re.IGNORECASE,
+        ):
+            raise serializers.ValidationError(
+                f"O campo {campo} contém conteúdo não permitido."
+            )
+
+        if re.search(
+            r"on[a-z]+\s*=",
+            texto,
+            re.IGNORECASE,
+        ):
+            raise serializers.ValidationError(
+                f"O campo {campo} contém conteúdo não permitido."
+            )
+
+        return texto
+
+    def validate_nome_completo(
+        self,
+        value,
+    ):
+        return self.validar_texto_seguro(
+            value,
+            "nome completo",
+        )
+
+    def validate_complemento(
+        self,
+        value,
+    ):
+        return self.validar_texto_seguro(
+            value,
+            "complemento",
+        )
+
+    def validate_observacoes(
+        self,
+        value,
+    ):
+        return self.validar_texto_seguro(
+            value,
+            "observações",
+        )
+
+
+def validate_municipio_eleitoral(
+    self,
+    value,
+):
+    return self.validar_texto_seguro(
+        value,
+        "município eleitoral",
+    )
 
     class Meta:
         model = Pessoa
