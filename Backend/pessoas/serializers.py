@@ -1,35 +1,26 @@
-from rest_framework import serializers
-
-from .models import Pessoa
 import re
 
 from rest_framework import serializers
 
 from .models import Pessoa
 
+
 class PessoaSerializer(
     serializers.ModelSerializer
 ):
-    
     regiao_nome = serializers.CharField(
         source="regiao.nome",
         read_only=True,
     )
 
-    localidade_nome = (
-        serializers.CharField(
-            source="localidade.nome",
-            read_only=True,
-        )
+    localidade_nome = serializers.CharField(
+        source="localidade.nome",
+        read_only=True,
     )
 
-    tipo_localidade = (
-        serializers.CharField(
-            source=(
-                "localidade.get_tipo_display"
-            ),
-            read_only=True,
-        )
+    tipo_localidade = serializers.CharField(
+        source="localidade.get_tipo_display",
+        read_only=True,
     )
 
     rua_nome = serializers.CharField(
@@ -41,6 +32,54 @@ class PessoaSerializer(
         serializers.SerializerMethodField()
     )
 
+    class Meta:
+        model = Pessoa
+
+        fields = [
+            "id",
+            "nome_completo",
+            "cpf",
+            "data_nascimento",
+            "titulo_eleitor",
+            "zona_eleitoral",
+            "secao_eleitoral",
+            "municipio_eleitoral",
+            "telefone",
+
+            "regiao",
+            "regiao_nome",
+
+            "localidade",
+            "localidade_nome",
+            "tipo_localidade",
+
+            "rua",
+            "rua_nome",
+
+            "numero",
+            "complemento",
+            "observacoes",
+
+            "cadastrada_por",
+            "cadastrada_por_nome",
+
+            "status",
+            "status_verificacao_cpf",
+            "status_verificacao_titulo",
+
+            "criado_em",
+            "atualizado_em",
+        ]
+
+        read_only_fields = [
+            "id",
+            "cadastrada_por",
+            "status_verificacao_cpf",
+            "status_verificacao_titulo",
+            "criado_em",
+            "atualizado_em",
+        ]
+
     def validar_texto_seguro(
         self,
         valor,
@@ -49,16 +88,27 @@ class PessoaSerializer(
         if not valor:
             return valor
 
-        texto = str(valor).strip()
+        texto = str(
+            valor
+        ).strip()
 
         padrao_perigoso = re.compile(
-            r"<\s*/?\s*(script|iframe|object|embed|style|img|svg|link|meta)\b",
+            (
+                r"<\s*/?\s*"
+                r"(script|iframe|object|embed|"
+                r"style|img|svg|link|meta)\b"
+            ),
             re.IGNORECASE,
         )
 
-        if padrao_perigoso.search(texto):
+        if padrao_perigoso.search(
+            texto
+        ):
             raise serializers.ValidationError(
-                f"O campo {campo} contém conteúdo não permitido."
+                (
+                    f"O campo {campo} contém "
+                    f"conteúdo não permitido."
+                )
             )
 
         if re.search(
@@ -67,7 +117,10 @@ class PessoaSerializer(
             re.IGNORECASE,
         ):
             raise serializers.ValidationError(
-                f"O campo {campo} contém conteúdo não permitido."
+                (
+                    f"O campo {campo} contém "
+                    f"conteúdo não permitido."
+                )
             )
 
         if re.search(
@@ -76,7 +129,10 @@ class PessoaSerializer(
             re.IGNORECASE,
         ):
             raise serializers.ValidationError(
-                f"O campo {campo} contém conteúdo não permitido."
+                (
+                    f"O campo {campo} contém "
+                    f"conteúdo não permitido."
+                )
             )
 
         return texto
@@ -108,75 +164,24 @@ class PessoaSerializer(
             "observações",
         )
 
-
-def validate_municipio_eleitoral(
-    self,
-    value,
-):
-    return self.validar_texto_seguro(
+    def validate_municipio_eleitoral(
+        self,
         value,
-        "município eleitoral",
-    )
-
-    class Meta:
-        model = Pessoa
-
-        fields = [
-            "id",
-            "nome_completo",
-            "cpf",
-            "data_nascimento",
-
-            "titulo_eleitor",
-            "zona_eleitoral",
-            "secao_eleitoral",
-            "municipio_eleitoral",
-
-            "telefone",
-             
-
-            "regiao",
-            "regiao_nome",
-
-            "localidade",
-            "localidade_nome",
-            "tipo_localidade",
-
-            "rua",
-            "rua_nome",
-
-            "numero",
-            "complemento",
-            "observacoes",
-
-            "cadastrada_por",
-            "cadastrada_por_nome",
-
-            "status",
-
-            "status_verificacao_cpf",
-            "status_verificacao_titulo",
-
-            "criado_em",
-            "atualizado_em",
-        ]
-
-        read_only_fields = [
-            "id",
-            "cadastrada_por",
-            "status_verificacao_cpf",
-            "status_verificacao_titulo",
-            "criado_em",
-            "atualizado_em",
-        ]
+    ):
+        return self.validar_texto_seguro(
+            value,
+            "município eleitoral",
+        )
 
     def get_cadastrada_por_nome(
         self,
         obj,
     ):
+        if not obj.cadastrada_por:
+            return ""
+
         nome = (
-            obj
-            .cadastrada_por
+            obj.cadastrada_por
             .get_full_name()
         )
 
@@ -184,8 +189,7 @@ def validate_municipio_eleitoral(
             return nome
 
         return (
-            obj
-            .cadastrada_por
+            obj.cadastrada_por
             .username
         )
 
@@ -200,18 +204,25 @@ def validate_municipio_eleitoral(
             )
         )
 
-        queryset = Pessoa.objects.filter(
-            cpf=cpf
+        queryset = (
+            Pessoa.objects.filter(
+                cpf=cpf
+            )
         )
 
         if self.instance:
-            queryset = queryset.exclude(
-                pk=self.instance.pk
+            queryset = (
+                queryset.exclude(
+                    pk=self.instance.pk
+                )
             )
 
         if queryset.exists():
             raise serializers.ValidationError(
-                "Já existe uma pessoa cadastrada com este CPF."
+                (
+                    "Já existe uma pessoa "
+                    "cadastrada com este CPF."
+                )
             )
 
         return cpf
@@ -248,47 +259,35 @@ def validate_municipio_eleitoral(
         )
 
         if (
-            regiao and
-            localidade
+            regiao
+            and localidade
+            and localidade.regiao_id
+            != regiao.id
         ):
-            if (
-                localidade.regiao_id
-                != regiao.id
-            ):
-                raise (
-                    serializers
-                    .ValidationError(
-                        {
-                            "localidade": (
-                                "A localidade "
-                                "selecionada não "
-                                "pertence à região "
-                                "informada."
-                            )
-                        }
+            raise serializers.ValidationError(
+                {
+                    "localidade": (
+                        "A localidade selecionada "
+                        "não pertence à região "
+                        "informada."
                     )
-                )
+                }
+            )
 
         if (
-            localidade and
-            rua
+            localidade
+            and rua
+            and rua.localidade_id
+            != localidade.id
         ):
-            if (
-                rua.localidade_id
-                != localidade.id
-            ):
-                raise (
-                    serializers
-                    .ValidationError(
-                        {
-                            "rua": (
-                                "A rua selecionada "
-                                "não pertence à "
-                                "localidade "
-                                "informada."
-                            )
-                        }
+            raise serializers.ValidationError(
+                {
+                    "rua": (
+                        "A rua selecionada não "
+                        "pertence à localidade "
+                        "informada."
                     )
-                )
+                }
+            )
 
         return dados
