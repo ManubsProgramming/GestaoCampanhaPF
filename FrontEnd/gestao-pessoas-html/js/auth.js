@@ -6,81 +6,89 @@ async function fazerLogin(
   username,
   password
 ) {
-  const response = await fetch(
-    `${API_URL}/auth/login/`,
-    {
-      method: "POST",
+  const response =
+    await fetch(
+      `${API_URL}/auth/login/`,
+      {
+        method: "POST",
 
-      headers: {
-        "Content-Type":
-          "application/json",
-      },
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
 
-      body: JSON.stringify({
-        username,
-        password,
-      }),
-    }
-  )
+        body:
+          JSON.stringify({
+            username,
+            password,
+          }),
+      }
+    );
+
 
   if (!response.ok) {
     let mensagem =
-      "Usuário ou senha inválidos."
+      "Usuário ou senha inválidos.";
 
     try {
       const erro =
-        await response.json()
+        await response.json();
 
       if (erro.detail) {
         mensagem =
-          erro.detail
+          erro.detail;
       }
+
     } catch {
-      // Mantém a mensagem padrão.
+      /*
+       * Mantém a mensagem padrão.
+       */
     }
 
     throw new Error(
       mensagem
-    )
+    );
   }
 
 
   const data =
-    await response.json()
+    await response.json();
 
 
   /*
    * Salva access e refresh token.
    */
+
   salvarTokens(
     data.access,
     data.refresh
-  )
+  );
 
 
   /*
    * Busca os dados reais
    * do usuário no backend.
    */
+
   const usuario =
-    await buscarUsuarioLogado()
+    await buscarUsuarioLogado();
 
 
   /*
    * Salva usuário localmente
    * para uso visual.
    */
+
   localStorage.setItem(
     "usuario",
     JSON.stringify(
       usuario
     )
-  )
+  );
 
 
-  return usuario
+  return usuario;
 }
-
 
 
 /* =========================================
@@ -91,18 +99,18 @@ async function buscarUsuarioLogado() {
   const response =
     await apiFetch(
       "/usuarios/me/"
-    )
+    );
 
 
   if (!response.ok) {
     throw new Error(
-      "Não foi possível carregar o usuário logado."
-    )
+      `Não foi possível carregar o usuário logado. Status: ${response.status}`
+    );
   }
 
 
   const usuario =
-    await response.json()
+    await response.json();
 
 
   /*
@@ -110,19 +118,19 @@ async function buscarUsuarioLogado() {
    * armazenados no navegador.
    *
    * Isso impede que o sistema
-   * trabalhe com um perfil antigo.
+   * trabalhe com perfil antigo.
    */
+
   localStorage.setItem(
     "usuario",
     JSON.stringify(
       usuario
     )
-  )
+  );
 
 
-  return usuario
+  return usuario;
 }
-
 
 
 /* =========================================
@@ -133,23 +141,23 @@ function getUsuarioLogado() {
   const usuario =
     localStorage.getItem(
       "usuario"
-    )
+    );
 
 
   if (!usuario) {
-    return null
+    return null;
   }
 
 
   try {
     return JSON.parse(
       usuario
-    )
+    );
+
   } catch {
-    return null
+    return null;
   }
 }
-
 
 
 /* =========================================
@@ -157,12 +165,20 @@ function getUsuarioLogado() {
 ========================================= */
 
 function estaAutenticado() {
+  /*
+   * Aqui apenas verificamos
+   * se existe token armazenado.
+   *
+   * A validade real é confirmada
+   * pelo backend através de
+   * buscarUsuarioLogado().
+   */
+
   return Boolean(
     getAccessToken() ||
     getRefreshToken()
-  )
+  );
 }
-
 
 
 /* =========================================
@@ -175,9 +191,8 @@ function ehAdministrador(
   return (
     usuario?.tipo ===
     "ADMINISTRADOR"
-  )
+  );
 }
-
 
 
 /* =========================================
@@ -190,9 +205,8 @@ function ehCadastrador(
   return (
     usuario?.tipo ===
     "CADASTRADOR"
-  )
+  );
 }
-
 
 
 /* =========================================
@@ -205,12 +219,12 @@ function aplicarPermissoesVisuais(
   const administrador =
     ehAdministrador(
       usuario
-    )
+    );
 
   const cadastrador =
     ehCadastrador(
       usuario
-    )
+    );
 
 
   /*
@@ -218,7 +232,7 @@ function aplicarPermissoesVisuais(
    * ELEMENTOS EXCLUSIVOS DO ADMIN
    * =====================================
    *
-   * Exemplo HTML:
+   * Exemplo:
    *
    * <a
    *   href="usuarios.html"
@@ -237,17 +251,18 @@ function aplicarPermissoesVisuais(
         elemento
       ) {
         if (administrador) {
-          elemento.style.removeProperty(
-            "display"
-          )
+          elemento.style
+            .removeProperty(
+              "display"
+            );
 
-          return
+          return;
         }
 
         elemento.style.display =
-          "none"
+          "none";
       }
-    )
+    );
 
 
   /*
@@ -265,17 +280,18 @@ function aplicarPermissoesVisuais(
         elemento
       ) {
         if (cadastrador) {
-          elemento.style.removeProperty(
-            "display"
-          )
+          elemento.style
+            .removeProperty(
+              "display"
+            );
 
-          return
+          return;
         }
 
         elemento.style.display =
-          "none"
+          "none";
       }
-    )
+    );
 
 
   /*
@@ -293,13 +309,13 @@ function aplicarPermissoesVisuais(
       function (
         elemento
       ) {
-        elemento.style.removeProperty(
-          "display"
-        )
+        elemento.style
+          .removeProperty(
+            "display"
+          );
       }
-    )
+    );
 }
-
 
 
 /* =========================================
@@ -311,29 +327,40 @@ function liberarPagina() {
     .classList
     .remove(
       "auth-loading"
-    )
+    );
 
   document.body
     .classList
     .add(
       "auth-ready"
-    )
+    );
 }
-
 
 
 /* =========================================
    REDIRECIONAR PARA LOGIN
 ========================================= */
 
-function redirecionarParaLogin() {
-  limparSessao()
+function redirecionarParaLogin(
+  limpar = true
+) {
+  /*
+   * Quando a sessão realmente
+   * for inválida, limpamos.
+   *
+   * Em modo offline podemos
+   * redirecionar sem destruir
+   * os tokens existentes.
+   */
+
+  if (limpar) {
+    limparSessao();
+  }
 
   window.location.replace(
     "index.html"
-  )
+  );
 }
-
 
 
 /* =========================================
@@ -343,9 +370,8 @@ function redirecionarParaLogin() {
 function redirecionarCadastrador() {
   window.location.replace(
     "pessoas.html"
-  )
+  );
 }
-
 
 
 /* =========================================
@@ -370,7 +396,7 @@ async function protegerPagina() {
 
   const acesso =
     document.body.dataset.auth ||
-    "public"
+    "public";
 
 
   /*
@@ -382,9 +408,9 @@ async function protegerPagina() {
   if (
     acesso === "public"
   ) {
-    liberarPagina()
+    liberarPagina();
 
-    return
+    return;
   }
 
 
@@ -397,14 +423,13 @@ async function protegerPagina() {
   if (
     !estaAutenticado()
   ) {
-    redirecionarParaLogin()
+    redirecionarParaLogin();
 
-    return
+    return;
   }
 
 
   try {
-
     /*
      * Busca o usuário diretamente
      * no backend antes de mostrar
@@ -412,7 +437,7 @@ async function protegerPagina() {
      */
 
     const usuario =
-      await buscarUsuarioLogado()
+      await buscarUsuarioLogado();
 
 
     /*
@@ -425,9 +450,9 @@ async function protegerPagina() {
       !usuario ||
       !usuario.tipo
     ) {
-      redirecionarParaLogin()
+      redirecionarParaLogin();
 
-      return
+      return;
     }
 
 
@@ -443,9 +468,9 @@ async function protegerPagina() {
         usuario
       )
     ) {
-      redirecionarCadastrador()
+      redirecionarCadastrador();
 
-      return
+      return;
     }
 
 
@@ -464,11 +489,11 @@ async function protegerPagina() {
     ) {
       aplicarPermissoesVisuais(
         usuario
-      )
+      );
 
-      liberarPagina()
+      liberarPagina();
 
-      return
+      return;
     }
 
 
@@ -486,45 +511,174 @@ async function protegerPagina() {
     ) {
       aplicarPermissoesVisuais(
         usuario
-      )
+      );
 
-      liberarPagina()
+      liberarPagina();
 
-      return
+      return;
     }
 
 
     /*
-     * Qualquer situação não prevista
-     * volta para o login.
+     * Qualquer situação não
+     * prevista volta para login.
      */
 
-    redirecionarParaLogin()
+    redirecionarParaLogin();
+
 
   } catch (error) {
-    console.error(
-      "Erro ao validar acesso:",
+    console.warn(
+      "Não foi possível validar acesso:",
       error
-    )
+    );
 
 
-    redirecionarParaLogin()
+    /*
+     * ===================================
+     * MODO OFFLINE
+     * ===================================
+     *
+     * Falha de internet não significa
+     * que o usuário foi deslogado.
+     *
+     * Nesse caso usamos os dados
+     * locais apenas para decidir
+     * quais telas podem ser exibidas.
+     *
+     * A segurança real das APIs
+     * continua sendo feita pelo Django.
+     */
+
+    if (
+      !navigator.onLine
+    ) {
+      const usuarioSalvo =
+        getUsuarioLogado();
+
+
+      if (
+        !usuarioSalvo ||
+        !usuarioSalvo.tipo
+      ) {
+        redirecionarParaLogin(
+          false
+        );
+
+        return;
+      }
+
+
+      /*
+       * Admin page sendo acessada
+       * por cadastrador offline.
+       */
+
+      if (
+        acesso === "admin" &&
+        !ehAdministrador(
+          usuarioSalvo
+        )
+      ) {
+        redirecionarCadastrador();
+
+        return;
+      }
+
+
+      /*
+       * Usuário conhecido localmente.
+       */
+
+      aplicarPermissoesVisuais(
+        usuarioSalvo
+      );
+
+      liberarPagina();
+
+      return;
+    }
+
+
+    /*
+     * Se estamos online e chegamos
+     * aqui, a validação da sessão
+     * realmente falhou.
+     */
+
+    redirecionarParaLogin();
   }
 }
 
 
-
 /* =========================================
-   LOGOUT
+   LOGOUT SEGURO
 ========================================= */
 
-function fazerLogout() {
-  limparSessao()
+async function fazerLogout() {
+  const refreshToken =
+    getRefreshToken();
 
-  window.location.href =
-    "index.html"
+
+  try {
+    /*
+     * Envia o refresh token para
+     * o backend antes de apagá-lo.
+     *
+     * O backend adiciona esse token
+     * à blacklist do SimpleJWT.
+     */
+
+    if (refreshToken) {
+      const response =
+        await apiFetch(
+          "/auth/logout/",
+          {
+            method: "POST",
+
+            body:
+              JSON.stringify({
+                refresh:
+                  refreshToken,
+              }),
+          }
+        );
+
+
+      if (!response.ok) {
+        console.warn(
+          "O backend não confirmou o logout:",
+          response.status
+        );
+      }
+    }
+
+
+  } catch (error) {
+    /*
+     * Mesmo que a Railway esteja
+     * indisponível, ainda podemos
+     * encerrar a sessão neste
+     * navegador.
+     */
+
+    console.warn(
+      "Não foi possível invalidar o refresh token no servidor:",
+      error
+    );
+
+
+  } finally {
+    /*
+     * Sempre limpa a sessão local.
+     */
+
+    limparSessao();
+
+    window.location.href =
+      "index.html";
+  }
 }
-
 
 
 /* =========================================
@@ -534,4 +688,4 @@ function fazerLogout() {
 document.addEventListener(
   "DOMContentLoaded",
   protegerPagina
-)
+);
