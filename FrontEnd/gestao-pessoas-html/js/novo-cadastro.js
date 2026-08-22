@@ -1640,10 +1640,9 @@ neighborhoodSelect
 
 async function sincronizarEnderecosOffline() {
   /*
-   * Esta função não deve
-   * derrubar a página.
+   * Se já estiver offline,
+   * apenas utiliza o cache existente.
    */
-
   if (
     !navigator.onLine
   ) {
@@ -1655,10 +1654,11 @@ async function sincronizarEnderecosOffline() {
   }
 
   if (
-    !substituicaoOfflineDisponivel()
+    !substituicaoOfflineDisponivel() ||
+    !offlineDisponivel()
   ) {
-    console.log(
-      "offline.js ainda não está disponível."
+    console.warn(
+      "Banco offline ainda não está disponível."
     );
 
     return;
@@ -1666,8 +1666,14 @@ async function sincronizarEnderecosOffline() {
 
   try {
     console.log(
-      "Sincronizando endereços para uso offline..."
+      "Preparando endereços para uso offline..."
     );
+
+    /*
+     * =====================================
+     * REGIÕES
+     * =====================================
+     */
 
     const regionsResponse =
       await apiFetch(
@@ -1678,7 +1684,7 @@ async function sincronizarEnderecosOffline() {
       !regionsResponse.ok
     ) {
       throw new Error(
-        "Falha ao carregar regiões."
+        "Não foi possível sincronizar as regiões."
       );
     }
 
@@ -1687,9 +1693,30 @@ async function sincronizarEnderecosOffline() {
         await regionsResponse.json()
       );
 
+    /*
+     * Regiões podem ser substituídas
+     * imediatamente.
+     */
     await substituirListaOffline(
       "regioes",
       regions
+    );
+
+    console.log(
+      `${regions.length} região(ões) salva(s) offline.`
+    );
+
+
+    /*
+     * =====================================
+     * LOCALIDADES
+     * =====================================
+     *
+     * Limpa a lista antiga primeiro.
+     */
+    await substituirListaOffline(
+      "localidades",
+      []
     );
 
     const allNeighborhoods =
@@ -1699,125 +1726,216 @@ async function sincronizarEnderecosOffline() {
       const region
       of regions
     ) {
-      const response =
-        await apiFetch(
-          `/localidades/?regiao=${encodeURIComponent(
-            region.id
-          )}`
-        );
-
+      /*
+       * Se a conexão cair no meio,
+       * preservamos tudo que já foi
+       * baixado anteriormente no loop.
+       */
       if (
-        !response.ok
+        !navigator.onLine
       ) {
         console.warn(
-          "Não foi possível sincronizar localidades de:",
-          region.nome
+          "Internet caiu durante a sincronização das localidades."
         );
 
-        continue;
+        break;
       }
 
-      const neighborhoods =
-        getList(
-          await response.json()
+      try {
+        const response =
+          await apiFetch(
+            `/localidades/?regiao=${encodeURIComponent(
+              region.id
+            )}`
+          );
+
+        if (
+          !response.ok
+        ) {
+          console.warn(
+            "Não foi possível carregar localidades da região:",
+            region.nome
+          );
+
+          continue;
+        }
+
+        let neighborhoods =
+          getList(
+            await response.json()
+          );
+
+        neighborhoods =
+          neighborhoods.map(
+            function (
+              neighborhood
+            ) {
+              const regiaoId =
+                neighborhood.regiao_id ||
+                neighborhood.regiao?.id ||
+                neighborhood.regiao ||
+                region.id;
+
+              return {
+                ...neighborhood,
+
+                regiao:
+                  Number(
+                    regiaoId
+                  ),
+
+                regiao_id:
+                  Number(
+                    regiaoId
+                  )
+              };
+            }
+          );
+
+        /*
+         * MUITO IMPORTANTE:
+         *
+         * Salva este grupo AGORA.
+         *
+         * Não espera todas as regiões
+         * terminarem.
+         */
+        await salvarListaOffline(
+          "localidades",
+          neighborhoods
         );
 
-      neighborhoods.forEach(
-        function (
-          neighborhood
-        ) {
-          const regiaoId =
-            neighborhood.regiao_id ||
-            neighborhood.regiao?.id ||
-            neighborhood.regiao ||
-            region.id;
+        allNeighborhoods.push(
+          ...neighborhoods
+        );
 
-          allNeighborhoods.push({
-            ...neighborhood,
+        console.log(
+          `Localidades offline: ${region.nome} = ${neighborhoods.length}`
+        );
 
-            regiao:
-              Number(
-                regiaoId
-              ),
-
-            regiao_id:
-              Number(
-                regiaoId
-              )
-          });
-        }
-      );
+      } catch (
+        error
+      ) {
+        console.warn(
+          "Falha ao sincronizar localidades de:",
+          region.nome,
+          error
+        );
+      }
     }
 
+
+    /*
+     * =====================================
+     * RUAS
+     * =====================================
+     */
+
     await substituirListaOffline(
-      "localidades",
-      allNeighborhoods
+      "ruas",
+      []
     );
 
-    const allStreets =
-      [];
+    let totalRuas =
+      0;
 
     for (
       const neighborhood
       of allNeighborhoods
     ) {
-      const response =
-        await apiFetch(
-          `/ruas/?localidade=${encodeURIComponent(
-            neighborhood.id
-          )}`
-        );
-
       if (
-        !response.ok
+        !navigator.onLine
       ) {
         console.warn(
-          "Não foi possível sincronizar ruas de:",
-          neighborhood.nome
+          "Internet caiu durante a sincronização das ruas."
         );
 
-        continue;
+        break;
       }
 
-      const streets =
-        getList(
-          await response.json()
+      try {
+        const response =
+          await apiFetch(
+            `/ruas/?localidade=${encodeURIComponent(
+              neighborhood.id
+            )}`
+          );
+
+        if (
+          !response.ok
+        ) {
+          console.warn(
+            "Não foi possível carregar ruas de:",
+            neighborhood.nome
+          );
+
+          continue;
+        }
+
+        let streets =
+          getList(
+            await response.json()
+          );
+
+        streets =
+          streets.map(
+            function (
+              street
+            ) {
+              const localidadeId =
+                street.localidade_id ||
+                street.localidade?.id ||
+                street.localidade ||
+                neighborhood.id;
+
+              return {
+                ...street,
+
+                localidade:
+                  Number(
+                    localidadeId
+                  ),
+
+                localidade_id:
+                  Number(
+                    localidadeId
+                  )
+              };
+            }
+          );
+
+        /*
+         * Também salva as ruas
+         * imediatamente.
+         */
+        await salvarListaOffline(
+          "ruas",
+          streets
         );
 
-      streets.forEach(
-        function (
-          street
-        ) {
-          const localidadeId =
-            street.localidade_id ||
-            street.localidade?.id ||
-            street.localidade ||
-            neighborhood.id;
+        totalRuas +=
+          streets.length;
 
-          allStreets.push({
-            ...street,
-
-            localidade:
-              Number(
-                localidadeId
-              ),
-
-            localidade_id:
-              Number(
-                localidadeId
-              )
-          });
-        }
-      );
+      } catch (
+        error
+      ) {
+        console.warn(
+          "Falha ao sincronizar ruas de:",
+          neighborhood.nome,
+          error
+        );
+      }
     }
 
-    await substituirListaOffline(
-      "ruas",
-      allStreets
-    );
+
+    /*
+     * =====================================
+     * RESULTADO
+     * =====================================
+     */
 
     console.log(
-      "Sincronização offline concluída:",
+      "Cache de endereços concluído:",
       {
         regioes:
           regions.length,
@@ -1826,13 +1944,17 @@ async function sincronizarEnderecosOffline() {
           allNeighborhoods.length,
 
         ruas:
-          allStreets.length
+          totalRuas
       }
     );
 
   } catch (
     error
   ) {
+    /*
+     * Nunca derruba a página
+     * por falha de cache.
+     */
     console.warn(
       "Não foi possível atualizar o cache offline:",
       error
