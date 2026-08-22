@@ -1638,6 +1638,10 @@ neighborhoodSelect
    SINCRONIZAÇÃO OFFLINE
 ========================= */
 
+/* =========================
+   SINCRONIZAÇÃO DE ENDEREÇOS OFFLINE
+========================= */
+
 async function sincronizarEnderecosOffline() {
   /*
    * Se já estiver offline,
