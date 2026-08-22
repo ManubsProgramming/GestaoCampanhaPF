@@ -1041,7 +1041,70 @@ function substituicaoOfflineDisponivel() {
     "function"
   );
 }
+function cadastroOfflineDisponivel() {
+  return (
+    typeof salvarCadastroOffline ===
+      "function" &&
+    typeof listarCadastrosPendentes ===
+      "function"
+  );
+}
 
+
+async function salvarNovoCadastroOffline(
+  data
+) {
+  if (
+    !cadastroOfflineDisponivel()
+  ) {
+    throw new Error(
+      "O armazenamento offline não está disponível neste navegador."
+    );
+  }
+
+  const pendentes =
+    await listarCadastrosPendentes();
+
+  const cpf =
+    String(
+      data.cpf || ""
+    ).replace(
+      /\D/g,
+      ""
+    );
+
+  const duplicado =
+    pendentes.some(
+      function (
+        cadastro
+      ) {
+        const cpfPendente =
+          String(
+            cadastro?.dados?.cpf || ""
+          ).replace(
+            /\D/g,
+            ""
+          );
+
+        return (
+          cpf &&
+          cpfPendente === cpf
+        );
+      }
+    );
+
+  if (
+    duplicado
+  ) {
+    throw new Error(
+      "Este CPF já possui um cadastro aguardando sincronização."
+    );
+  }
+
+  return salvarCadastroOffline(
+    data
+  );
+}
 
 /* =========================
    REGIÕES
@@ -2598,6 +2661,37 @@ async function saveRegistration() {
   const data =
     buildRegistrationData();
 
+  /*
+   * Não permitimos edição offline
+   * para evitar conflito de dados.
+   */
+  if (
+    isEditing &&
+    !navigator.onLine
+  ) {
+    throw new Error(
+      "Para editar um cadastro é necessário estar conectado à internet."
+    );
+  }
+
+  /*
+   * NOVO CADASTRO OFFLINE
+   */
+  if (
+    !isEditing &&
+    !navigator.onLine
+  ) {
+    const cadastro =
+      await salvarNovoCadastroOffline(
+        data
+      );
+
+    return {
+      offline: true,
+      cadastro
+    };
+  }
+
   const endpoint =
     isEditing
       ? `/pessoas/${editingPersonId}/`
@@ -2608,23 +2702,60 @@ async function saveRegistration() {
       ? "PATCH"
       : "POST";
 
-  const response =
-    await apiFetch(
-      endpoint,
-      {
-        method,
+  let response;
 
-        body:
-          JSON.stringify(
-            data
-          )
-      }
-    );
+  try {
+    response =
+      await apiFetch(
+        endpoint,
+        {
+          method,
+
+          body:
+            JSON.stringify(
+              data
+            )
+        }
+      );
+
+  } catch (
+    error
+  ) {
+    /*
+     * Pode acontecer de o navegador
+     * ainda informar que está online,
+     * mas a conexão já ter caído.
+     *
+     * Nesse caso preservamos o
+     * novo cadastro offline.
+     */
+    if (
+      !isEditing &&
+      cadastroOfflineDisponivel()
+    ) {
+      const cadastro =
+        await salvarNovoCadastroOffline(
+          data
+        );
+
+      return {
+        offline: true,
+        cadastro
+      };
+    }
+
+    throw error;
+  }
 
   if (
     response.ok
   ) {
-    return response.json();
+    return {
+      offline: false,
+
+      data:
+        await response.json()
+    };
   }
 
   let errors =
@@ -2702,6 +2833,7 @@ registrationForm
       }
 
       try {
+        const resultado =
         await saveRegistration();
 
         sessionStorage.removeItem(
@@ -2715,6 +2847,68 @@ registrationForm
         sessionStorage.removeItem(
           "tituloEmValidacao"
         );
+        /*
+ * CADASTRO SALVO OFFLINE
+ */
+if (
+  resultado?.offline
+) {
+  await showMessage({
+    title:
+      "Cadastro salvo offline",
+
+    message:
+      "O cadastro foi salvo neste dispositivo e será enviado automaticamente quando a internet voltar.",
+
+    type:
+      "success"
+  });
+
+  registrationForm
+    ?.reset();
+
+  clearElectoralData();
+
+  setVoterTitleStatus(
+    "Digite o título e consulte no site oficial do TSE."
+  );
+
+  neighborhoodSelect.innerHTML = `
+    <option value="">
+      Selecione primeiro a região
+    </option>
+  `;
+
+  streetSelect.innerHTML = `
+    <option value="">
+      Selecione primeiro a localidade
+    </option>
+  `;
+
+  neighborhoodSelect.disabled =
+    true;
+
+  streetSelect.disabled =
+    true;
+
+  if (
+    characterTotal
+  ) {
+    characterTotal.textContent =
+      "0";
+  }
+
+  resetCpfConfirmation();
+
+  resetVoterTitleConfirmation();
+
+  clearAllFieldErrors();
+
+  fullNameInput
+    ?.focus();
+
+  return;
+}
 
         if (
           isEditing
@@ -2980,8 +3174,25 @@ async function initializePage() {
      * realmente está autenticado.
      */
 
+    try {
+  currentUser =
+    await buscarUsuarioLogado();
+
+} catch (
+  error
+) {
+  if (
+    !navigator.onLine &&
+    typeof getUsuarioLogado ===
+      "function"
+  ) {
     currentUser =
-      await buscarUsuarioLogado();
+      getUsuarioLogado();
+
+  } else {
+    throw error;
+  }
+}
 
     if (
       !currentUser
@@ -3033,7 +3244,36 @@ async function initializePage() {
           );
         }
       );
-
+if (
+  navigator.onLine &&
+  typeof sincronizarCadastrosOffline ===
+    "function"
+) {
+  sincronizarCadastrosOffline()
+    .then(
+      function (
+        resultado
+      ) {
+        if (
+          resultado?.sincronizados
+        ) {
+          console.log(
+            `${resultado.sincronizados} cadastro(s) offline sincronizado(s).`
+          );
+        }
+      }
+    )
+    .catch(
+      function (
+        error
+      ) {
+        console.warn(
+          "Não foi possível sincronizar os cadastros pendentes:",
+          error
+        );
+      }
+    );
+}
     /*
      * Somente no modo edição.
      */
