@@ -131,6 +131,7 @@ class LoginView(
     throttle_classes = [
         LoginRateThrottle
     ]
+    
 class UsuarioViewSet(
     viewsets.ModelViewSet
 ):
