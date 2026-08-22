@@ -851,4 +851,21 @@ a {
     flex-direction: column;
     align-items: flex-start;
   }
+  .privacy-login-notice {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+.privacy-login-notice a {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.privacy-login-notice a:hover {
+  text-decoration: underline;
+}
 }
