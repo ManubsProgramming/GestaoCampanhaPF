@@ -8,22 +8,29 @@ from django.contrib import admin
 from django.urls import include, path
 
 from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
     TokenRefreshView,
+)
+
+from usuarios.views import (
+    LoginView,
 )
 
 
 urlpatterns = [
+
     # Django Admin
+
     path(
         "admin/",
         admin.site.urls,
     ),
 
+
     # Autenticação JWT
+
     path(
         "api/auth/login/",
-        TokenObtainPairView.as_view(),
+        LoginView.as_view(),
         name="token_obtain_pair",
     ),
 
@@ -33,53 +40,86 @@ urlpatterns = [
         name="token_refresh",
     ),
 
+
     # Dashboard
+
     path(
         "api/painel/",
-        include("painel.urls"),
+        include(
+            "painel.urls"
+        ),
     ),
+
 
     # Regiões / localidades / ruas
+
     path(
         "api/",
-        include("regioes.urls"),
+        include(
+            "regioes.urls"
+        ),
     ),
+
 
     # Pessoas
+
     path(
         "api/",
-        include("pessoas.urls"),
+        include(
+            "pessoas.urls"
+        ),
     ),
+
 
     # Usuários
+
     path(
         "api/",
-        include("usuarios.urls"),
+        include(
+            "usuarios.urls"
+        ),
     ),
+
 
     # Relatórios
+
     path(
         "api/relatorios/",
-        include("relatorios.urls"),
+        include(
+            "relatorios.urls"
+        ),
     ),
+
 
     # Auditoria
+
     path(
         "api/",
-        include("auditoria.urls"),
+        include(
+            "auditoria.urls"
+        ),
     ),
 
+
     # Configurações
+
     path(
         "api/",
-        include("configuracoes.urls"),
+        include(
+            "configuracoes.urls"
+        ),
     ),
+
 ]
 
 
-# Arquivos enviados pelo sistema, como a logo.
+# Arquivos enviados pelo sistema,
+# como a logo.
+
 if settings.DEBUG:
     urlpatterns += static(
         settings.MEDIA_URL,
-        document_root=settings.MEDIA_ROOT,
+        document_root=(
+            settings.MEDIA_ROOT
+        ),
     )

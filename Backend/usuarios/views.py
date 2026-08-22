@@ -31,7 +31,13 @@ from rest_framework_simplejwt.tokens import (
 from auditoria.services import (
     registrar_auditoria,
 )
+from rest_framework.throttling import (
+    AnonRateThrottle,
+)
 
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+)
 from .models import Usuario
 from .permissions import (
     EhAdministrador,
@@ -113,7 +119,18 @@ class LogoutView(APIView):
             ),
         )
 
+class LoginRateThrottle(
+    AnonRateThrottle
+):
+    scope = "login"
 
+
+class LoginView(
+    TokenObtainPairView
+):
+    throttle_classes = [
+        LoginRateThrottle
+    ]
 class UsuarioViewSet(
     viewsets.ModelViewSet
 ):
