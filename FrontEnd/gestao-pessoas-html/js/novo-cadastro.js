@@ -843,9 +843,7 @@ voterTitleInput
       );
     }
   );
-
-
-validateVoterTitleButton
+  validateVoterTitleButton
   ?.addEventListener(
     "click",
     async function () {
@@ -1041,6 +1039,8 @@ function substituicaoOfflineDisponivel() {
     "function"
   );
 }
+
+
 function cadastroOfflineDisponivel() {
   return (
     typeof salvarCadastroOffline ===
@@ -1105,6 +1105,7 @@ async function salvarNovoCadastroOffline(
     data
   );
 }
+
 
 /* =========================
    REGIÕES
@@ -1287,13 +1288,23 @@ async function loadNeighborhoods(
         function (
           neighborhood
         ) {
+          const regiaoId =
+            neighborhood.regiao_id ||
+            neighborhood.regiao?.id ||
+            neighborhood.regiao ||
+            regionId;
+
           return {
             ...neighborhood,
 
             regiao:
               Number(
-                neighborhood.regiao ||
-                regionId
+                regiaoId
+              ),
+
+            regiao_id:
+              Number(
+                regiaoId
               )
           };
         }
@@ -1339,9 +1350,14 @@ async function loadNeighborhoods(
             function (
               neighborhood
             ) {
+              const regiaoId =
+                neighborhood.regiao_id ||
+                neighborhood.regiao?.id ||
+                neighborhood.regiao;
+
               return (
                 Number(
-                  neighborhood.regiao
+                  regiaoId
                 ) ===
                 Number(
                   regionId
@@ -1445,13 +1461,23 @@ async function loadStreets(
         function (
           street
         ) {
+          const localidadeId =
+            street.localidade_id ||
+            street.localidade?.id ||
+            street.localidade ||
+            neighborhoodId;
+
           return {
             ...street,
 
             localidade:
               Number(
-                street.localidade ||
-                neighborhoodId
+                localidadeId
+              ),
+
+            localidade_id:
+              Number(
+                localidadeId
               )
           };
         }
@@ -1497,9 +1523,14 @@ async function loadStreets(
             function (
               street
             ) {
+              const localidadeId =
+                street.localidade_id ||
+                street.localidade?.id ||
+                street.localidade;
+
               return (
                 Number(
-                  street.localidade
+                  localidadeId
                 ) ===
                 Number(
                   neighborhoodId
@@ -1603,15 +1634,13 @@ neighborhoodSelect
       }
     }
   );
-
-
-/* =========================
+  /* =========================
    SINCRONIZAÇÃO OFFLINE
 ========================= */
 
 async function sincronizarEnderecosOffline() {
   /*
-   * Esta função nunca deve
+   * Esta função não deve
    * derrubar a página.
    */
 
@@ -1629,7 +1658,7 @@ async function sincronizarEnderecosOffline() {
     !substituicaoOfflineDisponivel()
   ) {
     console.log(
-      "offline-db.js ainda não está disponível."
+      "offline.js ainda não está disponível."
     );
 
     return;
@@ -1697,13 +1726,23 @@ async function sincronizarEnderecosOffline() {
         function (
           neighborhood
         ) {
+          const regiaoId =
+            neighborhood.regiao_id ||
+            neighborhood.regiao?.id ||
+            neighborhood.regiao ||
+            region.id;
+
           allNeighborhoods.push({
             ...neighborhood,
 
             regiao:
               Number(
-                neighborhood.regiao ||
-                region.id
+                regiaoId
+              ),
+
+            regiao_id:
+              Number(
+                regiaoId
               )
           });
         }
@@ -1749,13 +1788,23 @@ async function sincronizarEnderecosOffline() {
         function (
           street
         ) {
+          const localidadeId =
+            street.localidade_id ||
+            street.localidade?.id ||
+            street.localidade ||
+            neighborhood.id;
+
           allStreets.push({
             ...street,
 
             localidade:
               Number(
-                street.localidade ||
-                neighborhood.id
+                localidadeId
+              ),
+
+            localidade_id:
+              Number(
+                localidadeId
               )
           });
         }
@@ -1784,11 +1833,6 @@ async function sincronizarEnderecosOffline() {
   } catch (
     error
   ) {
-    /*
-     * Muito importante:
-     * erro de cache não desloga
-     * o usuário.
-     */
     console.warn(
       "Não foi possível atualizar o cache offline:",
       error
@@ -2078,6 +2122,7 @@ function validateForm() {
     }
 
     if (
+      navigator.onLine &&
       voterTitleConfirmed &&
       !voterTitleConfirmed.checked
     ) {
@@ -2147,6 +2192,7 @@ function validateForm() {
   }
 
   if (
+    navigator.onLine &&
     cpfConfirmed &&
     !cpfConfirmed.checked
   ) {
@@ -2459,10 +2505,6 @@ async function loadPersonForEditing() {
       "";
   }
 
-  /*
-   * ENDEREÇO
-   */
-
   if (
     pessoa.regiao
   ) {
@@ -2651,8 +2693,6 @@ async function loadPersonForEditing() {
       "Salvar alterações";
   }
 }
-
-
 /* =========================
    SALVAR
 ========================= */
@@ -2662,8 +2702,9 @@ async function saveRegistration() {
     buildRegistrationData();
 
   /*
-   * Não permitimos edição offline
-   * para evitar conflito de dados.
+   * Edição offline não é permitida.
+   * Isso evita conflito de versões
+   * entre o navegador e o servidor.
    */
   if (
     isEditing &&
@@ -2723,11 +2764,12 @@ async function saveRegistration() {
   ) {
     /*
      * Pode acontecer de o navegador
-     * ainda informar que está online,
-     * mas a conexão já ter caído.
+     * ainda considerar que está online,
+     * mas a conexão ter caído.
      *
-     * Nesse caso preservamos o
-     * novo cadastro offline.
+     * Para novos cadastros, salvamos
+     * no IndexedDB em vez de perder
+     * os dados digitados.
      */
     if (
       !isEditing &&
@@ -2834,7 +2876,7 @@ registrationForm
 
       try {
         const resultado =
-        await saveRegistration();
+          await saveRegistration();
 
         sessionStorage.removeItem(
           "cpfEmValidacao"
@@ -2847,69 +2889,73 @@ registrationForm
         sessionStorage.removeItem(
           "tituloEmValidacao"
         );
+
         /*
- * CADASTRO SALVO OFFLINE
- */
-if (
-  resultado?.offline
-) {
-  await showMessage({
-    title:
-      "Cadastro salvo offline",
+         * CADASTRO SALVO OFFLINE
+         */
+        if (
+          resultado?.offline
+        ) {
+          await showMessage({
+            title:
+              "Cadastro salvo offline",
 
-    message:
-      "O cadastro foi salvo neste dispositivo e será enviado automaticamente quando a internet voltar.",
+            message:
+              "O cadastro foi salvo neste dispositivo e será enviado automaticamente quando a internet voltar.",
 
-    type:
-      "success"
-  });
+            type:
+              "success"
+          });
 
-  registrationForm
-    ?.reset();
+          registrationForm
+            ?.reset();
 
-  clearElectoralData();
+          clearElectoralData();
 
-  setVoterTitleStatus(
-    "Digite o título e consulte no site oficial do TSE."
-  );
+          setVoterTitleStatus(
+            "Digite o título e consulte no site oficial do TSE."
+          );
 
-  neighborhoodSelect.innerHTML = `
-    <option value="">
-      Selecione primeiro a região
-    </option>
-  `;
+          neighborhoodSelect.innerHTML = `
+            <option value="">
+              Selecione primeiro a região
+            </option>
+          `;
 
-  streetSelect.innerHTML = `
-    <option value="">
-      Selecione primeiro a localidade
-    </option>
-  `;
+          streetSelect.innerHTML = `
+            <option value="">
+              Selecione primeiro a localidade
+            </option>
+          `;
 
-  neighborhoodSelect.disabled =
-    true;
+          neighborhoodSelect.disabled =
+            true;
 
-  streetSelect.disabled =
-    true;
+          streetSelect.disabled =
+            true;
 
-  if (
-    characterTotal
-  ) {
-    characterTotal.textContent =
-      "0";
-  }
+          if (
+            characterTotal
+          ) {
+            characterTotal.textContent =
+              "0";
+          }
 
-  resetCpfConfirmation();
+          resetCpfConfirmation();
 
-  resetVoterTitleConfirmation();
+          resetVoterTitleConfirmation();
 
-  clearAllFieldErrors();
+          clearAllFieldErrors();
 
-  fullNameInput
-    ?.focus();
+          fullNameInput
+            ?.focus();
 
-  return;
-}
+          return;
+        }
 
+        /*
+         * EDIÇÃO CONCLUÍDA
+         */
         if (
           isEditing
         ) {
@@ -2930,6 +2976,9 @@ if (
           return;
         }
 
+        /*
+         * NOVO CADASTRO ONLINE
+         */
         if (
           successModal
         ) {
@@ -3170,29 +3219,32 @@ document.addEventListener(
 async function initializePage() {
   try {
     /*
-     * Primeiro confirma quem
-     * realmente está autenticado.
+     * Primeiro tenta confirmar
+     * o usuário no backend.
+     *
+     * Se estiver realmente offline,
+     * usa os dados armazenados
+     * localmente.
      */
-
     try {
-  currentUser =
-    await buscarUsuarioLogado();
+      currentUser =
+        await buscarUsuarioLogado();
 
-} catch (
-  error
-) {
-  if (
-    !navigator.onLine &&
-    typeof getUsuarioLogado ===
-      "function"
-  ) {
-    currentUser =
-      getUsuarioLogado();
+    } catch (
+      error
+    ) {
+      if (
+        !navigator.onLine &&
+        typeof getUsuarioLogado ===
+          "function"
+      ) {
+        currentUser =
+          getUsuarioLogado();
 
-  } else {
-    throw error;
-  }
-}
+      } else {
+        throw error;
+      }
+    }
 
     if (
       !currentUser
@@ -3222,64 +3274,75 @@ async function initializePage() {
     );
 
     /*
-     * Carrega as regiões.
+     * Carrega regiões pela API
+     * ou pelo IndexedDB.
      */
-
     await loadRegions();
 
     /*
-     * Atualiza o banco offline,
-     * mas falha de cache não deve
-     * interromper a página.
+     * Atualiza regiões,
+     * localidades e ruas para
+     * utilização offline.
      */
-
     try {
-  await sincronizarEnderecosOffline();
+      await sincronizarEnderecosOffline();
 
-} catch (
-  error
-) {
-  console.warn(
-    "Sincronização offline ignorada:",
-    error
-  );
-}
-
-if (
-  navigator.onLine &&
-  typeof sincronizarCadastrosOffline ===
-    "function"
-) {
-
-  sincronizarCadastrosOffline()
-    .then(
-      function (
-        resultado
-      ) {
-        if (
-          resultado?.sincronizados
-        ) {
-          console.log(
-            `${resultado.sincronizados} cadastro(s) offline sincronizado(s).`
-          );
-        }
-      }
-    )
-    .catch(
-      function (
+    } catch (
+      error
+    ) {
+      console.warn(
+        "Sincronização offline ignorada:",
         error
-      ) {
-        console.warn(
-          "Não foi possível sincronizar os cadastros pendentes:",
-          error
-        );
-      }
-    );
-}
-    /*
-     * Somente no modo edição.
-     */
+      );
+    }
 
+    /*
+     * Se houver cadastros feitos
+     * offline, tenta enviá-los.
+     */
+    if (
+      navigator.onLine &&
+      typeof sincronizarCadastrosOffline ===
+        "function"
+    ) {
+      sincronizarCadastrosOffline()
+        .then(
+          function (
+            resultado
+          ) {
+            if (
+              resultado?.sincronizados
+            ) {
+              console.log(
+                `${resultado.sincronizados} cadastro(s) offline sincronizado(s).`
+              );
+            }
+
+            if (
+              resultado?.pendentes
+            ) {
+              console.log(
+                `${resultado.pendentes} cadastro(s) ainda aguardam sincronização.`
+              );
+            }
+          }
+        )
+        .catch(
+          function (
+            error
+          ) {
+            console.warn(
+              "Não foi possível sincronizar os cadastros pendentes:",
+              error
+            );
+          }
+        );
+    }
+
+    /*
+     * No modo edição, busca
+     * o cadastro no servidor.
+     */
     if (
       isEditing
     ) {
@@ -3295,7 +3358,6 @@ if (
     /*
      * Libera visualmente a página.
      */
-
     document.body
       .classList
       .remove(
@@ -3338,14 +3400,11 @@ if (
       );
 
     /*
-     * Se estava editando,
-     * volta para a lista.
-     *
-     * IMPORTANTE:
-     * agora está corretamente
-     * dentro das chaves.
+     * Se estava editando e
+     * ocorreu um erro que não é
+     * de autenticação, volta para
+     * a listagem.
      */
-
     if (
       isEditing &&
       !authenticationError
@@ -3369,10 +3428,10 @@ if (
     }
 
     /*
-     * Só apaga a sessão quando
-     * realmente for autenticação.
+     * Só encerra a sessão quando
+     * o erro realmente indica
+     * problema de autenticação.
      */
-
     if (
       authenticationError
     ) {
@@ -3385,10 +3444,9 @@ if (
     }
 
     /*
-     * Qualquer outro erro:
-     * fica na página.
+     * Outros erros não devem
+     * destruir a sessão.
      */
-
     await showMessage({
       title:
         "Erro ao carregar",
