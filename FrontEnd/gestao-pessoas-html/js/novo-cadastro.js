@@ -3233,22 +3233,24 @@ async function initializePage() {
      * interromper a página.
      */
 
-    sincronizarEnderecosOffline()
-      .catch(
-        function (
-          error
-        ) {
-          console.warn(
-            "Sincronização offline ignorada:",
-            error
-          );
-        }
-      );
+    try {
+  await sincronizarEnderecosOffline();
+
+} catch (
+  error
+) {
+  console.warn(
+    "Sincronização offline ignorada:",
+    error
+  );
+}
+
 if (
   navigator.onLine &&
   typeof sincronizarCadastrosOffline ===
     "function"
 ) {
+
   sincronizarCadastrosOffline()
     .then(
       function (
