@@ -21,6 +21,12 @@
   font-size: 0.76rem;
   line-height: 1.5;
 }
+
+
+/* =========================
+   CARREGAMENTO DO PERFIL
+========================= */
+
 body.auth-loading .sidebar-user {
   visibility: hidden;
 }
@@ -28,6 +34,11 @@ body.auth-loading .sidebar-user {
 body.auth-ready .sidebar-user {
   visibility: visible;
 }
+
+
+/* =========================
+   BOTÃO VOLTAR
+========================= */
 
 .back-button {
   width: 100%;
@@ -57,6 +68,7 @@ body.auth-ready .sidebar-user {
   height: 17px;
 }
 
+
 /* =========================
    FORMULÁRIO
 ========================= */
@@ -65,14 +77,17 @@ body.auth-ready .sidebar-user {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  width: 100%;
 }
 
 .form-card {
+  width: 100%;
   padding: 18px;
   border: 1px solid var(--border, #e2e8f0);
   border-radius: 14px;
   background: var(--surface, #ffffff);
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  box-sizing: border-box;
 }
 
 .form-card-header {
@@ -113,17 +128,29 @@ body.auth-ready .sidebar-user {
   line-height: 1.5;
 }
 
+
+/* =========================
+   GRID DO FORMULÁRIO
+========================= */
+
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 17px;
+  width: 100%;
 }
 
 .form-field {
   min-width: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 7px;
+}
+
+.form-field-full,
+.full-field {
+  grid-column: 1 / -1;
 }
 
 .form-field > label,
@@ -137,10 +164,17 @@ body.auth-ready .sidebar-user {
   color: var(--danger, #dc2626);
 }
 
+
+/* =========================
+   CAMPOS
+========================= */
+
 .form-field input,
 .form-field select,
 .form-field textarea {
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   border: 1px solid var(--border, #dbe1e8);
   border-radius: 10px;
   outline: none;
@@ -180,7 +214,10 @@ body.auth-ready .sidebar-user {
 
 .form-field input.invalid,
 .form-field select.invalid,
-.form-field textarea.invalid {
+.form-field textarea.invalid,
+.form-field input.input-error,
+.form-field select.input-error,
+.form-field textarea.input-error {
   border-color: var(--danger, #dc2626);
 }
 
@@ -190,10 +227,56 @@ body.auth-ready .sidebar-user {
   color: var(--text-muted, #94a3b8);
 }
 
-.form-field-full,
-.full-field {
-  grid-column: 1 / -1;
+
+/* =========================
+   FILIAÇÃO
+========================= */
+
+/*
+ * Garante que os campos de mãe e pai
+ * apareçam normalmente em qualquer
+ * tamanho de tela.
+ */
+
+#mother-name,
+#father-name {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  box-sizing: border-box !important;
 }
+
+label[for="mother-name"],
+label[for="father-name"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#parentage-help {
+  display: block;
+  margin: 0;
+  color: #64748b;
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+#parentage-error {
+  display: block;
+  min-height: 0;
+  margin-top: 4px;
+  color: #dc2626;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+
+/* =========================
+   ERROS
+========================= */
 
 .field-error {
   display: none;
@@ -206,14 +289,20 @@ body.auth-ready .sidebar-user {
   display: block;
 }
 
+#parentage-error.field-error {
+  display: block;
+}
+
+
 /* =========================
-   CPF
+   LINHA COM BOTÃO
 ========================= */
 
 .field-action-row {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
 }
 
 .field-action-row input {
@@ -248,6 +337,11 @@ body.auth-ready .sidebar-user {
   width: 18px;
   height: 18px;
 }
+
+
+/* =========================
+   CONFERÊNCIA CPF / TÍTULO
+========================= */
 
 .cpf-validation-box {
   margin-top: 20px;
@@ -316,6 +410,7 @@ body.auth-ready .sidebar-user {
   font-weight: 600;
 }
 
+
 /* =========================
    DADOS ELEITORAIS
 ========================= */
@@ -380,13 +475,14 @@ body.auth-ready .sidebar-user {
 
 .electoral-data-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   margin-top: 10px;
   padding: 16px;
   border: 1px solid #dbeafe;
   border-radius: 12px;
   background: #f8fbff;
+  box-sizing: border-box;
 }
 
 .electoral-data-grid .form-field {
@@ -405,6 +501,7 @@ body.auth-ready .sidebar-user {
   box-shadow: none;
 }
 
+
 /* =========================
    OBSERVAÇÕES
 ========================= */
@@ -422,6 +519,7 @@ body.auth-ready .sidebar-user {
   color: var(--text-muted, #94a3b8);
   font-size: 0.62rem;
 }
+
 
 /* =========================
    RESPONSÁVEL
@@ -458,6 +556,7 @@ body.auth-ready .sidebar-user {
   line-height: 1.5;
 }
 
+
 /* =========================
    BOTÕES
 ========================= */
@@ -481,6 +580,7 @@ body.auth-ready .sidebar-user {
   font-weight: 700;
   text-decoration: none;
   transition: 0.2s ease;
+  box-sizing: border-box;
 }
 
 .cancel-button {
@@ -516,6 +616,7 @@ body.auth-ready .sidebar-user {
   height: 18px;
 }
 
+
 /* =========================
    MODAL DE SUCESSO
 ========================= */
@@ -545,6 +646,7 @@ body.auth-ready .sidebar-user {
   text-align: center;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.2);
   animation: modal-entry 180ms ease;
+  box-sizing: border-box;
 }
 
 @keyframes modal-entry {
@@ -610,6 +712,7 @@ body.auth-ready .sidebar-user {
   font-size: 0.75rem;
   font-weight: 600;
   text-decoration: none;
+  box-sizing: border-box;
 }
 
 .success-actions .primary-button {
@@ -632,6 +735,7 @@ body.auth-ready .sidebar-user {
 .success-actions .secondary-link-button:hover {
   background: #f8fafc;
 }
+
 
 /* =========================
    TABLET
@@ -672,7 +776,10 @@ body.auth-ready .sidebar-user {
   }
 
   .electoral-data-grid {
-    grid-template-columns: 0.7fr 0.7fr 1.6fr;
+    grid-template-columns:
+      0.7fr
+      0.7fr
+      1.6fr;
   }
 
   .registration-responsible {
@@ -696,6 +803,7 @@ body.auth-ready .sidebar-user {
   }
 }
 
+
 /* =========================
    COMPUTADOR
 ========================= */
@@ -713,11 +821,79 @@ body.auth-ready .sidebar-user {
   }
 }
 
+
+/* =========================
+   CELULAR
+========================= */
+
+@media (max-width: 599px) {
+  /*
+   * Uma coluna no celular.
+   * Isso mantém mãe e pai visíveis,
+   * um campo embaixo do outro.
+   */
+
+  .form-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  .form-field,
+  .form-field-full {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    grid-column: 1 / -1 !important;
+  }
+
+  #mother-name,
+  #father-name {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+  }
+
+  label[for="mother-name"],
+  label[for="father-name"] {
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  .field-action-row {
+    flex-direction: column;
+  }
+
+  .secondary-button {
+    width: 100%;
+  }
+
+  .electoral-data-grid {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 14px;
+  }
+
+  .form-actions {
+    width: 100%;
+  }
+
+  .cancel-button,
+  .save-button {
+    width: 100%;
+  }
+}
+
+
 /* =========================
    CELULAR PEQUENO
 ========================= */
 
 @media (max-width: 480px) {
+  .form-card {
+    padding: 15px;
+  }
+
   .field-with-status input {
     padding-right: 13px;
   }
@@ -733,7 +909,10 @@ body.auth-ready .sidebar-user {
   }
 }
 
-/* Menos animações para acessibilidade */
+
+/* =========================
+   ACESSIBILIDADE
+========================= */
 
 @media (prefers-reduced-motion: reduce) {
   .small-spinner,
@@ -741,6 +920,8 @@ body.auth-ready .sidebar-user {
     animation: none;
   }
 }
+
+
 /* =========================================
    CORREÇÃO DA PÁGINA NOVO CADASTRO
 ========================================= */
@@ -783,6 +964,7 @@ body {
   background: rgba(255, 255, 255, 0.96) !important;
   border-bottom: 1px solid #e2e8f0 !important;
   overflow: visible !important;
+  box-sizing: border-box !important;
 }
 
 .topbar-left,
@@ -808,6 +990,7 @@ body {
   padding: 28px !important;
 
   transform: none !important;
+  box-sizing: border-box !important;
 }
 
 .page-introduction {
@@ -816,6 +999,7 @@ body {
   margin: 0 0 20px !important;
   padding: 0 !important;
   transform: none !important;
+  box-sizing: border-box !important;
 }
 
 .registration-form {
@@ -823,7 +1007,13 @@ body {
   width: 100% !important;
   margin: 0 !important;
   transform: none !important;
+  box-sizing: border-box !important;
 }
+
+
+/* =========================
+   LAYOUT DESKTOP
+========================= */
 
 @media (min-width: 1024px) {
   .app-content {
@@ -838,6 +1028,11 @@ body {
     padding: 28px !important;
   }
 }
+
+
+/* =========================
+   LAYOUT MOBILE / TABLET
+========================= */
 
 @media (max-width: 1023px) {
   .app-content {
@@ -854,17 +1049,4 @@ body {
   .main-content {
     padding: 20px 14px 32px !important;
   }
-}
-#parentage-help {
-  margin: 0;
-  color: #64748b;
-  font-size: 0.875rem;
-  line-height: 1.5;
-}
-
-#parentage-error {
-  display: block;
-  margin-top: 4px;
-  color: #dc2626;
-  font-size: 0.875rem;
 }
