@@ -310,4 +310,11 @@ label[for="father-name"] {
     visibility: visible !important;
     opacity: 1 !important;
   }
+  body.auth-loading .registration-form {
+  visibility: hidden;
+}
+
+body.auth-ready .registration-form {
+  visibility: visible;
+}
 }
