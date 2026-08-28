@@ -2854,21 +2854,43 @@ notificationButton
 async function initializePage() {
   try {
     /*
-     * Obtém usuário autenticado.
+     * BUSCAR USUÁRIO LOGADO
      */
 
     if (
-      typeof requireAuth ===
+      typeof buscarUsuarioLogado ===
       "function"
+    ) {
+      currentUser =
+        await buscarUsuarioLogado();
+    }
+
+    /*
+     * FALLBACK OFFLINE / SESSÃO LOCAL
+     */
+
+    if (
+      !currentUser &&
+      typeof getUsuarioLogado ===
+        "function"
+    ) {
+      currentUser =
+        getUsuarioLogado();
+    }
+
+    /*
+     * FALLBACK PARA OUTRAS VERSÕES
+     * DO AUTH.JS
+     */
+
+    if (
+      !currentUser &&
+      typeof requireAuth ===
+        "function"
     ) {
       currentUser =
         await requireAuth();
     }
-
-    /*
-     * Alguns projetos retornam
-     * o usuário por outra função.
-     */
 
     if (
       !currentUser &&
@@ -2879,26 +2901,38 @@ async function initializePage() {
         await getCurrentUser();
     }
 
-    if (
-      currentUser
-    ) {
-      fillCurrentUser(
-        currentUser
-      );
+    /*
+     * SE NÃO ENCONTROU USUÁRIO
+     */
 
-      configureMenuByProfile(
-        currentUser
+    if (
+      !currentUser
+    ) {
+      throw new Error(
+        "Usuário não autenticado."
       );
     }
 
     /*
-     * Carrega regiões primeiro.
+     * PREENCHER PERFIL
+     */
+
+    fillCurrentUser(
+      currentUser
+    );
+
+    configureMenuByProfile(
+      currentUser
+    );
+
+    /*
+     * CARREGAR REGIÕES
      */
 
     await loadRegions();
 
     /*
-     * Estado inicial dos selects.
+     * ESTADO INICIAL DOS SELECTS
      */
 
     if (
@@ -2932,8 +2966,7 @@ async function initializePage() {
     }
 
     /*
-     * Se tiver ?id=...
-     * abre em modo edição.
+     * MODO EDIÇÃO
      */
 
     if (
@@ -2943,7 +2976,7 @@ async function initializePage() {
     }
 
     /*
-     * Contador de observações.
+     * CONTADOR DE OBSERVAÇÕES
      */
 
     if (
@@ -2958,7 +2991,7 @@ async function initializePage() {
     }
 
     /*
-     * Estado inicial do título.
+     * STATUS INICIAL DO TÍTULO
      */
 
     if (
@@ -2969,6 +3002,32 @@ async function initializePage() {
       );
     }
 
+    /*
+     * ÍCONES
+     */
+
+    if (
+      window.lucide
+    ) {
+      window.lucide.createIcons();
+    }
+
+    /*
+     * LIBERAR EXIBIÇÃO DA PÁGINA
+     */
+
+    document.body
+      .classList
+      .remove(
+        "auth-loading"
+      );
+
+    document.body
+      .classList
+      .add(
+        "auth-ready"
+      );
+
   } catch (
     error
   ) {
@@ -2977,12 +3036,65 @@ async function initializePage() {
       error
     );
 
+    const mensagem =
+      String(
+        error?.message ||
+        ""
+      ).toLowerCase();
+
+    const erroAutenticacao =
+      mensagem.includes(
+        "não autenticado"
+      ) ||
+      mensagem.includes(
+        "401"
+      ) ||
+      mensagem.includes(
+        "token"
+      ) ||
+      mensagem.includes(
+        "unauthorized"
+      );
+
+    if (
+      erroAutenticacao
+    ) {
+      if (
+        typeof limparSessao ===
+        "function"
+      ) {
+        limparSessao();
+      }
+
+      window.location.href =
+        "index.html";
+
+      return;
+    }
+
+    /*
+     * NÃO DEIXAR A PÁGINA
+     * PRESA EM "CARREGANDO"
+     */
+
+    document.body
+      .classList
+      .remove(
+        "auth-loading"
+      );
+
+    document.body
+      .classList
+      .add(
+        "auth-ready"
+      );
+
     await showMessage({
       title:
         "Erro ao carregar página",
 
       message:
-        error.message ||
+        error?.message ||
         "Não foi possível carregar os dados necessários.",
 
       type:
@@ -2990,7 +3102,6 @@ async function initializePage() {
     });
   }
 }
-
 
 /* =========================
    INICIAR
