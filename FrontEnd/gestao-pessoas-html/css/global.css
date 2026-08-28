@@ -19,14 +19,16 @@
   --radius-medium: 12px;
   --radius-large: 18px;
 
-  --shadow-small:
-    0 2px 8px rgba(15, 23, 42, 0.06);
-
-  --shadow-large:
-    0 20px 50px rgba(15, 23, 42, 0.12);
+  --shadow-small: 0 2px 8px rgba(15, 23, 42, 0.06);
+  --shadow-large: 0 20px 50px rgba(15, 23, 42, 0.12);
 
   --transition: 180ms ease;
 }
+
+
+/* =========================================
+   RESET
+========================================= */
 
 *,
 *::before,
@@ -43,8 +45,10 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+
   background: var(--background);
   color: var(--text-primary);
+
   font-family:
     Inter,
     system-ui,
@@ -52,9 +56,15 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
+
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
+
+
+/* =========================================
+   ELEMENTOS BÁSICOS
+========================================= */
 
 button,
 input,
@@ -76,21 +86,34 @@ a {
   color: inherit;
 }
 
+
+/* =========================================
+   BOTÃO PRINCIPAL
+========================================= */
+
 .primary-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   width: 100%;
   min-height: 50px;
+
   padding: 0 20px;
+
   border: 1px solid transparent;
   border-radius: var(--radius-medium);
+
   background: var(--primary);
   color: #ffffff;
+
   font-size: 0.875rem;
   font-weight: 700;
+
   cursor: pointer;
+
   box-shadow: var(--shadow-small);
+
   transition:
     background-color var(--transition),
     box-shadow var(--transition),
@@ -116,13 +139,21 @@ a {
   opacity: 0.65;
 }
 
+
+/* =========================================
+   BOTÃO DE TEXTO
+========================================= */
+
 .text-button {
   padding: 0;
   border: 0;
+
   background: transparent;
   color: var(--primary);
+
   font-size: 0.75rem;
   font-weight: 600;
+
   cursor: pointer;
 }
 
@@ -130,69 +161,153 @@ a {
   color: var(--primary-dark);
 }
 
+
+/* =========================================
+   ACESSIBILIDADE
+========================================= */
+
 .sr-only {
   position: absolute;
+
   width: 1px;
   height: 1px;
+
   padding: 0;
-  overflow: hidden;
-  border: 0;
   margin: -1px;
+
+  overflow: hidden;
+
+  border: 0;
+
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
 }
 
-@media (min-width: 768px) {
-  body {
-    font-size: 1rem;
-  }
-  /* =========================================
+
+/* =========================================
    PROTEÇÃO DE ACESSO
 ========================================= */
 
 /*
- * Toda página protegida começa
- * invisível.
+ * A página protegida começa invisível.
+ * O JavaScript deve trocar:
  *
- * O auth.js só libera depois
- * que o backend confirmar
- * quem é o usuário.
+ * auth-loading
+ *
+ * por:
+ *
+ * auth-ready
+ *
+ * depois de confirmar o usuário.
  */
 
 body.auth-loading {
   visibility: hidden;
 }
-body.auth-loading .profile-button,
-body.auth-loading .sidebar-user {
-  visibility: hidden;
-}
-
-body.auth-ready .profile-button,
-body.auth-ready .sidebar-user {
-  visibility: visible;
-}
-
-/*
- * Depois da validação,
- * a página aparece.
- */
 
 body.auth-ready {
   visibility: visible;
 }
 
 
-/*
- * Links administrativos
- * começam escondidos.
- *
- * O JavaScript libera somente
- * quando o usuário realmente
- * for ADMINISTRADOR.
- */
+/* Enquanto autentica, esconde dados do perfil */
+
+body.auth-loading .profile-button,
+body.auth-loading .sidebar-user {
+  visibility: hidden;
+}
+
+
+/* Depois da autenticação, mostra o perfil */
+
+body.auth-ready .profile-button,
+body.auth-ready .sidebar-user {
+  visibility: visible;
+}
+
+
+/* =========================================
+   LINKS SOMENTE ADMINISTRADOR
+========================================= */
 
 [data-admin-only] {
   display: none;
 }
 
+
+/* =========================================
+   GARANTIA DOS CAMPOS DE FILIAÇÃO
+========================================= */
+
+/*
+ * Essas regras impedem que Nome da mãe
+ * e Nome do pai sejam escondidos por
+ * alguma regra responsiva genérica.
+ */
+
+#mother-name,
+#father-name {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+
+  width: 100%;
+  max-width: 100%;
+}
+
+label[for="mother-name"],
+label[for="father-name"] {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+}
+
+
+/* =========================================
+   TABLET / COMPUTADOR
+========================================= */
+
+@media (min-width: 768px) {
+  body {
+    font-size: 1rem;
+  }
+}
+
+
+/* =========================================
+   CELULAR
+========================================= */
+
+@media (max-width: 767px) {
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    width: 100%;
+    min-width: 320px;
+    overflow-x: hidden;
+  }
+
+  /*
+   * Mantém explicitamente os campos
+   * de filiação visíveis no celular.
+   */
+
+  #mother-name,
+  #father-name {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  label[for="mother-name"],
+  label[for="father-name"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
 }
