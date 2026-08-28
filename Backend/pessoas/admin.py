@@ -8,6 +8,10 @@ class PessoaAdmin(admin.ModelAdmin):
     list_display = [
         "nome_completo",
         "cpf",
+        "titulo_eleitor",
+        "zona_eleitoral",
+        "secao_eleitoral",
+        "municipio_eleitoral",
         "telefone",
         "regiao",
         "localidade",
@@ -20,6 +24,10 @@ class PessoaAdmin(admin.ModelAdmin):
     search_fields = [
         "nome_completo",
         "cpf",
+        "titulo_eleitor",
+        "zona_eleitoral",
+        "secao_eleitoral",
+        "municipio_eleitoral",
         "telefone",
         "cadastrada_por__username",
         "cadastrada_por__first_name",
@@ -31,6 +39,7 @@ class PessoaAdmin(admin.ModelAdmin):
         "regiao",
         "localidade",
         "status_verificacao_cpf",
+        "status_verificacao_titulo",
         "criado_em",
     ]
 
@@ -52,6 +61,18 @@ class PessoaAdmin(admin.ModelAdmin):
             },
         ),
 
+        (
+            "Dados eleitorais",
+            {
+                "fields": [
+                    "titulo_eleitor",
+                    "zona_eleitoral",
+                    "secao_eleitoral",
+                    "municipio_eleitoral",
+                    "status_verificacao_titulo",
+                ]
+            },
+        ),
 
         (
             "Endereço",

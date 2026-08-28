@@ -5,9 +5,7 @@ from rest_framework import serializers
 from .models import Pessoa
 
 
-class PessoaSerializer(
-    serializers.ModelSerializer
-):
+class PessoaSerializer(serializers.ModelSerializer):
     regiao_nome = serializers.CharField(
         source="regiao.nome",
         read_only=True,
@@ -28,9 +26,7 @@ class PessoaSerializer(
         read_only=True,
     )
 
-    cadastrada_por_nome = (
-        serializers.SerializerMethodField()
-    )
+    cadastrada_por_nome = serializers.SerializerMethodField()
 
     class Meta:
         model = Pessoa
@@ -40,9 +36,21 @@ class PessoaSerializer(
             "nome_completo",
             "cpf",
             "data_nascimento",
+
+            # Filiação
             "nome_mae",
             "nome_pai",
+
+            # Dados eleitorais
+            "titulo_eleitor",
+            "zona_eleitoral",
+            "secao_eleitoral",
+            "municipio_eleitoral",
+
+            # Contato
             "telefone",
+
+            # Endereço
             "regiao",
             "regiao_nome",
             "localidade",
@@ -52,11 +60,14 @@ class PessoaSerializer(
             "rua_nome",
             "numero",
             "complemento",
+
+            # Outros
             "observacoes",
             "cadastrada_por",
             "cadastrada_por_nome",
             "status",
             "status_verificacao_cpf",
+            "status_verificacao_titulo",
             "criado_em",
             "atualizado_em",
         ]
@@ -65,6 +76,7 @@ class PessoaSerializer(
             "id",
             "cadastrada_por",
             "status_verificacao_cpf",
+            "status_verificacao_titulo",
             "criado_em",
             "atualizado_em",
         ]
@@ -77,9 +89,7 @@ class PessoaSerializer(
         if not valor:
             return valor
 
-        texto = str(
-            valor
-        ).strip()
+        texto = str(valor).strip()
 
         padrao_perigoso = re.compile(
             (
@@ -90,9 +100,7 @@ class PessoaSerializer(
             re.IGNORECASE,
         )
 
-        if padrao_perigoso.search(
-            texto
-        ):
+        if padrao_perigoso.search(texto):
             raise serializers.ValidationError(
                 (
                     f"O campo {campo} contém "
@@ -126,75 +134,66 @@ class PessoaSerializer(
 
         return texto
 
-    def validate_nome_completo(
-        self,
-        value,
-    ):
+    # -----------------------------------------
+    # VALIDAÇÕES DOS CAMPOS DE TEXTO
+    # -----------------------------------------
+
+    def validate_nome_completo(self, value):
         return self.validar_texto_seguro(
             value,
             "nome completo",
         )
 
-    def validate_nome_mae(
-        self,
-        value,
-    ):
+    def validate_nome_mae(self, value):
         return self.validar_texto_seguro(
             value,
             "nome da mãe",
         )
 
-    def validate_nome_pai(
-        self,
-        value,
-    ):
+    def validate_nome_pai(self, value):
         return self.validar_texto_seguro(
             value,
             "nome do pai",
         )
 
-    def validate_complemento(
-        self,
-        value,
-    ):
+    def validate_complemento(self, value):
         return self.validar_texto_seguro(
             value,
             "complemento",
         )
 
-    def validate_observacoes(
-        self,
-        value,
-    ):
+    def validate_observacoes(self, value):
         return self.validar_texto_seguro(
             value,
             "observações",
         )
 
-    def get_cadastrada_por_nome(
-        self,
-        obj,
-    ):
+    def validate_municipio_eleitoral(self, value):
+        return self.validar_texto_seguro(
+            value,
+            "município eleitoral",
+        )
+
+    # -----------------------------------------
+    # USUÁRIO QUE REALIZOU O CADASTRO
+    # -----------------------------------------
+
+    def get_cadastrada_por_nome(self, obj):
         if not obj.cadastrada_por:
             return ""
 
-        nome = (
-            obj.cadastrada_por
-            .get_full_name()
-        )
+        nome = obj.cadastrada_por.get_full_name()
 
         if nome:
             return nome
 
-        return (
-            obj.cadastrada_por
-            .username
-        )
+        return obj.cadastrada_por.username
 
-    def validate_cpf(
-        self,
-        value,
-    ):
+    # -----------------------------------------
+    # CPF
+    # -----------------------------------------
+
+    def validate_cpf(self, value):
         cpf = "".join(
             filter(
                 str.isdigit,
@@ -202,17 +201,13 @@ class PessoaSerializer(
             )
         )
 
-        queryset = (
-            Pessoa.objects.filter(
-                cpf=cpf
-            )
+        queryset = Pessoa.objects.filter(
+            cpf=cpf
         )
 
         if self.instance:
-            queryset = (
-                queryset.exclude(
-                    pk=self.instance.pk
-                )
+            queryset = queryset.exclude(
+                pk=self.instance.pk
             )
 
         if queryset.exists():
@@ -225,10 +220,11 @@ class PessoaSerializer(
 
         return cpf
 
-    def validate(
-        self,
-        dados,
-    ):
+    # -----------------------------------------
+    # REGIÃO / LOCALIDADE / RUA
+    # -----------------------------------------
+
+    def validate(self, dados):
         regiao = dados.get(
             "regiao",
             getattr(
@@ -259,8 +255,7 @@ class PessoaSerializer(
         if (
             regiao
             and localidade
-            and localidade.regiao_id
-            != regiao.id
+            and localidade.regiao_id != regiao.id
         ):
             raise serializers.ValidationError(
                 {
@@ -275,8 +270,7 @@ class PessoaSerializer(
         if (
             localidade
             and rua
-            and rua.localidade_id
-            != localidade.id
+            and rua.localidade_id != localidade.id
         ):
             raise serializers.ValidationError(
                 {

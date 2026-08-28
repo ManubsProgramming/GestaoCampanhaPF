@@ -47,12 +47,12 @@ def validar_cpf(cpf):
 
 
 class Pessoa(models.Model):
+
     class Status(models.TextChoices):
         ATIVO = (
             "ATIVO",
             "Ativo",
         )
-
         INATIVO = (
             "INATIVO",
             "Inativo",
@@ -65,7 +65,6 @@ class Pessoa(models.Model):
             "NAO_VERIFICADO",
             "Não verificado",
         )
-
         CONSULTADO = (
             "CONSULTADO",
             "Consulta realizada",
@@ -85,6 +84,10 @@ class Pessoa(models.Model):
 
     data_nascimento = models.DateField()
 
+    # -------------------------
+    # FILIAÇÃO
+    # -------------------------
+
     nome_mae = models.CharField(
         max_length=200,
         blank=True,
@@ -95,10 +98,44 @@ class Pessoa(models.Model):
         blank=True,
     )
 
+    # -------------------------
+    # DADOS ELEITORAIS
+    # -------------------------
+
+    titulo_eleitor = models.CharField(
+        max_length=20,
+        unique=True,
+        blank=True,
+        null=True,
+    )
+
+    zona_eleitoral = models.CharField(
+        max_length=10,
+        blank=True,
+    )
+
+    secao_eleitoral = models.CharField(
+        max_length=10,
+        blank=True,
+    )
+
+    municipio_eleitoral = models.CharField(
+        max_length=150,
+        blank=True,
+    )
+
+    # -------------------------
+    # CONTATO
+    # -------------------------
+
     telefone = models.CharField(
         max_length=20,
         blank=True,
     )
+
+    # -------------------------
+    # ENDEREÇO
+    # -------------------------
 
     regiao = models.ForeignKey(
         Regiao,
@@ -132,11 +169,19 @@ class Pessoa(models.Model):
         blank=True,
     )
 
+    # -------------------------
+    # USUÁRIO QUE CADASTROU
+    # -------------------------
+
     cadastrada_por = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         related_name="pessoas_cadastradas",
     )
+
+    # -------------------------
+    # STATUS
+    # -------------------------
 
     status = models.CharField(
         max_length=10,
@@ -144,18 +189,21 @@ class Pessoa(models.Model):
         default=Status.ATIVO,
     )
 
-    status_verificacao_cpf = (
-        models.CharField(
-            max_length=20,
-            choices=(
-                StatusVerificacao.choices
-            ),
-            default=(
-                StatusVerificacao
-                .NAO_VERIFICADO
-            ),
-        )
+    status_verificacao_cpf = models.CharField(
+        max_length=20,
+        choices=StatusVerificacao.choices,
+        default=StatusVerificacao.NAO_VERIFICADO,
     )
+
+    status_verificacao_titulo = models.CharField(
+        max_length=20,
+        choices=StatusVerificacao.choices,
+        default=StatusVerificacao.NAO_VERIFICADO,
+    )
+
+    # -------------------------
+    # DATAS
+    # -------------------------
 
     criado_em = models.DateTimeField(
         auto_now_add=True,
@@ -166,14 +214,10 @@ class Pessoa(models.Model):
     )
 
     class Meta:
-        verbose_name = (
-            "Pessoa cadastrada"
-        )
-
+        verbose_name = "Pessoa cadastrada"
         verbose_name_plural = (
             "Pessoas cadastradas"
         )
-
         ordering = [
             "-criado_em"
         ]
