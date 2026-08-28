@@ -21,10 +21,10 @@
   >
 
   <!-- ESTILOS -->
-  <link rel="stylesheet" href="css/global.css">
-  <link rel="stylesheet" href="css/painel.css">
-  <link rel="stylesheet" href="css/novo-cadastro.css">
-  <link rel="stylesheet" href="css/modal.css">
+  <link rel="stylesheet" href="css/global.css?v=13">
+  <link rel="stylesheet" href="css/painel.css?v=13">
+  <link rel="stylesheet" href="css/novo-cadastro.css?v=13">
+  <link rel="stylesheet" href="css/modal.css?v=13">
 
   <link
     rel="manifest"
@@ -43,10 +43,10 @@
   ></script>
 
   <!-- JAVASCRIPT -->
-  <script src="js/api.js?v=10" defer></script>
-  <script src="js/auth.js?v=10" defer></script>
-  <script src="js/modal.js?v=10" defer></script>
-  <script src="js/novo-cadastro.js?v=10" defer></script>
+  <script src="js/api.js?v=13" defer></script>
+  <script src="js/auth.js?v=13" defer></script>
+  <script src="js/modal.js?v=13" defer></script>
+  <script src="js/novo-cadastro.js?v=13" defer></script>
 </head>
 
 <body
@@ -54,14 +54,12 @@
   data-auth="authenticated"
 >
   <!-- FUNDO DO MENU NO CELULAR -->
-
   <div
     id="menu-overlay"
     class="menu-overlay"
   ></div>
 
   <!-- MENU LATERAL -->
-
   <aside
     id="sidebar"
     class="sidebar"
@@ -176,6 +174,7 @@
       </div>
 
       <button
+        id="logout-button"
         class="logout-button"
         type="button"
         title="Sair"
@@ -186,10 +185,9 @@
   </aside>
 
   <!-- CONTEÚDO DA PÁGINA -->
-
   <div class="app-content">
-    <!-- CABEÇALHO -->
 
+    <!-- CABEÇALHO -->
     <header class="topbar">
       <div class="topbar-left">
         <button
@@ -242,8 +240,8 @@
     </header>
 
     <!-- CONTEÚDO PRINCIPAL -->
-
     <main class="main-content">
+
       <section class="page-introduction">
         <div>
           <h2>Cadastro de pessoa</h2>
@@ -264,14 +262,15 @@
       </section>
 
       <!-- FORMULÁRIO -->
-
       <form
         id="registration-form"
         class="registration-form"
         novalidate
       >
-        <!-- DADOS PESSOAIS -->
 
+        <!-- =====================================
+             DADOS PESSOAIS
+        ====================================== -->
         <section class="form-card">
           <header class="form-card-header">
             <div class="form-card-icon">
@@ -288,8 +287,8 @@
           </header>
 
           <div class="form-grid">
-            <!-- NOME -->
 
+            <!-- NOME -->
             <div class="form-field form-field-full">
               <label for="full-name">
                 Nome completo
@@ -308,9 +307,14 @@
               <span class="field-error"></span>
             </div>
 
-            <!-- FILIAÇÃO -->
+            <!-- =====================================
+                 FILIAÇÃO
+            ====================================== -->
 
-            <div class="form-field">
+            <div
+              class="form-field parentage-field"
+              data-parentage-field
+            >
               <label for="mother-name">
                 Nome da mãe
               </label>
@@ -323,9 +327,14 @@
                 autocomplete="off"
                 aria-describedby="parentage-help parentage-error"
               >
+
+              <span class="field-error"></span>
             </div>
 
-            <div class="form-field">
+            <div
+              class="form-field parentage-field"
+              data-parentage-field
+            >
               <label for="father-name">
                 Nome do pai
               </label>
@@ -338,9 +347,14 @@
                 autocomplete="off"
                 aria-describedby="parentage-help parentage-error"
               >
+
+              <span class="field-error"></span>
             </div>
 
-            <div class="form-field form-field-full">
+            <div
+              class="form-field form-field-full parentage-help-field"
+              data-parentage-field
+            >
               <p id="parentage-help">
                 Informe pelo menos um dos nomes. Se não souber
                 o nome da mãe, informe o nome do pai.
@@ -354,7 +368,6 @@
             </div>
 
             <!-- CPF -->
-
             <div class="form-field">
               <label for="cpf">
                 CPF
@@ -387,7 +400,6 @@
             </div>
 
             <!-- DATA DE NASCIMENTO -->
-
             <div class="form-field">
               <label for="birth-date">
                 Data de nascimento
@@ -404,7 +416,9 @@
               <span class="field-error"></span>
             </div>
 
-            <!-- TÍTULO DE ELEITOR -->
+            <!-- =====================================
+                 TÍTULO DE ELEITOR
+            ====================================== -->
 
             <div class="form-field form-field-full">
               <label for="voter-title">
@@ -442,8 +456,8 @@
               </p>
 
               <!-- DADOS ELEITORAIS -->
-
               <div class="electoral-data-grid">
+
                 <div class="form-field">
                   <label for="electoral-zone">
                     Zona eleitoral
@@ -487,7 +501,6 @@
               </div>
 
               <!-- CONFERÊNCIA DO TÍTULO -->
-
               <div
                 class="cpf-validation-box"
                 style="margin-top: 16px;"
@@ -528,7 +541,6 @@
             </div>
 
             <!-- TELEFONE -->
-
             <div class="form-field">
               <label for="phone">
                 Telefone
@@ -547,9 +559,12 @@
 
               <span class="field-error"></span>
             </div>
+
           </div>
 
-          <!-- CONFERÊNCIA DO CPF -->
+          <!-- =====================================
+               CONFERÊNCIA DO CPF
+          ====================================== -->
 
           <div
             id="cpf-validation-box"
@@ -592,7 +607,9 @@
           </div>
         </section>
 
-        <!-- ENDEREÇO -->
+        <!-- =====================================
+             ENDEREÇO
+        ====================================== -->
 
         <section class="form-card">
           <header class="form-card-header">
@@ -610,8 +627,8 @@
           </header>
 
           <div class="form-grid">
-            <!-- REGIÃO -->
 
+            <!-- REGIÃO -->
             <div class="form-field">
               <label for="region">
                 Região
@@ -632,7 +649,6 @@
             </div>
 
             <!-- LOCALIDADE -->
-
             <div class="form-field">
               <label for="neighborhood">
                 Localidade
@@ -654,7 +670,6 @@
             </div>
 
             <!-- RUA -->
-
             <div class="form-field">
               <label for="street">
                 Rua
@@ -676,7 +691,6 @@
             </div>
 
             <!-- NÚMERO -->
-
             <div class="form-field">
               <label for="number">
                 Número
@@ -693,7 +707,6 @@
             </div>
 
             <!-- COMPLEMENTO -->
-
             <div class="form-field form-field-full">
               <label for="complement">
                 Complemento
@@ -711,7 +724,9 @@
           </div>
         </section>
 
-        <!-- OBSERVAÇÕES -->
+        <!-- =====================================
+             OBSERVAÇÕES
+        ====================================== -->
 
         <section class="form-card">
           <header class="form-card-header">
@@ -752,7 +767,9 @@
           </div>
         </section>
 
-        <!-- RESPONSÁVEL PELO CADASTRO -->
+        <!-- =====================================
+             RESPONSÁVEL
+        ====================================== -->
 
         <section class="registration-responsible">
           <div>
@@ -769,7 +786,9 @@
           </p>
         </section>
 
-        <!-- BOTÕES DO FORMULÁRIO -->
+        <!-- =====================================
+             AÇÕES
+        ====================================== -->
 
         <div class="form-actions">
           <a
@@ -788,11 +807,14 @@
             <span>Salvar cadastro</span>
           </button>
         </div>
+
       </form>
     </main>
   </div>
 
-  <!-- MODAL DE SUCESSO -->
+  <!-- =====================================
+       MODAL DE SUCESSO
+  ====================================== -->
 
   <div
     id="success-modal"
@@ -834,40 +856,8 @@
     </div>
   </div>
 
-  <script src="js/pwa.js"></script>
-  <script src="js/offline.js"></script>
-
-  <!-- VALIDAÇÃO DOS NOMES DOS PAIS -->
-
-  <script>
-    (() => {
-      const form = document.getElementById('registration-form');
-      const motherName = document.getElementById('mother-name');
-      const fatherName = document.getElementById('father-name');
-      const parentageError = document.getElementById('parentage-error');
-
-      const validateParentage = () => {
-        const hasParentName =
-          motherName.value.trim() || fatherName.value.trim();
-
-        parentageError.textContent = hasParentName
-          ? ''
-          : 'Informe o nome da mãe ou o nome do pai.';
-
-        return Boolean(hasParentName);
-      };
-
-      motherName.addEventListener('input', validateParentage);
-      fatherName.addEventListener('input', validateParentage);
-
-      form.addEventListener('submit', (event) => {
-        if (!validateParentage()) {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-          motherName.focus();
-        }
-      });
-    })();
-  </script>
+  <!-- PWA / OFFLINE -->
+  <script src="js/pwa.js?v=13"></script>
+  <script src="js/offline.js?v=13"></script>
 </body>
 </html>
