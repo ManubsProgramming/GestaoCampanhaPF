@@ -40,33 +40,23 @@ class PessoaSerializer(
             "nome_completo",
             "cpf",
             "data_nascimento",
-            "titulo_eleitor",
-            "zona_eleitoral",
-            "secao_eleitoral",
-            "municipio_eleitoral",
+            "nome_mae",
+            "nome_pai",
             "telefone",
-
             "regiao",
             "regiao_nome",
-
             "localidade",
             "localidade_nome",
             "tipo_localidade",
-
             "rua",
             "rua_nome",
-
             "numero",
             "complemento",
             "observacoes",
-
             "cadastrada_por",
             "cadastrada_por_nome",
-
             "status",
             "status_verificacao_cpf",
-            "status_verificacao_titulo",
-
             "criado_em",
             "atualizado_em",
         ]
@@ -75,7 +65,6 @@ class PessoaSerializer(
             "id",
             "cadastrada_por",
             "status_verificacao_cpf",
-            "status_verificacao_titulo",
             "criado_em",
             "atualizado_em",
         ]
@@ -146,6 +135,24 @@ class PessoaSerializer(
             "nome completo",
         )
 
+    def validate_nome_mae(
+        self,
+        value,
+    ):
+        return self.validar_texto_seguro(
+            value,
+            "nome da mãe",
+        )
+
+    def validate_nome_pai(
+        self,
+        value,
+    ):
+        return self.validar_texto_seguro(
+            value,
+            "nome do pai",
+        )
+
     def validate_complemento(
         self,
         value,
@@ -162,15 +169,6 @@ class PessoaSerializer(
         return self.validar_texto_seguro(
             value,
             "observações",
-        )
-
-    def validate_municipio_eleitoral(
-        self,
-        value,
-    ):
-        return self.validar_texto_seguro(
-            value,
-            "município eleitoral",
         )
 
     def get_cadastrada_por_nome(

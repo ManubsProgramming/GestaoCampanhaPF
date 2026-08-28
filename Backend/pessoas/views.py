@@ -45,18 +45,13 @@ class PessoaViewSet(
         "rua",
         "cadastrada_por",
         "status",
-        "zona_eleitoral",
-        "secao_eleitoral",
-        "municipio_eleitoral",
     ]
 
     search_fields = [
         "nome_completo",
         "cpf",
-        "titulo_eleitor",
-        "zona_eleitoral",
-        "secao_eleitoral",
-        "municipio_eleitoral",
+        "nome_mae",
+        "nome_pai",
         "telefone",
         "regiao__nome",
         "localidade__nome",

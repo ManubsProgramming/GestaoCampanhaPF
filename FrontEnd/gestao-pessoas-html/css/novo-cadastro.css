@@ -855,4 +855,16 @@ body {
     padding: 20px 14px 32px !important;
   }
 }
+#parentage-help {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
 
+#parentage-error {
+  display: block;
+  margin-top: 4px;
+  color: #dc2626;
+  font-size: 0.875rem;
+}

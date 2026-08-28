@@ -70,7 +70,6 @@ class ExportarExcelView(APIView):
                 pessoa.nome_completo,
                 pessoa.cpf,
                 nascimento,
-                pessoa.titulo_eleitor,
                 pessoa.telefone,
                 pessoa.regiao.nome,
                 pessoa.localidade.nome,

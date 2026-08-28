@@ -47,7 +47,6 @@ def validar_cpf(cpf):
 
 
 class Pessoa(models.Model):
-
     class Status(models.TextChoices):
         ATIVO = (
             "ATIVO",
@@ -86,24 +85,13 @@ class Pessoa(models.Model):
 
     data_nascimento = models.DateField()
 
-    titulo_eleitor = models.CharField(
-        max_length=20,
-        unique=True,
+    nome_mae = models.CharField(
+        max_length=200,
         blank=True,
     )
 
-    zona_eleitoral = models.CharField(
-        max_length=10,
-        blank=True,
-    )
-
-    secao_eleitoral = models.CharField(
-        max_length=10,
-        blank=True,
-    )
-
-    municipio_eleitoral = models.CharField(
-        max_length=150,
+    nome_pai = models.CharField(
+        max_length=200,
         blank=True,
     )
 
@@ -157,19 +145,6 @@ class Pessoa(models.Model):
     )
 
     status_verificacao_cpf = (
-        models.CharField(
-            max_length=20,
-            choices=(
-                StatusVerificacao.choices
-            ),
-            default=(
-                StatusVerificacao
-                .NAO_VERIFICADO
-            ),
-        )
-    )
-
-    status_verificacao_titulo = (
         models.CharField(
             max_length=20,
             choices=(

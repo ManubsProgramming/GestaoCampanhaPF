@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Registros de auditoria do sistema"
+  >
+
+  <title>
+    Auditoria | Gestão de Cadastros
+  </title>
+
+  <link
+    rel="icon"
+    href="assets/imagens/prefeitura-icon.png"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/global.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/painel.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/auditoria.css"
+  >
+
+  <script
+    src="https://unpkg.com/lucide@0.468.0"
+    defer
+  ></script>
+
+  <script
+    src="js/api.js"
+    defer
+  ></script>
+
+  <script
+    src="js/auth.js"
+    defer
+  ></script>
+
+  <script
+    src="js/auditoria.js"
+    defer
+  ></script>
+</head>
+
+<body
+  class="auth-loading"
+  data-auth="admin"
+>
+
+  <div
+    id="menu-overlay"
+    class="menu-overlay"
+  ></div>
+
+
+  <aside
+    id="sidebar"
+    class="sidebar"
+    aria-label="Menu principal"
+  >
+
+    <div class="sidebar-brand">
+
+      <img
+        src="assets/imagens/prefeitura-icon.png"
+        alt="Logo do sistema"
+        class="sidebar-logo"
+      >
+
+      <div>
+        <strong>
+          Gestão de Cadastros
+        </strong>
+
+        <span>
+          Painel administrativo
+        </span>
+      </div>
+
+      <button
+        id="close-menu"
+        class="icon-button close-menu"
+        type="button"
+        aria-label="Fechar menu"
+      >
+        <i data-lucide="x"></i>
+      </button>
+
+    </div>
+
+
+    <nav class="sidebar-navigation">
+
+      <span class="sidebar-section-title">
+        Menu principal
+      </span>
+
+      <a
+        href="painel.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="layout-dashboard"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a
+        href="pessoas.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="users"></i>
+        <span>Pessoas cadastradas</span>
+      </a>
+
+      <a
+        href="novo-cadastro.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="user-plus"></i>
+        <span>Novo cadastro</span>
+      </a>
+
+      <a
+        href="usuarios.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="user-cog"></i>
+        <span>Usuários</span>
+      </a>
+
+      <a
+        href="regioes.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="map-pin"></i>
+        <span>Regiões</span>
+      </a>
+
+      <a
+        href="relatorios.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="bar-chart-3"></i>
+        <span>Relatórios</span>
+      </a>
+
+      <a
+        href="configuracoes.html"
+        class="sidebar-link"
+      >
+        <i data-lucide="settings"></i>
+        <span>Configurações</span>
+      </a>
+
+      <a
+        href="auditoria.html"
+        class="sidebar-link active"
+      >
+        <i data-lucide="file-clock"></i>
+        <span>Auditoria</span>
+      </a>
+
+    </nav>
+
+
+    <div class="sidebar-user">
+
+      <div class="user-avatar">
+        AD
+      </div>
+
+      <div class="sidebar-user-info">
+        <strong>
+          Administrador
+        </strong>
+
+        <span>
+          Administrador geral
+        </span>
+      </div>
+
+      <button
+        id="logout-button"
+        class="logout-button"
+        type="button"
+        aria-label="Sair do sistema"
+      >
+        <i data-lucide="log-out"></i>
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <div class="app-content">
+
+    <header class="topbar">
+
+      <div class="topbar-left">
+
+        <button
+          id="open-menu"
+          class="icon-button open-menu"
+          type="button"
+          aria-label="Abrir menu"
+        >
+          <i data-lucide="menu"></i>
+        </button>
+
+        <div>
+          <h1>Auditoria</h1>
+
+          <p>
+            Histórico de ações realizadas no sistema
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="topbar-actions">
+
+        <button
+          class="notification-button"
+          type="button"
+          aria-label="Notificações"
+        >
+          <i data-lucide="bell"></i>
+          <span class="notification-dot"></span>
+        </button>
+
+        <button
+          class="profile-button"
+          type="button"
+          aria-label="Abrir perfil"
+        >
+          <span class="profile-avatar">
+            AD
+          </span>
+
+          <span class="profile-info">
+            <strong id="logged-user">
+              Administrador
+            </strong>
+
+            <small>
+              Administrador geral
+            </small>
+          </span>
+
+          <i data-lucide="chevron-down"></i>
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <main class="main-content">
+
+      <section class="audit-introduction">
+
+        <div>
+          <h2>
+            Registros de auditoria
+          </h2>
+
+          <p>
+            Consulte as ações realizadas por usuários
+            e pelo próprio sistema.
+          </p>
+        </div>
+
+      </section>
+
+
+      <section class="audit-summary">
+
+        <article>
+          <span class="audit-summary-icon blue">
+            <i data-lucide="list-checks"></i>
+          </span>
+
+          <div>
+            <p>Total de registros</p>
+            <strong id="audit-total">0</strong>
+          </div>
+        </article>
+
+
+        <article>
+          <span class="audit-summary-icon green">
+            <i data-lucide="plus-circle"></i>
+          </span>
+
+          <div>
+            <p>Criações</p>
+            <strong id="audit-creations">0</strong>
+          </div>
+        </article>
+
+
+        <article>
+          <span class="audit-summary-icon orange">
+            <i data-lucide="pencil"></i>
+          </span>
+
+          <div>
+            <p>Alterações</p>
+            <strong id="audit-updates">0</strong>
+          </div>
+        </article>
+
+
+        <article>
+          <span class="audit-summary-icon red">
+            <i data-lucide="user-x"></i>
+          </span>
+
+          <div>
+            <p>Desativações</p>
+            <strong id="audit-deactivations">0</strong>
+          </div>
+        </article>
+
+      </section>
+
+
+      <section class="audit-filters">
+
+        <div class="audit-filters-header">
+
+          <div>
+            <h3>Pesquisa e filtros</h3>
+
+            <p>
+              Refine os registros apresentados
+            </p>
+          </div>
+
+          <button
+            id="clear-audit-filters"
+            type="button"
+            class="audit-clear-button"
+          >
+            Limpar filtros
+          </button>
+
+        </div>
+
+
+        <div class="audit-filters-grid">
+
+          <label>
+            <span>Pesquisar</span>
+
+            <div class="audit-search">
+              <i data-lucide="search"></i>
+
+              <input
+                id="audit-search-input"
+                type="search"
+                placeholder="Descrição, usuário, entidade ou IP"
+              >
+            </div>
+          </label>
+
+
+          <label>
+            <span>Ação</span>
+
+            <select id="audit-action-filter">
+              <option value="">
+                Todas as ações
+              </option>
+
+              <option value="LOGIN">Login</option>
+              <option value="LOGOUT">Logout</option>
+              <option value="CRIACAO">Criação</option>
+              <option value="ALTERACAO">Alteração</option>
+              <option value="EXCLUSAO">Exclusão</option>
+              <option value="ATIVACAO">Ativação</option>
+              <option value="DESATIVACAO">Desativação</option>
+              <option value="CONSULTA">Consulta</option>
+            </select>
+          </label>
+
+
+          <label>
+            <span>Entidade</span>
+
+            <select id="audit-entity-filter">
+              <option value="">
+                Todas as entidades
+              </option>
+            </select>
+          </label>
+
+
+          <label>
+            <span>Data inicial</span>
+
+            <input
+              id="audit-start-date"
+              type="date"
+            >
+          </label>
+
+
+          <label>
+            <span>Data final</span>
+
+            <input
+              id="audit-end-date"
+              type="date"
+            >
+          </label>
+
+        </div>
+
+      </section>
+
+
+      <section class="audit-card">
+
+        <header class="audit-card-header">
+
+          <div>
+            <h3>
+              Histórico de ações
+            </h3>
+
+            <p>
+              <span id="audit-visible-total">
+                0
+              </span>
+              registros encontrados
+            </p>
+          </div>
+
+        </header>
+
+
+        <div class="audit-table-container">
+
+          <table class="audit-table">
+
+            <thead>
+              <tr>
+                <th>Data e hora</th>
+                <th>Usuário</th>
+                <th>Ação</th>
+                <th>Entidade</th>
+                <th>Descrição</th>
+                <th>IP</th>
+              </tr>
+            </thead>
+
+            <tbody id="audit-table-body">
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <div
+          id="audit-empty-state"
+          class="audit-empty-state"
+        >
+          <i data-lucide="search-x"></i>
+
+          <strong>
+            Nenhum registro encontrado
+          </strong>
+
+          <p>
+            Tente alterar ou limpar os filtros.
+          </p>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+</body>
+</html>

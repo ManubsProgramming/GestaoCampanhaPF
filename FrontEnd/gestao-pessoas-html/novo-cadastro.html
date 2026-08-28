@@ -25,15 +25,17 @@
   <link rel="stylesheet" href="css/painel.css?v=10">
   <link rel="stylesheet" href="css/novo-cadastro.css?v=10">
   <link rel="stylesheet" href="css/modal.css?v=10">
-<link
-  rel="manifest"
-  href="manifest.json"
->
 
-<meta
-  name="theme-color"
-  content="#2563eb"
->
+  <link
+    rel="manifest"
+    href="manifest.json"
+  >
+
+  <meta
+    name="theme-color"
+    content="#2563eb"
+  >
+
   <!-- ÍCONES -->
   <script
     src="https://unpkg.com/lucide@0.468.0"
@@ -306,6 +308,51 @@
               <span class="field-error"></span>
             </div>
 
+            <!-- FILIAÇÃO -->
+
+            <div class="form-field">
+              <label for="mother-name">
+                Nome da mãe
+              </label>
+
+              <input
+                id="mother-name"
+                name="nome_mae"
+                type="text"
+                placeholder="Digite o nome da mãe"
+                autocomplete="off"
+                aria-describedby="parentage-help parentage-error"
+              >
+            </div>
+
+            <div class="form-field">
+              <label for="father-name">
+                Nome do pai
+              </label>
+
+              <input
+                id="father-name"
+                name="nome_pai"
+                type="text"
+                placeholder="Digite o nome do pai"
+                autocomplete="off"
+                aria-describedby="parentage-help parentage-error"
+              >
+            </div>
+
+            <div class="form-field form-field-full">
+              <p id="parentage-help">
+                Informe pelo menos um dos nomes. Se não souber
+                o nome da mãe, informe o nome do pai.
+              </p>
+
+              <span
+                id="parentage-error"
+                class="field-error"
+                aria-live="polite"
+              ></span>
+            </div>
+
             <!-- CPF -->
 
             <div class="form-field">
@@ -563,7 +610,6 @@
           </header>
 
           <div class="form-grid">
-           
             <!-- REGIÃO -->
 
             <div class="form-field">
@@ -787,8 +833,41 @@
       </div>
     </div>
   </div>
+
   <script src="js/pwa.js"></script>
   <script src="js/offline.js"></script>
 
+  <!-- VALIDAÇÃO DOS NOMES DOS PAIS -->
+
+  <script>
+    (() => {
+      const form = document.getElementById('registration-form');
+      const motherName = document.getElementById('mother-name');
+      const fatherName = document.getElementById('father-name');
+      const parentageError = document.getElementById('parentage-error');
+
+      const validateParentage = () => {
+        const hasParentName =
+          motherName.value.trim() || fatherName.value.trim();
+
+        parentageError.textContent = hasParentName
+          ? ''
+          : 'Informe o nome da mãe ou o nome do pai.';
+
+        return Boolean(hasParentName);
+      };
+
+      motherName.addEventListener('input', validateParentage);
+      fatherName.addEventListener('input', validateParentage);
+
+      form.addEventListener('submit', (event) => {
+        if (!validateParentage()) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          motherName.focus();
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

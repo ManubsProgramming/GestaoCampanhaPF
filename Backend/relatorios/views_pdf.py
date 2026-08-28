@@ -387,16 +387,7 @@ class ExportarPDFView(APIView):
                         estilo_texto,
                     ),
                 ],
-                [
-                    Paragraph(
-                        "<b>Título de eleitor</b>",
-                        estilo_texto,
-                    ),
-                    Paragraph(
-                        pessoa.titulo_eleitor or "",
-                        estilo_texto,
-                    ),
-                ],
+                
                 [
                     Paragraph(
                         "<b>Telefone</b>",
