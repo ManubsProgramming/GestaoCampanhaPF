@@ -8,6 +8,25 @@ const fullNameInput =
     "#full-name"
   );
 
+/* =========================
+   FILIAÇÃO
+========================= */
+
+const motherNameInput =
+  document.querySelector(
+    "#mother-name"
+  );
+
+const fatherNameInput =
+  document.querySelector(
+    "#father-name"
+  );
+
+const parentageError =
+  document.querySelector(
+    "#parentage-error"
+  );
+
 const cpfInput =
   document.querySelector(
     "#cpf"
@@ -564,6 +583,54 @@ phoneInput
 
 
 /* =========================
+   VALIDAÇÃO DA FILIAÇÃO
+========================= */
+
+function validateParentage() {
+  const motherName =
+    motherNameInput
+      ?.value
+      .trim() || "";
+
+  const fatherName =
+    fatherNameInput
+      ?.value
+      .trim() || "";
+
+  const valid =
+    Boolean(
+      motherName ||
+      fatherName
+    );
+
+  if (
+    parentageError
+  ) {
+    parentageError.textContent =
+      valid
+        ? ""
+        : "Informe o nome da mãe ou o nome do pai.";
+  }
+
+  return valid;
+}
+
+
+motherNameInput
+  ?.addEventListener(
+    "input",
+    validateParentage
+  );
+
+
+fatherNameInput
+  ?.addEventListener(
+    "input",
+    validateParentage
+  );
+
+
+/* =========================
    CPF
 ========================= */
 
@@ -880,13 +947,8 @@ voterTitleInput
         titulo
       );
 
-      setVoterTitleStatus(
-        "Consulta aberta no site oficial do TSE.",
-        "success"
-      );
-
       window.open(
-        "https://www.tse.jus.br/servicos-eleitorais/autoatendimento-eleitoral",
+        "https://www.tse.jus.br/servicos-eleitorais/autoatendimento-eleitoral#/atendimento-eleitor",
         "_blank",
         "noopener,noreferrer"
       );
@@ -925,26 +987,6 @@ voterTitleConfirmed
   );
 
 
-[
-  electoralZoneInput,
-  electoralSectionInput,
-  electoralMunicipalityInput
-]
-  .filter(Boolean)
-  .forEach(
-    function (
-      field
-    ) {
-      field.addEventListener(
-        "input",
-        function () {
-          resetVoterTitleConfirmation();
-        }
-      );
-    }
-  );
-
-
 /* =========================
    OBSERVAÇÕES
 ========================= */
@@ -957,1019 +999,46 @@ observationsInput
         characterTotal
       ) {
         characterTotal.textContent =
-          observationsInput
-            .value
-            .length;
-      }
-    }
-  );
-
-
-/* =========================
-   AUXILIARES API
-========================= */
-
-function getList(
-  data
-) {
-  if (
-    Array.isArray(
-      data
-    )
-  ) {
-    return data;
-  }
-
-  if (
-    data &&
-    Array.isArray(
-      data.results
-    )
-  ) {
-    return data.results;
-  }
-
-  return [];
-}
-
-
-function addSelectOption(
-  select,
-  value,
-  text
-) {
-  if (!select) {
-    return;
-  }
-
-  const option =
-    document.createElement(
-      "option"
-    );
-
-  option.value =
-    value;
-
-  option.textContent =
-    text;
-
-  select.appendChild(
-    option
-  );
-}
-
-
-/* =========================
-   OFFLINE AUXILIAR
-========================= */
-
-function offlineDisponivel() {
-  return (
-    typeof salvarListaOffline ===
-      "function" &&
-    typeof buscarListaOffline ===
-      "function"
-  );
-}
-
-
-function substituicaoOfflineDisponivel() {
-  return (
-    typeof substituirListaOffline ===
-    "function"
-  );
-}
-
-
-function cadastroOfflineDisponivel() {
-  return (
-    typeof salvarCadastroOffline ===
-      "function" &&
-    typeof listarCadastrosPendentes ===
-      "function"
-  );
-}
-
-
-async function salvarNovoCadastroOffline(
-  data
-) {
-  if (
-    !cadastroOfflineDisponivel()
-  ) {
-    throw new Error(
-      "O armazenamento offline não está disponível neste navegador."
-    );
-  }
-
-  const pendentes =
-    await listarCadastrosPendentes();
-
-  const cpf =
-    String(
-      data.cpf || ""
-    ).replace(
-      /\D/g,
-      ""
-    );
-
-  const duplicado =
-    pendentes.some(
-      function (
-        cadastro
-      ) {
-        const cpfPendente =
           String(
-            cadastro?.dados?.cpf || ""
-          ).replace(
-            /\D/g,
-            ""
+            observationsInput
+              .value
+              .length
           );
-
-        return (
-          cpf &&
-          cpfPendente === cpf
-        );
-      }
-    );
-
-  if (
-    duplicado
-  ) {
-    throw new Error(
-      "Este CPF já possui um cadastro aguardando sincronização."
-    );
-  }
-
-  return salvarCadastroOffline(
-    data
-  );
-}
-
-
-/* =========================
-   REGIÕES
-========================= */
-
-async function loadRegions() {
-  if (
-    !regionSelect
-  ) {
-    return;
-  }
-
-  regionSelect.disabled =
-    true;
-
-  regionSelect.innerHTML = `
-    <option value="">
-      Carregando regiões...
-    </option>
-  `;
-
-  let regions = [];
-
-  try {
-    const response =
-      await apiFetch(
-        "/regioes/"
-      );
-
-    if (
-      !response.ok
-    ) {
-      throw new Error(
-        "Não foi possível carregar as regiões."
-      );
-    }
-
-    regions =
-      getList(
-        await response.json()
-      );
-
-    if (
-      offlineDisponivel()
-    ) {
-      try {
-        await salvarListaOffline(
-          "regioes",
-          regions
-        );
-      } catch (
-        offlineError
-      ) {
-        console.warn(
-          "Não foi possível salvar regiões offline:",
-          offlineError
-        );
-      }
-    }
-
-  } catch (
-    error
-  ) {
-    console.warn(
-      "Não foi possível carregar regiões pela API:",
-      error
-    );
-
-    if (
-      offlineDisponivel()
-    ) {
-      try {
-        regions =
-          await buscarListaOffline(
-            "regioes"
-          );
-      } catch (
-        offlineError
-      ) {
-        console.error(
-          "Também não foi possível carregar regiões offline:",
-          offlineError
-        );
-      }
-    }
-  }
-
-  regionSelect.innerHTML = `
-    <option value="">
-      Selecione a região
-    </option>
-  `;
-
-  regions.forEach(
-    function (
-      region
-    ) {
-      addSelectOption(
-        regionSelect,
-        region.id,
-        region.nome
-      );
-    }
-  );
-
-  regionSelect.disabled =
-    false;
-}
-
-
-/* =========================
-   LOCALIDADES
-========================= */
-
-async function loadNeighborhoods(
-  regionId
-) {
-  if (
-    !neighborhoodSelect ||
-    !streetSelect
-  ) {
-    return;
-  }
-
-  neighborhoodSelect.disabled =
-    true;
-
-  streetSelect.disabled =
-    true;
-
-  neighborhoodSelect.innerHTML = `
-    <option value="">
-      Carregando localidades...
-    </option>
-  `;
-
-  streetSelect.innerHTML = `
-    <option value="">
-      Selecione primeiro a localidade
-    </option>
-  `;
-
-  if (
-    !regionId
-  ) {
-    neighborhoodSelect.innerHTML = `
-      <option value="">
-        Selecione primeiro a região
-      </option>
-    `;
-
-    return;
-  }
-
-  let neighborhoods = [];
-
-  try {
-    const response =
-      await apiFetch(
-        `/localidades/?regiao=${encodeURIComponent(
-          regionId
-        )}`
-      );
-
-    if (
-      !response.ok
-    ) {
-      throw new Error(
-        "Não foi possível carregar as localidades."
-      );
-    }
-
-    neighborhoods =
-      getList(
-        await response.json()
-      );
-
-    neighborhoods =
-      neighborhoods.map(
-        function (
-          neighborhood
-        ) {
-          const regiaoId =
-            neighborhood.regiao_id ||
-            neighborhood.regiao?.id ||
-            neighborhood.regiao ||
-            regionId;
-
-          return {
-            ...neighborhood,
-
-            regiao:
-              Number(
-                regiaoId
-              ),
-
-            regiao_id:
-              Number(
-                regiaoId
-              )
-          };
-        }
-      );
-
-    if (
-      offlineDisponivel()
-    ) {
-      try {
-        await salvarListaOffline(
-          "localidades",
-          neighborhoods
-        );
-      } catch (
-        offlineError
-      ) {
-        console.warn(
-          "Não foi possível salvar localidades offline:",
-          offlineError
-        );
-      }
-    }
-
-  } catch (
-    error
-  ) {
-    console.warn(
-      "Usando localidades offline:",
-      error
-    );
-
-    if (
-      offlineDisponivel()
-    ) {
-      try {
-        const all =
-          await buscarListaOffline(
-            "localidades"
-          );
-
-        neighborhoods =
-          all.filter(
-            function (
-              neighborhood
-            ) {
-              const regiaoId =
-                neighborhood.regiao_id ||
-                neighborhood.regiao?.id ||
-                neighborhood.regiao;
-
-              return (
-                Number(
-                  regiaoId
-                ) ===
-                Number(
-                  regionId
-                )
-              );
-            }
-          );
-      } catch (
-        offlineError
-      ) {
-        console.error(
-          "Erro ao carregar localidades offline:",
-          offlineError
-        );
-      }
-    }
-  }
-
-  neighborhoodSelect.innerHTML = `
-    <option value="">
-      Selecione a localidade
-    </option>
-  `;
-
-  neighborhoods.forEach(
-    function (
-      neighborhood
-    ) {
-      addSelectOption(
-        neighborhoodSelect,
-        neighborhood.id,
-        neighborhood.nome
-      );
-    }
-  );
-
-  neighborhoodSelect.disabled =
-    false;
-}
-
-
-/* =========================
-   RUAS
-========================= */
-
-async function loadStreets(
-  neighborhoodId
-) {
-  if (
-    !streetSelect
-  ) {
-    return;
-  }
-
-  streetSelect.disabled =
-    true;
-
-  streetSelect.innerHTML = `
-    <option value="">
-      Carregando ruas...
-    </option>
-  `;
-
-  if (
-    !neighborhoodId
-  ) {
-    streetSelect.innerHTML = `
-      <option value="">
-        Selecione primeiro a localidade
-      </option>
-    `;
-
-    return;
-  }
-
-  let streets = [];
-
-  try {
-    const response =
-      await apiFetch(
-        `/ruas/?localidade=${encodeURIComponent(
-          neighborhoodId
-        )}`
-      );
-
-    if (
-      !response.ok
-    ) {
-      throw new Error(
-        "Não foi possível carregar as ruas."
-      );
-    }
-
-    streets =
-      getList(
-        await response.json()
-      );
-
-    streets =
-      streets.map(
-        function (
-          street
-        ) {
-          const localidadeId =
-            street.localidade_id ||
-            street.localidade?.id ||
-            street.localidade ||
-            neighborhoodId;
-
-          return {
-            ...street,
-
-            localidade:
-              Number(
-                localidadeId
-              ),
-
-            localidade_id:
-              Number(
-                localidadeId
-              )
-          };
-        }
-      );
-
-    if (
-      offlineDisponivel()
-    ) {
-      try {
-        await salvarListaOffline(
-          "ruas",
-          streets
-        );
-      } catch (
-        offlineError
-      ) {
-        console.warn(
-          "Não foi possível salvar ruas offline:",
-          offlineError
-        );
-      }
-    }
-
-  } catch (
-    error
-  ) {
-    console.warn(
-      "Usando ruas offline:",
-      error
-    );
-
-    if (
-      offlineDisponivel()
-    ) {
-      try {
-        const all =
-          await buscarListaOffline(
-            "ruas"
-          );
-
-        streets =
-          all.filter(
-            function (
-              street
-            ) {
-              const localidadeId =
-                street.localidade_id ||
-                street.localidade?.id ||
-                street.localidade;
-
-              return (
-                Number(
-                  localidadeId
-                ) ===
-                Number(
-                  neighborhoodId
-                )
-              );
-            }
-          );
-      } catch (
-        offlineError
-      ) {
-        console.error(
-          "Erro ao carregar ruas offline:",
-          offlineError
-        );
-      }
-    }
-  }
-
-  streetSelect.innerHTML = `
-    <option value="">
-      Selecione a rua
-    </option>
-  `;
-
-  streets.forEach(
-    function (
-      street
-    ) {
-      addSelectOption(
-        streetSelect,
-        street.id,
-        street.nome
-      );
-    }
-  );
-
-  streetSelect.disabled =
-    false;
-}
-
-
-/* =========================
-   EVENTOS DE ENDEREÇO
-========================= */
-
-regionSelect
-  ?.addEventListener(
-    "change",
-    async function () {
-      try {
-        await loadNeighborhoods(
-          regionSelect.value
-        );
-      } catch (
-        error
-      ) {
-        console.error(
-          error
-        );
-
-        await showMessage({
-          title:
-            "Erro ao carregar",
-
-          message:
-            error.message,
-
-          type:
-            "warning"
-        });
       }
     }
   );
-
-
-neighborhoodSelect
-  ?.addEventListener(
-    "change",
-    async function () {
-      try {
-        await loadStreets(
-          neighborhoodSelect.value
-        );
-      } catch (
-        error
-      ) {
-        console.error(
-          error
-        );
-
-        await showMessage({
-          title:
-            "Erro ao carregar",
-
-          message:
-            error.message,
-
-          type:
-            "warning"
-        });
-      }
-    }
-  );
-  /* =========================
-   SINCRONIZAÇÃO OFFLINE
-========================= */
-
-/* =========================
-   SINCRONIZAÇÃO DE ENDEREÇOS OFFLINE
-========================= */
-
-async function sincronizarEnderecosOffline() {
-  /*
-   * Se já estiver offline,
-   * apenas utiliza o cache existente.
-   */
-  if (
-    !navigator.onLine
-  ) {
-    console.log(
-      "Offline: usando endereços armazenados."
-    );
-
-    return;
-  }
-
-  if (
-    !substituicaoOfflineDisponivel() ||
-    !offlineDisponivel()
-  ) {
-    console.warn(
-      "Banco offline ainda não está disponível."
-    );
-
-    return;
-  }
-
-  try {
-    console.log(
-      "Preparando endereços para uso offline..."
-    );
-
-    /*
-     * =====================================
-     * REGIÕES
-     * =====================================
-     */
-
-    const regionsResponse =
-      await apiFetch(
-        "/regioes/"
-      );
-
-    if (
-      !regionsResponse.ok
-    ) {
-      throw new Error(
-        "Não foi possível sincronizar as regiões."
-      );
-    }
-
-    const regions =
-      getList(
-        await regionsResponse.json()
-      );
-
-    /*
-     * Regiões podem ser substituídas
-     * imediatamente.
-     */
-    await substituirListaOffline(
-      "regioes",
-      regions
-    );
-
-    console.log(
-      `${regions.length} região(ões) salva(s) offline.`
-    );
-
-
-    /*
-     * =====================================
-     * LOCALIDADES
-     * =====================================
-     *
-     * Limpa a lista antiga primeiro.
-     */
-    await substituirListaOffline(
-      "localidades",
-      []
-    );
-
-    const allNeighborhoods =
-      [];
-
-    for (
-      const region
-      of regions
-    ) {
-      /*
-       * Se a conexão cair no meio,
-       * preservamos tudo que já foi
-       * baixado anteriormente no loop.
-       */
-      if (
-        !navigator.onLine
-      ) {
-        console.warn(
-          "Internet caiu durante a sincronização das localidades."
-        );
-
-        break;
-      }
-
-      try {
-        const response =
-          await apiFetch(
-            `/localidades/?regiao=${encodeURIComponent(
-              region.id
-            )}`
-          );
-
-        if (
-          !response.ok
-        ) {
-          console.warn(
-            "Não foi possível carregar localidades da região:",
-            region.nome
-          );
-
-          continue;
-        }
-
-        let neighborhoods =
-          getList(
-            await response.json()
-          );
-
-        neighborhoods =
-          neighborhoods.map(
-            function (
-              neighborhood
-            ) {
-              const regiaoId =
-                neighborhood.regiao_id ||
-                neighborhood.regiao?.id ||
-                neighborhood.regiao ||
-                region.id;
-
-              return {
-                ...neighborhood,
-
-                regiao:
-                  Number(
-                    regiaoId
-                  ),
-
-                regiao_id:
-                  Number(
-                    regiaoId
-                  )
-              };
-            }
-          );
-
-        /*
-         * MUITO IMPORTANTE:
-         *
-         * Salva este grupo AGORA.
-         *
-         * Não espera todas as regiões
-         * terminarem.
-         */
-        await salvarListaOffline(
-          "localidades",
-          neighborhoods
-        );
-
-        allNeighborhoods.push(
-          ...neighborhoods
-        );
-
-        console.log(
-          `Localidades offline: ${region.nome} = ${neighborhoods.length}`
-        );
-
-      } catch (
-        error
-      ) {
-        console.warn(
-          "Falha ao sincronizar localidades de:",
-          region.nome,
-          error
-        );
-      }
-    }
-
-
-    /*
-     * =====================================
-     * RUAS
-     * =====================================
-     */
-
-    await substituirListaOffline(
-      "ruas",
-      []
-    );
-
-    let totalRuas =
-      0;
-
-    for (
-      const neighborhood
-      of allNeighborhoods
-    ) {
-      if (
-        !navigator.onLine
-      ) {
-        console.warn(
-          "Internet caiu durante a sincronização das ruas."
-        );
-
-        break;
-      }
-
-      try {
-        const response =
-          await apiFetch(
-            `/ruas/?localidade=${encodeURIComponent(
-              neighborhood.id
-            )}`
-          );
-
-        if (
-          !response.ok
-        ) {
-          console.warn(
-            "Não foi possível carregar ruas de:",
-            neighborhood.nome
-          );
-
-          continue;
-        }
-
-        let streets =
-          getList(
-            await response.json()
-          );
-
-        streets =
-          streets.map(
-            function (
-              street
-            ) {
-              const localidadeId =
-                street.localidade_id ||
-                street.localidade?.id ||
-                street.localidade ||
-                neighborhood.id;
-
-              return {
-                ...street,
-
-                localidade:
-                  Number(
-                    localidadeId
-                  ),
-
-                localidade_id:
-                  Number(
-                    localidadeId
-                  )
-              };
-            }
-          );
-
-        /*
-         * Também salva as ruas
-         * imediatamente.
-         */
-        await salvarListaOffline(
-          "ruas",
-          streets
-        );
-
-        totalRuas +=
-          streets.length;
-
-      } catch (
-        error
-      ) {
-        console.warn(
-          "Falha ao sincronizar ruas de:",
-          neighborhood.nome,
-          error
-        );
-      }
-    }
-
-
-    /*
-     * =====================================
-     * RESULTADO
-     * =====================================
-     */
-
-    console.log(
-      "Cache de endereços concluído:",
-      {
-        regioes:
-          regions.length,
-
-        localidades:
-          allNeighborhoods.length,
-
-        ruas:
-          totalRuas
-      }
-    );
-
-  } catch (
-    error
-  ) {
-    /*
-     * Nunca derruba a página
-     * por falha de cache.
-     */
-    console.warn(
-      "Não foi possível atualizar o cache offline:",
-      error
-    );
-  }
-}
 
 
 /* =========================
    ERROS DOS CAMPOS
 ========================= */
+
+function getFieldErrorElement(
+  field
+) {
+  if (
+    !field
+  ) {
+    return null;
+  }
+
+  const formField =
+    field.closest(
+      ".form-field"
+    );
+
+  if (
+    !formField
+  ) {
+    return null;
+  }
+
+  return formField
+    .querySelector(
+      ".field-error"
+    );
+}
+
 
 function clearFieldError(
   field
@@ -1980,37 +1049,27 @@ function clearFieldError(
     return;
   }
 
-  field.classList.remove(
-    "invalid"
-  );
-
-  const fieldContainer =
-    field.closest(
-      ".form-field"
+  field
+    .classList
+    .remove(
+      "input-error"
     );
 
   const errorElement =
-    fieldContainer
-      ?.querySelector(
-        ".field-error"
-      );
+    getFieldErrorElement(
+      field
+    );
 
   if (
     errorElement
   ) {
     errorElement.textContent =
       "";
-
-    errorElement
-      .classList
-      .remove(
-        "visible"
-      );
   }
 }
 
 
-function showFieldError(
+function setFieldError(
   field,
   message
 ) {
@@ -2020,78 +1079,67 @@ function showFieldError(
     return;
   }
 
-  field.classList.add(
-    "invalid"
-  );
-
-  const fieldContainer =
-    field.closest(
-      ".form-field"
+  field
+    .classList
+    .add(
+      "input-error"
     );
 
   const errorElement =
-    fieldContainer
-      ?.querySelector(
-        ".field-error"
-      );
+    getFieldErrorElement(
+      field
+    );
 
   if (
     errorElement
   ) {
     errorElement.textContent =
       message;
-
-    errorElement
-      .classList
-      .add(
-        "visible"
-      );
   }
 }
 
 
 function clearAllFieldErrors() {
-  registrationForm
-    ?.querySelectorAll(
-      "input, select, textarea"
+  document
+    .querySelectorAll(
+      ".input-error"
     )
     .forEach(
-      clearFieldError
+      function (
+        element
+      ) {
+        element
+          .classList
+          .remove(
+            "input-error"
+          );
+      }
     );
+
+  document
+    .querySelectorAll(
+      ".field-error"
+    )
+    .forEach(
+      function (
+        element
+      ) {
+        element.textContent =
+          "";
+      }
+    );
+
+  if (
+    parentageError
+  ) {
+    parentageError.textContent =
+      "";
+  }
 }
 
 
-registrationForm
-  ?.querySelectorAll(
-    "input, select, textarea"
-  )
-  .forEach(
-    function (
-      field
-    ) {
-      field.addEventListener(
-        "input",
-        function () {
-          clearFieldError(
-            field
-          );
-        }
-      );
-
-      field.addEventListener(
-        "change",
-        function () {
-          clearFieldError(
-            field
-          );
-        }
-      );
-    }
-  );
-
-
 /* =========================
-   VALIDAÇÃO
+   VALIDAÇÃO DO FORMULÁRIO
 ========================= */
 
 function validateForm() {
@@ -2105,27 +1153,33 @@ function validateForm() {
 
   const fullName =
     fullNameInput
-      .value
-      .trim();
+      ?.value
+      .trim() || "";
+
+  const motherName =
+    motherNameInput
+      ?.value
+      .trim() || "";
+
+  const fatherName =
+    fatherNameInput
+      ?.value
+      .trim() || "";
 
   const cpf =
     cpfInput
-      .value
+      ?.value
       .replace(
         /\D/g,
         ""
-      );
+      ) || "";
+
+  const birthDate =
+    birthDateInput
+      ?.value || "";
 
   const phone =
     phoneInput
-      .value
-      .replace(
-        /\D/g,
-        ""
-      );
-
-  const voterTitle =
-    voterTitleInput
       ?.value
       .replace(
         /\D/g,
@@ -2133,190 +1187,163 @@ function validateForm() {
       ) || "";
 
   if (
-    fullName.length < 3
+    !fullName
   ) {
-    valid =
-      false;
-
-    showFieldError(
+    setFieldError(
       fullNameInput,
-      "Digite o nome completo."
+      "Informe o nome completo."
     );
 
-    firstError ||=
+    firstError =
+      firstError ||
       fullNameInput;
+
+    valid =
+      false;
+  }
+
+  /*
+   * FILIAÇÃO
+   *
+   * Pelo menos um dos nomes
+   * precisa ser informado.
+   */
+  if (
+    !motherName &&
+    !fatherName
+  ) {
+    if (
+      parentageError
+    ) {
+      parentageError.textContent =
+        "Informe o nome da mãe ou o nome do pai.";
+    }
+
+    motherNameInput
+      ?.classList
+      .add(
+        "input-error"
+      );
+
+    fatherNameInput
+      ?.classList
+      .add(
+        "input-error"
+      );
+
+    firstError =
+      firstError ||
+      motherNameInput ||
+      fatherNameInput;
+
+    valid =
+      false;
   }
 
   if (
     cpf.length !== 11
   ) {
-    valid =
-      false;
-
-    showFieldError(
+    setFieldError(
       cpfInput,
-      "Digite um CPF com 11 números."
+      "Informe um CPF válido com 11 números."
     );
 
-    firstError ||=
+    firstError =
+      firstError ||
       cpfInput;
+
+    valid =
+      false;
   }
 
   if (
-    !birthDateInput.value
+    !birthDate
   ) {
-    valid =
-      false;
-
-    showFieldError(
+    setFieldError(
       birthDateInput,
       "Informe a data de nascimento."
     );
 
-    firstError ||=
+    firstError =
+      firstError ||
       birthDateInput;
-  }
 
-  if (
-    voterTitle &&
-    voterTitle.length !== 12
-  ) {
     valid =
       false;
-
-    showFieldError(
-      voterTitleInput,
-      "O título deve possuir 12 números."
-    );
-
-    firstError ||=
-      voterTitleInput;
-  }
-
-  if (
-    voterTitle
-  ) {
-    if (
-      !electoralZoneInput
-        ?.value
-        .trim()
-    ) {
-      valid =
-        false;
-
-      showFieldError(
-        electoralZoneInput,
-        "Informe a zona eleitoral."
-      );
-
-      firstError ||=
-        electoralZoneInput;
-    }
-
-    if (
-      !electoralSectionInput
-        ?.value
-        .trim()
-    ) {
-      valid =
-        false;
-
-      showFieldError(
-        electoralSectionInput,
-        "Informe a seção eleitoral."
-      );
-
-      firstError ||=
-        electoralSectionInput;
-    }
-
-    if (
-      !electoralMunicipalityInput
-        ?.value
-        .trim()
-    ) {
-      valid =
-        false;
-
-      showFieldError(
-        electoralMunicipalityInput,
-        "Informe o município eleitoral."
-      );
-
-      firstError ||=
-        electoralMunicipalityInput;
-    }
-
-    if (
-      navigator.onLine &&
-      voterTitleConfirmed &&
-      !voterTitleConfirmed.checked
-    ) {
-      valid =
-        false;
-    }
   }
 
   if (
     phone.length < 10
   ) {
-    valid =
-      false;
-
-    showFieldError(
+    setFieldError(
       phoneInput,
-      "Digite um telefone válido."
+      "Informe um telefone válido."
     );
 
-    firstError ||=
+    firstError =
+      firstError ||
       phoneInput;
+
+    valid =
+      false;
   }
 
   if (
-    !regionSelect.value
+    !regionSelect
+      ?.value
   ) {
-    valid =
-      false;
-
-    showFieldError(
+    setFieldError(
       regionSelect,
-      "Selecione uma região."
+      "Selecione a região."
     );
 
-    firstError ||=
+    firstError =
+      firstError ||
       regionSelect;
+
+    valid =
+      false;
   }
 
   if (
-    !neighborhoodSelect.value
+    !neighborhoodSelect
+      ?.value
   ) {
-    valid =
-      false;
-
-    showFieldError(
+    setFieldError(
       neighborhoodSelect,
-      "Selecione uma localidade."
+      "Selecione a localidade."
     );
 
-    firstError ||=
+    firstError =
+      firstError ||
       neighborhoodSelect;
+
+    valid =
+      false;
   }
 
   if (
-    !streetSelect.value
+    !streetSelect
+      ?.value
   ) {
-    valid =
-      false;
-
-    showFieldError(
+    setFieldError(
       streetSelect,
-      "Selecione uma rua."
+      "Selecione a rua."
     );
 
-    firstError ||=
+    firstError =
+      firstError ||
       streetSelect;
+
+    valid =
+      false;
   }
 
+  /*
+   * Quando estiver online,
+   * o CPF precisa ter sido
+   * conferido.
+   */
   if (
     navigator.onLine &&
     cpfConfirmed &&
@@ -2324,6 +1351,10 @@ function validateForm() {
   ) {
     valid =
       false;
+
+    firstError =
+      firstError ||
+      cpfConfirmed;
   }
 
   firstError
@@ -2343,6 +1374,19 @@ function buildRegistrationData() {
       fullNameInput
         .value
         .trim(),
+
+    /*
+     * FILIAÇÃO
+     */
+    nome_mae:
+      motherNameInput
+        ?.value
+        .trim() || "",
+
+    nome_pai:
+      fatherNameInput
+        ?.value
+        .trim() || "",
 
     cpf:
       cpfInput
@@ -2451,6 +1495,15 @@ function showBackendErrors(
     nome_completo:
       fullNameInput,
 
+    /*
+     * NOVOS CAMPOS
+     */
+    nome_mae:
+      motherNameInput,
+
+    nome_pai:
+      fatherNameInput,
+
     cpf:
       cpfInput,
 
@@ -2503,6 +1556,12 @@ function showBackendErrors(
           fieldName
         ];
 
+      if (
+        !field
+      ) {
+        return;
+      }
+
       const message =
         Array.isArray(
           messages
@@ -2514,311 +1573,692 @@ function showBackendErrors(
               messages
             );
 
-      if (
-        field
-      ) {
-        showFieldError(
-          field,
-          message
-        );
-
-      } else {
-        console.error(
-          fieldName,
-          message
-        );
-      }
+      setFieldError(
+        field,
+        message
+      );
     }
   );
 }
-
-
 /* =========================
-   CARREGAR EDIÇÃO
+   ENDEREÇO
 ========================= */
 
-async function loadPersonForEditing() {
+async function loadRegions() {
+  if (!regionSelect) {
+    return;
+  }
+
+  try {
+    const response =
+      await apiFetch(
+        "/regioes/"
+      );
+
+    if (!response.ok) {
+      throw new Error(
+        "Não foi possível carregar as regiões."
+      );
+    }
+
+    const data =
+      await response.json();
+
+    const regions =
+      Array.isArray(data)
+        ? data
+        : data.results || [];
+
+    regionSelect.innerHTML = `
+      <option value="">
+        Selecione a região
+      </option>
+    `;
+
+    regions.forEach(
+      function (region) {
+        const option =
+          document.createElement(
+            "option"
+          );
+
+        option.value =
+          region.id;
+
+        option.textContent =
+          region.nome;
+
+        regionSelect.appendChild(
+          option
+        );
+      }
+    );
+  } catch (error) {
+    console.error(
+      "Erro ao carregar regiões:",
+      error
+    );
+
+    await showMessage({
+      title:
+        "Erro ao carregar regiões",
+
+      message:
+        error.message ||
+        "Não foi possível carregar as regiões.",
+
+      type:
+        "warning"
+    });
+  }
+}
+
+
+async function loadNeighborhoods(
+  regionId
+) {
   if (
-    !isEditing
+    !neighborhoodSelect
   ) {
     return;
   }
 
-  const response =
-    await apiFetch(
-      `/pessoas/${editingPersonId}/`
-    );
+  neighborhoodSelect.innerHTML = `
+    <option value="">
+      Carregando...
+    </option>
+  `;
+
+  neighborhoodSelect.disabled =
+    true;
 
   if (
-    !response.ok
+    streetSelect
   ) {
-    let message =
-      "Não foi possível carregar o cadastro para edição.";
+    streetSelect.innerHTML = `
+      <option value="">
+        Selecione primeiro a localidade
+      </option>
+    `;
 
-    try {
-      const errorData =
-        await response.json();
+    streetSelect.disabled =
+      true;
+  }
 
-      message =
-        errorData.detail ||
-        errorData.mensagem ||
-        message;
+  if (
+    !regionId
+  ) {
+    neighborhoodSelect.innerHTML = `
+      <option value="">
+        Selecione primeiro a região
+      </option>
+    `;
 
-    } catch {
-      // mantém mensagem
+    return;
+  }
+
+  try {
+    const response =
+      await apiFetch(
+        `/localidades/?regiao=${regionId}`
+      );
+
+    if (!response.ok) {
+      throw new Error(
+        "Não foi possível carregar as localidades."
+      );
     }
 
-    throw new Error(
-      message
-    );
-  }
+    const data =
+      await response.json();
 
-  const pessoa =
-    await response.json();
+    const neighborhoods =
+      Array.isArray(data)
+        ? data
+        : data.results || [];
 
-  fullNameInput.value =
-    pessoa.nome_completo ||
-    "";
+    neighborhoodSelect.innerHTML = `
+      <option value="">
+        Selecione a localidade
+      </option>
+    `;
 
-  cpfInput.value =
-    formatCpfValue(
-      pessoa.cpf
-    );
+    neighborhoods.forEach(
+      function (neighborhood) {
+        const option =
+          document.createElement(
+            "option"
+          );
 
-  birthDateInput.value =
-    pessoa.data_nascimento ||
-    "";
+        option.value =
+          neighborhood.id;
 
-  phoneInput.value =
-    formatPhoneValue(
-      pessoa.telefone
-    );
+        option.textContent =
+          neighborhood.nome;
 
-  if (
-    voterTitleInput
-  ) {
-    voterTitleInput.value =
-      String(
-        pessoa.titulo_eleitor ||
-        ""
-      ).replace(
-        /\D/g,
-        ""
-      );
-  }
-
-  if (
-    electoralZoneInput
-  ) {
-    electoralZoneInput.value =
-      pessoa.zona_eleitoral ||
-      "";
-  }
-
-  if (
-    electoralSectionInput
-  ) {
-    electoralSectionInput.value =
-      pessoa.secao_eleitoral ||
-      "";
-  }
-
-  if (
-    electoralMunicipalityInput
-  ) {
-    electoralMunicipalityInput.value =
-      pessoa.municipio_eleitoral ||
-      "";
-  }
-
-  if (
-    pessoa.regiao
-  ) {
-    regionSelect.value =
-      String(
-        pessoa.regiao
-      );
-
-    await loadNeighborhoods(
-      pessoa.regiao
-    );
-  }
-
-  if (
-    pessoa.localidade
-  ) {
-    neighborhoodSelect.value =
-      String(
-        pessoa.localidade
-      );
-
-    await loadStreets(
-      pessoa.localidade
-    );
-  }
-
-  if (
-    pessoa.rua
-  ) {
-    streetSelect.value =
-      String(
-        pessoa.rua
-      );
-  }
-
-  numberInput.value =
-    pessoa.numero ||
-    "";
-
-  if (
-    complementInput
-  ) {
-    complementInput.value =
-      pessoa.complemento ||
-      "";
-  }
-
-  if (
-    observationsInput
-  ) {
-    observationsInput.value =
-      pessoa.observacoes ||
-      "";
-  }
-
-  if (
-    characterTotal
-  ) {
-    characterTotal.textContent =
-      String(
-        observationsInput
-          ?.value
-          .length || 0
-      );
-  }
-
-  if (
-    registeredBy
-  ) {
-    registeredBy.textContent =
-      pessoa
-        .cadastrada_por_nome ||
-      getUserName(
-        currentUser
-      );
-  }
-
-  if (
-    cpfConfirmed
-  ) {
-    cpfConfirmed.checked =
-      pessoa
-        .status_verificacao_cpf ===
-      "CONSULTADO";
-
-    if (
-      cpfConfirmed.checked &&
-      cpfValidationStatus
-    ) {
-      cpfValidationStatus.textContent =
-        "Consulta realizada e CPF conferido.";
-
-      cpfValidationStatus
-        .classList
-        .add(
-          "confirmed"
+        neighborhoodSelect.appendChild(
+          option
         );
-    }
-  }
-
-  if (
-    voterTitleConfirmed
-  ) {
-    voterTitleConfirmed.checked =
-      pessoa
-        .status_verificacao_titulo ===
-      "CONSULTADO";
-
-    if (
-      voterTitleConfirmed.checked &&
-      voterTitleValidationStatus
-    ) {
-      voterTitleValidationStatus
-        .textContent =
-        "Consulta realizada e título conferido.";
-
-      voterTitleValidationStatus
-        .classList
-        .add(
-          "confirmed"
-        );
-    }
-  }
-
-  document.title =
-    "Editar cadastro | Gestão de Cadastros";
-
-  const topbarTitle =
-    document.querySelector(
-      ".topbar h1"
+      }
     );
 
-  if (
-    topbarTitle
-  ) {
-    topbarTitle.textContent =
-      "Editar cadastro";
-  }
-
-  const topbarDescription =
-    document.querySelector(
-      ".topbar-left p"
+    neighborhoodSelect.disabled =
+      false;
+  } catch (error) {
+    console.error(
+      "Erro ao carregar localidades:",
+      error
     );
 
-  if (
-    topbarDescription
-  ) {
-    topbarDescription.textContent =
-      "Atualize os dados da pessoa cadastrada";
-  }
+    neighborhoodSelect.innerHTML = `
+      <option value="">
+        Não foi possível carregar
+      </option>
+    `;
 
-  const introductionTitle =
-    document.querySelector(
-      ".page-introduction h2"
-    );
+    await showMessage({
+      title:
+        "Erro ao carregar localidades",
 
-  if (
-    introductionTitle
-  ) {
-    introductionTitle.textContent =
-      "Editar pessoa";
-  }
+      message:
+        error.message ||
+        "Não foi possível carregar as localidades.",
 
-  const introductionDescription =
-    document.querySelector(
-      ".page-introduction p"
-    );
-
-  if (
-    introductionDescription
-  ) {
-    introductionDescription.textContent =
-      "Altere os dados necessários e salve as alterações.";
-  }
-
-  const buttonText =
-    saveButton
-      ?.querySelector(
-        "span"
-      );
-
-  if (
-    buttonText
-  ) {
-    buttonText.textContent =
-      "Salvar alterações";
+      type:
+        "warning"
+    });
   }
 }
+
+
+async function loadStreets(
+  neighborhoodId
+) {
+  if (
+    !streetSelect
+  ) {
+    return;
+  }
+
+  streetSelect.innerHTML = `
+    <option value="">
+      Carregando...
+    </option>
+  `;
+
+  streetSelect.disabled =
+    true;
+
+  if (
+    !neighborhoodId
+  ) {
+    streetSelect.innerHTML = `
+      <option value="">
+        Selecione primeiro a localidade
+      </option>
+    `;
+
+    return;
+  }
+
+  try {
+    const response =
+      await apiFetch(
+        `/ruas/?localidade=${neighborhoodId}`
+      );
+
+    if (!response.ok) {
+      throw new Error(
+        "Não foi possível carregar as ruas."
+      );
+    }
+
+    const data =
+      await response.json();
+
+    const streets =
+      Array.isArray(data)
+        ? data
+        : data.results || [];
+
+    streetSelect.innerHTML = `
+      <option value="">
+        Selecione a rua
+      </option>
+    `;
+
+    streets.forEach(
+      function (street) {
+        const option =
+          document.createElement(
+            "option"
+          );
+
+        option.value =
+          street.id;
+
+        option.textContent =
+          street.nome;
+
+        streetSelect.appendChild(
+          option
+        );
+      }
+    );
+
+    streetSelect.disabled =
+      false;
+  } catch (error) {
+    console.error(
+      "Erro ao carregar ruas:",
+      error
+    );
+
+    streetSelect.innerHTML = `
+      <option value="">
+        Não foi possível carregar
+      </option>
+    `;
+
+    await showMessage({
+      title:
+        "Erro ao carregar ruas",
+
+      message:
+        error.message ||
+        "Não foi possível carregar as ruas.",
+
+      type:
+        "warning"
+    });
+  }
+}
+
+
+regionSelect
+  ?.addEventListener(
+    "change",
+    async function () {
+      clearFieldError(
+        regionSelect
+      );
+
+      await loadNeighborhoods(
+        regionSelect.value
+      );
+    }
+  );
+
+
+neighborhoodSelect
+  ?.addEventListener(
+    "change",
+    async function () {
+      clearFieldError(
+        neighborhoodSelect
+      );
+
+      await loadStreets(
+        neighborhoodSelect.value
+      );
+    }
+  );
+
+
+streetSelect
+  ?.addEventListener(
+    "change",
+    function () {
+      clearFieldError(
+        streetSelect
+      );
+    }
+  );
+
+
+/* =========================
+   CARREGAR PESSOA NA EDIÇÃO
+========================= */
+
+async function loadPersonForEditing() {
+  if (
+    !isEditing ||
+    !editingPersonId
+  ) {
+    return;
+  }
+
+  try {
+    const response =
+      await apiFetch(
+        `/pessoas/${editingPersonId}/`
+      );
+
+    if (!response.ok) {
+      let message =
+        "Não foi possível carregar o cadastro para edição.";
+
+      try {
+        const errorData =
+          await response.json();
+
+        message =
+          errorData.detail ||
+          errorData.mensagem ||
+          message;
+      } catch {
+        // mantém a mensagem padrão
+      }
+
+      throw new Error(
+        message
+      );
+    }
+
+    const pessoa =
+      await response.json();
+
+    /*
+     * DADOS PESSOAIS
+     */
+
+    fullNameInput.value =
+      pessoa.nome_completo ||
+      "";
+
+    /*
+     * FILIAÇÃO
+     *
+     * CORREÇÃO:
+     * agora mãe e pai também são
+     * carregados durante a edição.
+     */
+
+    if (
+      motherNameInput
+    ) {
+      motherNameInput.value =
+        pessoa.nome_mae ||
+        "";
+    }
+
+    if (
+      fatherNameInput
+    ) {
+      fatherNameInput.value =
+        pessoa.nome_pai ||
+        "";
+    }
+
+    cpfInput.value =
+      formatCpfValue(
+        pessoa.cpf
+      );
+
+    birthDateInput.value =
+      pessoa.data_nascimento ||
+      "";
+
+    phoneInput.value =
+      formatPhoneValue(
+        pessoa.telefone
+      );
+
+    /*
+     * DADOS ELEITORAIS
+     */
+
+    if (
+      voterTitleInput
+    ) {
+      voterTitleInput.value =
+        String(
+          pessoa.titulo_eleitor ||
+          ""
+        ).replace(
+          /\D/g,
+          ""
+        );
+    }
+
+    if (
+      electoralZoneInput
+    ) {
+      electoralZoneInput.value =
+        pessoa.zona_eleitoral ||
+        "";
+    }
+
+    if (
+      electoralSectionInput
+    ) {
+      electoralSectionInput.value =
+        pessoa.secao_eleitoral ||
+        "";
+    }
+
+    if (
+      electoralMunicipalityInput
+    ) {
+      electoralMunicipalityInput.value =
+        pessoa.municipio_eleitoral ||
+        "";
+    }
+
+    /*
+     * ENDEREÇO
+     */
+
+    if (
+      pessoa.regiao
+    ) {
+      regionSelect.value =
+        String(
+          pessoa.regiao
+        );
+
+      await loadNeighborhoods(
+        pessoa.regiao
+      );
+    }
+
+    if (
+      pessoa.localidade
+    ) {
+      neighborhoodSelect.value =
+        String(
+          pessoa.localidade
+        );
+
+      await loadStreets(
+        pessoa.localidade
+      );
+    }
+
+    if (
+      pessoa.rua
+    ) {
+      streetSelect.value =
+        String(
+          pessoa.rua
+        );
+    }
+
+    numberInput.value =
+      pessoa.numero ||
+      "";
+
+    if (
+      complementInput
+    ) {
+      complementInput.value =
+        pessoa.complemento ||
+        "";
+    }
+
+    if (
+      observationsInput
+    ) {
+      observationsInput.value =
+        pessoa.observacoes ||
+        "";
+    }
+
+    if (
+      characterTotal
+    ) {
+      characterTotal.textContent =
+        String(
+          observationsInput
+            ?.value
+            .length || 0
+        );
+    }
+
+    /*
+     * RESPONSÁVEL
+     */
+
+    if (
+      registeredBy
+    ) {
+      registeredBy.textContent =
+        pessoa
+          .cadastrada_por_nome ||
+        getUserName(
+          currentUser
+        );
+    }
+
+    /*
+     * STATUS DA VERIFICAÇÃO DO CPF
+     */
+
+    if (
+      cpfConfirmed
+    ) {
+      cpfConfirmed.checked =
+        pessoa
+          .status_verificacao_cpf ===
+        "CONSULTADO";
+
+      if (
+        cpfConfirmed.checked &&
+        cpfValidationStatus
+      ) {
+        cpfValidationStatus.textContent =
+          "Consulta realizada e CPF conferido.";
+
+        cpfValidationStatus
+          .classList
+          .add(
+            "confirmed"
+          );
+      }
+    }
+
+    /*
+     * STATUS DO TÍTULO
+     */
+
+    if (
+      voterTitleConfirmed
+    ) {
+      voterTitleConfirmed.checked =
+        pessoa
+          .status_verificacao_titulo ===
+        "CONSULTADO";
+
+      if (
+        voterTitleConfirmed.checked &&
+        voterTitleValidationStatus
+      ) {
+        voterTitleValidationStatus
+          .textContent =
+          "Consulta realizada e título conferido.";
+
+        voterTitleValidationStatus
+          .classList
+          .add(
+            "confirmed"
+          );
+      }
+    }
+
+    /*
+     * ALTERA A INTERFACE PARA EDIÇÃO
+     */
+
+    const pageTitle =
+      document.querySelector(
+        ".topbar h1"
+      );
+
+    if (
+      pageTitle
+    ) {
+      pageTitle.textContent =
+        "Editar cadastro";
+    }
+
+    const introductionTitle =
+      document.querySelector(
+        ".page-introduction h2"
+      );
+
+    if (
+      introductionTitle
+    ) {
+      introductionTitle.textContent =
+        "Editar pessoa";
+    }
+
+    const introductionText =
+      document.querySelector(
+        ".page-introduction p"
+      );
+
+    if (
+      introductionText
+    ) {
+      introductionText.textContent =
+        "Atualize os dados da pessoa cadastrada.";
+    }
+
+    const buttonText =
+      saveButton
+        ?.querySelector(
+          "span"
+        );
+
+    if (
+      buttonText
+    ) {
+      buttonText.textContent =
+        "Salvar alterações";
+    }
+
+  } catch (error) {
+    console.error(
+      "Erro ao carregar pessoa:",
+      error
+    );
+
+    await showMessage({
+      title:
+        "Erro ao carregar cadastro",
+
+      message:
+        error.message ||
+        "Não foi possível carregar os dados da pessoa.",
+
+      type:
+        "warning"
+    });
+  }
+}
+
+
 /* =========================
    SALVAR
 ========================= */
@@ -2829,8 +2269,6 @@ async function saveRegistration() {
 
   /*
    * Edição offline não é permitida.
-   * Isso evita conflito de versões
-   * entre o navegador e o servidor.
    */
   if (
     isEditing &&
@@ -2844,20 +2282,38 @@ async function saveRegistration() {
   /*
    * NOVO CADASTRO OFFLINE
    */
+
   if (
     !isEditing &&
     !navigator.onLine
   ) {
-    const cadastro =
-      await salvarNovoCadastroOffline(
-        data
-      );
+    if (
+      window.OfflineDB &&
+      typeof window
+        .OfflineDB
+        .savePendingPerson ===
+        "function"
+    ) {
+      await window
+        .OfflineDB
+        .savePendingPerson(
+          data
+        );
 
-    return {
-      offline: true,
-      cadastro
-    };
+      return {
+        offline:
+          true
+      };
+    }
+
+    throw new Error(
+      "Você está sem internet e o armazenamento offline não está disponível."
+    );
   }
+
+  /*
+   * ONLINE
+   */
 
   const endpoint =
     isEditing
@@ -2869,98 +2325,86 @@ async function saveRegistration() {
       ? "PATCH"
       : "POST";
 
-  let response;
+  const response =
+    await apiFetch(
+      endpoint,
+      {
+        method,
 
-  try {
-    response =
-      await apiFetch(
-        endpoint,
-        {
-          method,
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
 
-          body:
-            JSON.stringify(
-              data
-            )
-        }
-      );
+        body:
+          JSON.stringify(
+            data
+          )
+      }
+    );
 
-  } catch (
-    error
+  if (
+    !response.ok
   ) {
-    /*
-     * Pode acontecer de o navegador
-     * ainda considerar que está online,
-     * mas a conexão ter caído.
-     *
-     * Para novos cadastros, salvamos
-     * no IndexedDB em vez de perder
-     * os dados digitados.
-     */
-    if (
-      !isEditing &&
-      cadastroOfflineDisponivel()
-    ) {
-      const cadastro =
-        await salvarNovoCadastroOffline(
-          data
-        );
+    let errorData =
+      null;
 
-      return {
-        offline: true,
-        cadastro
-      };
+    try {
+      errorData =
+        await response.json();
+    } catch {
+      errorData =
+        null;
     }
 
-    throw error;
-  }
-
-  if (
-    response.ok
-  ) {
-    return {
-      offline: false,
-
-      data:
-        await response.json()
-    };
-  }
-
-  let errors =
-    {};
-
-  try {
-    errors =
-      await response.json();
-
-  } catch (
-    error
-  ) {
-    console.error(
-      "Resposta do servidor sem JSON:",
-      error
-    );
-  }
-
-  if (
-    errors &&
-    typeof errors ===
+    if (
+      errorData &&
+      typeof errorData ===
       "object"
-  ) {
-    showBackendErrors(
-      errors
-    );
-  }
+    ) {
+      showBackendErrors(
+        errorData
+      );
 
-  throw new Error(
-    errors.detail ||
-    errors.mensagem ||
-    (
+      const messages =
+        Object.values(
+          errorData
+        )
+          .flat()
+          .filter(Boolean)
+          .map(String);
+
+      if (
+        messages.length
+      ) {
+        throw new Error(
+          messages.join(
+            " "
+          )
+        );
+      }
+    }
+
+    throw new Error(
       isEditing
         ? "Não foi possível atualizar o cadastro."
-        : "Não foi possível salvar o cadastro."
-    )
-  );
+        : "Não foi possível realizar o cadastro."
+    );
+  }
+
+  /*
+   * DELETE pode não retornar JSON,
+   * mas POST/PATCH normalmente retorna.
+   */
+
+  try {
+    return await response.json();
+  } catch {
+    return {
+      success:
+        true
+    };
+  }
 }
 
 
@@ -2975,6 +2419,18 @@ registrationForm
       event
     ) {
       event.preventDefault();
+
+      /*
+       * Valida também a filiação.
+       */
+      if (
+        !validateParentage()
+      ) {
+        motherNameInput
+          ?.focus();
+
+        return;
+      }
 
       if (
         !validateForm()
@@ -3019,6 +2475,7 @@ registrationForm
         /*
          * CADASTRO SALVO OFFLINE
          */
+
         if (
           resultado?.offline
         ) {
@@ -3082,6 +2539,7 @@ registrationForm
         /*
          * EDIÇÃO CONCLUÍDA
          */
+
         if (
           isEditing
         ) {
@@ -3105,6 +2563,7 @@ registrationForm
         /*
          * NOVO CADASTRO ONLINE
          */
+
         if (
           successModal
         ) {
@@ -3226,18 +2685,6 @@ newRegistrationButton
 
       clearAllFieldErrors();
 
-      sessionStorage.removeItem(
-        "cpfEmValidacao"
-      );
-
-      sessionStorage.removeItem(
-        "nascimentoEmValidacao"
-      );
-
-      sessionStorage.removeItem(
-        "tituloEmValidacao"
-      );
-
       successModal
         ?.classList
         .remove(
@@ -3254,54 +2701,7 @@ newRegistrationButton
 
 
 /* =========================
-   LOGOUT
-========================= */
-
-logoutButton
-  ?.addEventListener(
-    "click",
-    async function () {
-      if (
-        window.SystemModal
-      ) {
-        return;
-      }
-
-      const confirmLogout =
-        window.confirm(
-          "Deseja realmente sair do sistema?"
-        );
-
-      if (
-        confirmLogout
-      ) {
-        fazerLogout();
-      }
-    }
-  );
-
-
-/* =========================
-   NOTIFICAÇÕES
-========================= */
-
-notificationButton
-  ?.addEventListener(
-    "click",
-    function () {
-      if (
-        !window.SystemModal
-      ) {
-        window.alert(
-          "Você não possui novas notificações."
-        );
-      }
-    }
-  );
-
-
-/* =========================
-   TECLADO
+   FECHAR MODAL COM ESC
 ========================= */
 
 document.addEventListener(
@@ -3327,15 +2727,124 @@ document.addEventListener(
       document.body.style.overflow =
         "";
     }
-
-    if (
-      event.key ===
-      "Escape"
-    ) {
-      closeMenu();
-    }
   }
 );
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+logoutButton
+  ?.addEventListener(
+    "click",
+    async function () {
+      try {
+        if (
+          typeof logout ===
+          "function"
+        ) {
+          await logout();
+          return;
+        }
+
+        localStorage.removeItem(
+          "access"
+        );
+
+        localStorage.removeItem(
+          "refresh"
+        );
+
+        sessionStorage.clear();
+
+        window.location.href =
+          "index.html";
+
+      } catch (
+        error
+      ) {
+        console.error(
+          "Erro ao sair:",
+          error
+        );
+
+        window.location.href =
+          "index.html";
+      }
+    }
+  );
+
+
+/* =========================
+   NOTIFICAÇÕES
+========================= */
+
+notificationButton
+  ?.addEventListener(
+    "click",
+    async function () {
+      await showMessage({
+        title:
+          "Notificações",
+
+        message:
+          "Você não possui novas notificações.",
+
+        type:
+          "information"
+      });
+    }
+  );
+
+
+/* =========================
+   LIMPAR ERRO AO DIGITAR
+========================= */
+
+[
+  fullNameInput,
+  motherNameInput,
+  fatherNameInput,
+  cpfInput,
+  birthDateInput,
+  phoneInput,
+  voterTitleInput,
+  electoralZoneInput,
+  electoralSectionInput,
+  electoralMunicipalityInput,
+  numberInput,
+  complementInput,
+  observationsInput
+]
+  .filter(Boolean)
+  .forEach(
+    function (
+      field
+    ) {
+      field.addEventListener(
+        "input",
+        function () {
+          clearFieldError(
+            field
+          );
+
+          /*
+           * Mãe e pai compartilham
+           * a validação de filiação.
+           */
+          if (
+            field ===
+              motherNameInput ||
+            field ===
+              fatherNameInput
+          ) {
+            validateParentage();
+          }
+        }
+      );
+    }
+  );
 
 
 /* =========================
@@ -3345,262 +2854,146 @@ document.addEventListener(
 async function initializePage() {
   try {
     /*
-     * Primeiro tenta confirmar
-     * o usuário no backend.
-     *
-     * Se estiver realmente offline,
-     * usa os dados armazenados
-     * localmente.
+     * Obtém usuário autenticado.
      */
-    try {
+
+    if (
+      typeof requireAuth ===
+      "function"
+    ) {
       currentUser =
-        await buscarUsuarioLogado();
-
-    } catch (
-      error
-    ) {
-      if (
-        !navigator.onLine &&
-        typeof getUsuarioLogado ===
-          "function"
-      ) {
-        currentUser =
-          getUsuarioLogado();
-
-      } else {
-        throw error;
-      }
+        await requireAuth();
     }
-
-    if (
-      !currentUser
-    ) {
-      throw new Error(
-        "Usuário não autenticado."
-      );
-    }
-
-    if (
-      currentUser.tipo !==
-        "ADMINISTRADOR" &&
-      currentUser.tipo !==
-        "CADASTRADOR"
-    ) {
-      throw new Error(
-        "Perfil sem permissão."
-      );
-    }
-
-    fillCurrentUser(
-      currentUser
-    );
-
-    configureMenuByProfile(
-      currentUser
-    );
 
     /*
-     * Carrega regiões pela API
-     * ou pelo IndexedDB.
+     * Alguns projetos retornam
+     * o usuário por outra função.
      */
+
+    if (
+      !currentUser &&
+      typeof getCurrentUser ===
+        "function"
+    ) {
+      currentUser =
+        await getCurrentUser();
+    }
+
+    if (
+      currentUser
+    ) {
+      fillCurrentUser(
+        currentUser
+      );
+
+      configureMenuByProfile(
+        currentUser
+      );
+    }
+
+    /*
+     * Carrega regiões primeiro.
+     */
+
     await loadRegions();
 
     /*
-     * Atualiza regiões,
-     * localidades e ruas para
-     * utilização offline.
+     * Estado inicial dos selects.
      */
-    try {
-      await sincronizarEnderecosOffline();
 
-    } catch (
-      error
-    ) {
-      console.warn(
-        "Sincronização offline ignorada:",
-        error
-      );
-    }
-
-    /*
-     * Se houver cadastros feitos
-     * offline, tenta enviá-los.
-     */
     if (
-      navigator.onLine &&
-      typeof sincronizarCadastrosOffline ===
-        "function"
+      !isEditing
     ) {
-      sincronizarCadastrosOffline()
-        .then(
-          function (
-            resultado
-          ) {
-            if (
-              resultado?.sincronizados
-            ) {
-              console.log(
-                `${resultado.sincronizados} cadastro(s) offline sincronizado(s).`
-              );
-            }
+      if (
+        neighborhoodSelect
+      ) {
+        neighborhoodSelect.innerHTML = `
+          <option value="">
+            Selecione primeiro a região
+          </option>
+        `;
 
-            if (
-              resultado?.pendentes
-            ) {
-              console.log(
-                `${resultado.pendentes} cadastro(s) ainda aguardam sincronização.`
-              );
-            }
-          }
-        )
-        .catch(
-          function (
-            error
-          ) {
-            console.warn(
-              "Não foi possível sincronizar os cadastros pendentes:",
-              error
-            );
-          }
-        );
+        neighborhoodSelect.disabled =
+          true;
+      }
+
+      if (
+        streetSelect
+      ) {
+        streetSelect.innerHTML = `
+          <option value="">
+            Selecione primeiro a localidade
+          </option>
+        `;
+
+        streetSelect.disabled =
+          true;
+      }
     }
 
     /*
-     * No modo edição, busca
-     * o cadastro no servidor.
+     * Se tiver ?id=...
+     * abre em modo edição.
      */
+
     if (
       isEditing
     ) {
       await loadPersonForEditing();
     }
 
+    /*
+     * Contador de observações.
+     */
+
     if (
-      window.lucide
+      characterTotal
     ) {
-      window.lucide.createIcons();
+      characterTotal.textContent =
+        String(
+          observationsInput
+            ?.value
+            .length || 0
+        );
     }
 
     /*
-     * Libera visualmente a página.
+     * Estado inicial do título.
      */
-    document.body
-      .classList
-      .remove(
-        "auth-loading"
-      );
 
-    document.body
-      .classList
-      .add(
-        "auth-ready"
+    if (
+      !isEditing
+    ) {
+      setVoterTitleStatus(
+        "Digite o título e consulte no site oficial do TSE."
       );
+    }
 
   } catch (
     error
   ) {
     console.error(
-      "Erro ao iniciar página:",
+      "Erro ao inicializar página:",
       error
     );
 
-    const message =
-      String(
-        error?.message ||
-        ""
-      )
-        .toLowerCase();
-
-    const authenticationError =
-      message.includes(
-        "não autenticado"
-      ) ||
-      message.includes(
-        "unauthorized"
-      ) ||
-      message.includes(
-        "401"
-      ) ||
-      message.includes(
-        "token"
-      );
-
-    /*
-     * Se estava editando e
-     * ocorreu um erro que não é
-     * de autenticação, volta para
-     * a listagem.
-     */
-    if (
-      isEditing &&
-      !authenticationError
-    ) {
-      await showMessage({
-        title:
-          "Não foi possível editar",
-
-        message:
-          error?.message ||
-          "Não foi possível carregar o cadastro.",
-
-        type:
-          "warning"
-      });
-
-      window.location.href =
-        "pessoas.html";
-
-      return;
-    }
-
-    /*
-     * Só encerra a sessão quando
-     * o erro realmente indica
-     * problema de autenticação.
-     */
-    if (
-      authenticationError
-    ) {
-      limparSessao();
-
-      window.location.href =
-        "index.html";
-
-      return;
-    }
-
-    /*
-     * Outros erros não devem
-     * destruir a sessão.
-     */
     await showMessage({
       title:
-        "Erro ao carregar",
+        "Erro ao carregar página",
 
       message:
-        error?.message ||
-        "Não foi possível carregar a página.",
+        error.message ||
+        "Não foi possível carregar os dados necessários.",
 
       type:
         "warning"
     });
-
-    document.body
-      .classList
-      .remove(
-        "auth-loading"
-      );
-
-    document.body
-      .classList
-      .add(
-        "auth-ready"
-      );
   }
 }
 
 
-document.addEventListener(
-  "DOMContentLoaded",
-  initializePage
-);
+/* =========================
+   INICIAR
+========================= */
+
+initializePage();
