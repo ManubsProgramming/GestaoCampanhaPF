@@ -590,7 +590,6 @@ window.addEventListener(
         "Sincronização offline:",
         resultado
       );
-
     } catch (error) {
       console.error(
         "Erro na sincronização offline:",
@@ -598,4 +597,55 @@ window.addEventListener(
       );
     }
   }
-); 
+);
+
+/* =========================================
+   API PÚBLICA DO BANCO OFFLINE
+========================================= */
+
+window.OfflineDB = {
+  savePendingPerson: salvarCadastroOffline,
+
+  getPendingPeople: listarCadastrosPendentes,
+
+  syncPendingPeople: sincronizarCadastrosOffline,
+
+  async saveRegions(items) {
+    return substituirListaOffline(
+      STORES.regioes,
+      items
+    );
+  },
+
+  async getRegions() {
+    return buscarListaOffline(
+      STORES.regioes
+    );
+  },
+
+  async saveLocalities(items) {
+    return substituirListaOffline(
+      STORES.localidades,
+      items
+    );
+  },
+
+  async getLocalities() {
+    return buscarListaOffline(
+      STORES.localidades
+    );
+  },
+
+  async saveStreets(items) {
+    return substituirListaOffline(
+      STORES.ruas,
+      items
+    );
+  },
+
+  async getStreets() {
+    return buscarListaOffline(
+      STORES.ruas
+    );
+  }
+};

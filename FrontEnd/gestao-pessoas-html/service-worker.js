@@ -1,4 +1,4 @@
-const CACHE_NAME = "gestao-pf-v14";
+const CACHE_NAME = "gestao-pf-v15";
 
 const STATIC_FILES = [
   "./",
@@ -12,12 +12,12 @@ const STATIC_FILES = [
   "./css/novo-cadastro.css?v=13",
   "./css/modal.css?v=13",
 
-  "./js/api.js?v=13",
-  "./js/auth.js?v=13",
-  "./js/modal.js?v=13",
-  "./js/novo-cadastro.js?v=13",
-  "./js/pwa.js?v=13",
-  "./js/offline.js?v=13",
+  "./js/api.js?v=14",
+  "./js/auth.js?v=14",
+  "./js/modal.js?v=14",
+  "./js/novo-cadastro.js?v=14",
+  "./js/pwa.js?v=14",
+  "./js/offline.js?v=14",
 
   "./assets/imagens/prefeitura-icon.png"
 ];
@@ -90,12 +90,11 @@ self.addEventListener("fetch", function (event) {
 
   const url = new URL(request.url);
 
+
   /*
    * PÁGINAS HTML
    *
-   * Para HTML usamos NETWORK FIRST.
-   * Primeiro busca a versão atual no servidor.
-   * O cache é apenas fallback caso esteja offline.
+   * NETWORK FIRST.
    */
   if (
     request.mode === "navigate" ||
@@ -141,11 +140,11 @@ self.addEventListener("fetch", function (event) {
     return;
   }
 
+
   /*
    * CSS E JAVASCRIPT
    *
-   * NETWORK FIRST para evitar que
-   * celular fique preso em CSS/JS antigo.
+   * NETWORK FIRST.
    */
   if (
     url.pathname.endsWith(".css") ||
@@ -174,17 +173,20 @@ self.addEventListener("fetch", function (event) {
           return networkResponse;
         })
         .catch(function () {
-          return caches.match(request);
+          return caches.match(
+            request
+          );
         })
     );
 
     return;
   }
 
+
   /*
    * DEMAIS ARQUIVOS ESTÁTICOS
    *
-   * Pode usar CACHE FIRST.
+   * CACHE FIRST.
    */
   event.respondWith(
     caches

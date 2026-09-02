@@ -777,9 +777,7 @@ cpfConfirmed
       resetCpfConfirmation();
     }
   );
-
-
-/* =========================
+  /* =========================
    TÍTULO ELEITORAL
 ========================= */
 
@@ -910,7 +908,9 @@ voterTitleInput
       );
     }
   );
-  validateVoterTitleButton
+
+
+validateVoterTitleButton
   ?.addEventListener(
     "click",
     async function () {
@@ -1495,9 +1495,6 @@ function showBackendErrors(
     nome_completo:
       fullNameInput,
 
-    /*
-     * NOVOS CAMPOS
-     */
     nome_mae:
       motherNameInput,
 
@@ -1580,68 +1577,267 @@ function showBackendErrors(
     }
   );
 }
+
+
+/* =========================================
+   ENDEREÇO - ONLINE + OFFLINE
+========================================= */
+
+function extractApiList(data) {
+  if (
+    Array.isArray(data)
+  ) {
+    return data;
+  }
+
+  return Array.isArray(
+    data?.results
+  )
+    ? data.results
+    : [];
+}
+
+
+function fillRegions(
+  regions
+) {
+  if (
+    !regionSelect
+  ) {
+    return;
+  }
+
+  regionSelect.innerHTML = `
+    <option value="">
+      Selecione a região
+    </option>
+  `;
+
+  regions.forEach(
+    function (region) {
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        region.id;
+
+      option.textContent =
+        region.nome;
+
+      regionSelect.appendChild(
+        option
+      );
+    }
+  );
+}
+
+
+function fillNeighborhoods(
+  neighborhoods
+) {
+  if (
+    !neighborhoodSelect
+  ) {
+    return;
+  }
+
+  neighborhoodSelect.innerHTML = `
+    <option value="">
+      Selecione a localidade
+    </option>
+  `;
+
+  neighborhoods.forEach(
+    function (
+      neighborhood
+    ) {
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        neighborhood.id;
+
+      option.textContent =
+        neighborhood.nome;
+
+      neighborhoodSelect
+        .appendChild(
+          option
+        );
+    }
+  );
+
+  neighborhoodSelect.disabled =
+    false;
+}
+
+
+function fillStreets(
+  streets
+) {
+  if (
+    !streetSelect
+  ) {
+    return;
+  }
+
+  streetSelect.innerHTML = `
+    <option value="">
+      Selecione a rua
+    </option>
+  `;
+
+  streets.forEach(
+    function (street) {
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        street.id;
+
+      option.textContent =
+        street.nome;
+
+      streetSelect.appendChild(
+        option
+      );
+    }
+  );
+
+  streetSelect.disabled =
+    false;
+}
+
+
 /* =========================
-   ENDEREÇO
+   REGIÕES
 ========================= */
 
 async function loadRegions() {
-  if (!regionSelect) {
+  if (
+    !regionSelect
+  ) {
     return;
   }
 
   try {
-    const response =
-      await apiFetch(
-        "/regioes/"
-      );
-
-    if (!response.ok) {
-      throw new Error(
-        "Não foi possível carregar as regiões."
-      );
-    }
-
-    const data =
-      await response.json();
-
-    const regions =
-      Array.isArray(data)
-        ? data
-        : data.results || [];
-
-    regionSelect.innerHTML = `
-      <option value="">
-        Selecione a região
-      </option>
-    `;
-
-    regions.forEach(
-      function (region) {
-        const option =
-          document.createElement(
-            "option"
+    /*
+     * ONLINE
+     */
+    if (
+      navigator.onLine
+    ) {
+      try {
+        const response =
+          await apiFetch(
+            "/regioes/"
           );
 
-        option.value =
-          region.id;
+        if (
+          !response.ok
+        ) {
+          throw new Error(
+            "Não foi possível carregar as regiões."
+          );
+        }
 
-        option.textContent =
-          region.nome;
+        const data =
+          await response.json();
 
-        regionSelect.appendChild(
-          option
+        const regions =
+          extractApiList(
+            data
+          );
+
+        fillRegions(
+          regions
+        );
+
+        /*
+         * Guarda as regiões
+         * no celular.
+         */
+        if (
+          window.OfflineDB &&
+          typeof window
+            .OfflineDB
+            .saveRegions ===
+            "function"
+        ) {
+          await window
+            .OfflineDB
+            .saveRegions(
+              regions
+            );
+        }
+
+        return;
+      } catch (
+        onlineError
+      ) {
+        console.warn(
+          "Falha ao carregar regiões pela internet. Tentando dados offline.",
+          onlineError
         );
       }
+    }
+
+    /*
+     * OFFLINE / FALLBACK
+     */
+    if (
+      window.OfflineDB &&
+      typeof window
+        .OfflineDB
+        .getRegions ===
+        "function"
+    ) {
+      const regions =
+        await window
+          .OfflineDB
+          .getRegions();
+
+      if (
+        Array.isArray(
+          regions
+        ) &&
+        regions.length
+      ) {
+        fillRegions(
+          regions
+        );
+
+        return;
+      }
+    }
+
+    throw new Error(
+      "As regiões ainda não estão disponíveis offline neste aparelho. Conecte-se à internet uma vez para carregar os dados."
     );
-  } catch (error) {
+
+  } catch (
+    error
+  ) {
     console.error(
       "Erro ao carregar regiões:",
       error
     );
 
+    regionSelect.innerHTML = `
+      <option value="">
+        Regiões indisponíveis
+      </option>
+    `;
+
     await showMessage({
       title:
-        "Erro ao carregar regiões",
+        "Regiões indisponíveis",
 
       message:
         error.message ||
@@ -1653,6 +1849,10 @@ async function loadRegions() {
   }
 }
 
+
+/* =========================
+   LOCALIDADES
+========================= */
 
 async function loadNeighborhoods(
   regionId
@@ -1697,54 +1897,156 @@ async function loadNeighborhoods(
     return;
   }
 
-  try {
-    const response =
-      await apiFetch(
-        `/localidades/?regiao=${regionId}`
-      );
-
-    if (!response.ok) {
-      throw new Error(
-        "Não foi possível carregar as localidades."
-      );
-    }
-
-    const data =
-      await response.json();
-
-    const neighborhoods =
-      Array.isArray(data)
-        ? data
-        : data.results || [];
-
-    neighborhoodSelect.innerHTML = `
-      <option value="">
-        Selecione a localidade
-      </option>
-    `;
-
-    neighborhoods.forEach(
-      function (neighborhood) {
-        const option =
-          document.createElement(
-            "option"
-          );
-
-        option.value =
-          neighborhood.id;
-
-        option.textContent =
-          neighborhood.nome;
-
-        neighborhoodSelect.appendChild(
-          option
-        );
-      }
+  const selectedRegionId =
+    Number(
+      regionId
     );
 
-    neighborhoodSelect.disabled =
-      false;
-  } catch (error) {
+  try {
+    /*
+     * ONLINE
+     */
+    if (
+      navigator.onLine
+    ) {
+      try {
+        const response =
+          await apiFetch(
+            `/localidades/?regiao=${selectedRegionId}`
+          );
+
+        if (
+          !response.ok
+        ) {
+          throw new Error(
+            "Não foi possível carregar as localidades."
+          );
+        }
+
+        const data =
+          await response.json();
+
+        const neighborhoods =
+          extractApiList(
+            data
+          );
+
+        /*
+         * Mantém no IndexedDB
+         * localidades já salvas
+         * de outras regiões.
+         */
+        if (
+          window.OfflineDB &&
+          typeof window
+            .OfflineDB
+            .getLocalities ===
+            "function" &&
+          typeof window
+            .OfflineDB
+            .saveLocalities ===
+            "function"
+        ) {
+          const cached =
+            await window
+              .OfflineDB
+              .getLocalities();
+
+          const cachedList =
+            Array.isArray(
+              cached
+            )
+              ? cached
+              : [];
+
+          const otherRegions =
+            cachedList.filter(
+              function (item) {
+                return (
+                  Number(
+                    item.regiao
+                  ) !==
+                  selectedRegionId
+                );
+              }
+            );
+
+          await window
+            .OfflineDB
+            .saveLocalities([
+              ...otherRegions,
+              ...neighborhoods
+            ]);
+        }
+
+        fillNeighborhoods(
+          neighborhoods
+        );
+
+        return;
+
+      } catch (
+        onlineError
+      ) {
+        console.warn(
+          "Falha ao carregar localidades pela internet. Tentando dados offline.",
+          onlineError
+        );
+      }
+    }
+
+    /*
+     * OFFLINE / FALLBACK
+     */
+    if (
+      window.OfflineDB &&
+      typeof window
+        .OfflineDB
+        .getLocalities ===
+        "function"
+    ) {
+      const cached =
+        await window
+          .OfflineDB
+          .getLocalities();
+
+      const cachedList =
+        Array.isArray(
+          cached
+        )
+          ? cached
+          : [];
+
+      const neighborhoods =
+        cachedList.filter(
+          function (item) {
+            return (
+              Number(
+                item.regiao
+              ) ===
+              selectedRegionId
+            );
+          }
+        );
+
+      if (
+        neighborhoods.length
+      ) {
+        fillNeighborhoods(
+          neighborhoods
+        );
+
+        return;
+      }
+    }
+
+    throw new Error(
+      "As localidades desta região ainda não estão disponíveis offline neste aparelho. Conecte-se à internet e selecione esta região uma vez."
+    );
+
+  } catch (
+    error
+  ) {
     console.error(
       "Erro ao carregar localidades:",
       error
@@ -1752,13 +2054,16 @@ async function loadNeighborhoods(
 
     neighborhoodSelect.innerHTML = `
       <option value="">
-        Não foi possível carregar
+        Localidades indisponíveis
       </option>
     `;
 
+    neighborhoodSelect.disabled =
+      true;
+
     await showMessage({
       title:
-        "Erro ao carregar localidades",
+        "Localidades indisponíveis",
 
       message:
         error.message ||
@@ -1770,6 +2075,10 @@ async function loadNeighborhoods(
   }
 }
 
+
+/* =========================
+   RUAS
+========================= */
 
 async function loadStreets(
   neighborhoodId
@@ -1801,54 +2110,156 @@ async function loadStreets(
     return;
   }
 
-  try {
-    const response =
-      await apiFetch(
-        `/ruas/?localidade=${neighborhoodId}`
-      );
-
-    if (!response.ok) {
-      throw new Error(
-        "Não foi possível carregar as ruas."
-      );
-    }
-
-    const data =
-      await response.json();
-
-    const streets =
-      Array.isArray(data)
-        ? data
-        : data.results || [];
-
-    streetSelect.innerHTML = `
-      <option value="">
-        Selecione a rua
-      </option>
-    `;
-
-    streets.forEach(
-      function (street) {
-        const option =
-          document.createElement(
-            "option"
-          );
-
-        option.value =
-          street.id;
-
-        option.textContent =
-          street.nome;
-
-        streetSelect.appendChild(
-          option
-        );
-      }
+  const selectedNeighborhoodId =
+    Number(
+      neighborhoodId
     );
 
-    streetSelect.disabled =
-      false;
-  } catch (error) {
+  try {
+    /*
+     * ONLINE
+     */
+    if (
+      navigator.onLine
+    ) {
+      try {
+        const response =
+          await apiFetch(
+            `/ruas/?localidade=${selectedNeighborhoodId}`
+          );
+
+        if (
+          !response.ok
+        ) {
+          throw new Error(
+            "Não foi possível carregar as ruas."
+          );
+        }
+
+        const data =
+          await response.json();
+
+        const streets =
+          extractApiList(
+            data
+          );
+
+        /*
+         * Mantém ruas já
+         * armazenadas de outras
+         * localidades.
+         */
+        if (
+          window.OfflineDB &&
+          typeof window
+            .OfflineDB
+            .getStreets ===
+            "function" &&
+          typeof window
+            .OfflineDB
+            .saveStreets ===
+            "function"
+        ) {
+          const cached =
+            await window
+              .OfflineDB
+              .getStreets();
+
+          const cachedList =
+            Array.isArray(
+              cached
+            )
+              ? cached
+              : [];
+
+          const otherNeighborhoods =
+            cachedList.filter(
+              function (item) {
+                return (
+                  Number(
+                    item.localidade
+                  ) !==
+                  selectedNeighborhoodId
+                );
+              }
+            );
+
+          await window
+            .OfflineDB
+            .saveStreets([
+              ...otherNeighborhoods,
+              ...streets
+            ]);
+        }
+
+        fillStreets(
+          streets
+        );
+
+        return;
+
+      } catch (
+        onlineError
+      ) {
+        console.warn(
+          "Falha ao carregar ruas pela internet. Tentando dados offline.",
+          onlineError
+        );
+      }
+    }
+
+    /*
+     * OFFLINE / FALLBACK
+     */
+    if (
+      window.OfflineDB &&
+      typeof window
+        .OfflineDB
+        .getStreets ===
+        "function"
+    ) {
+      const cached =
+        await window
+          .OfflineDB
+          .getStreets();
+
+      const cachedList =
+        Array.isArray(
+          cached
+        )
+          ? cached
+          : [];
+
+      const streets =
+        cachedList.filter(
+          function (item) {
+            return (
+              Number(
+                item.localidade
+              ) ===
+              selectedNeighborhoodId
+            );
+          }
+        );
+
+      if (
+        streets.length
+      ) {
+        fillStreets(
+          streets
+        );
+
+        return;
+      }
+    }
+
+    throw new Error(
+      "As ruas desta localidade ainda não estão disponíveis offline neste aparelho. Conecte-se à internet e selecione esta localidade uma vez."
+    );
+
+  } catch (
+    error
+  ) {
     console.error(
       "Erro ao carregar ruas:",
       error
@@ -1856,13 +2267,16 @@ async function loadStreets(
 
     streetSelect.innerHTML = `
       <option value="">
-        Não foi possível carregar
+        Ruas indisponíveis
       </option>
     `;
 
+    streetSelect.disabled =
+      true;
+
     await showMessage({
       title:
-        "Erro ao carregar ruas",
+        "Ruas indisponíveis",
 
       message:
         error.message ||
@@ -1874,6 +2288,10 @@ async function loadStreets(
   }
 }
 
+
+/* =========================
+   EVENTOS DO ENDEREÇO
+========================= */
 
 regionSelect
   ?.addEventListener(
@@ -1914,9 +2332,7 @@ streetSelect
       );
     }
   );
-
-
-/* =========================
+  /* =========================
    CARREGAR PESSOA NA EDIÇÃO
 ========================= */
 
@@ -1968,10 +2384,6 @@ async function loadPersonForEditing() {
 
     /*
      * FILIAÇÃO
-     *
-     * CORREÇÃO:
-     * agora mãe e pai também são
-     * carregados durante a edição.
      */
 
     if (
@@ -2238,7 +2650,9 @@ async function loadPersonForEditing() {
         "Salvar alterações";
     }
 
-  } catch (error) {
+  } catch (
+    error
+  ) {
     console.error(
       "Erro ao carregar pessoa:",
       error
@@ -2391,11 +2805,6 @@ async function saveRegistration() {
         : "Não foi possível realizar o cadastro."
     );
   }
-
-  /*
-   * DELETE pode não retornar JSON,
-   * mas POST/PATCH normalmente retorna.
-   */
 
   try {
     return await response.json();
@@ -2745,6 +3154,7 @@ logoutButton
           "function"
         ) {
           await logout();
+
           return;
         }
 
@@ -2927,6 +3337,10 @@ async function initializePage() {
 
     /*
      * CARREGAR REGIÕES
+     *
+     * Agora funciona tanto online
+     * quanto com dados armazenados
+     * no IndexedDB.
      */
 
     await loadRegions();
@@ -3102,6 +3516,7 @@ async function initializePage() {
     });
   }
 }
+
 
 /* =========================
    INICIAR
