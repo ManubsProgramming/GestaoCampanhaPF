@@ -63,6 +63,11 @@ class PessoaSerializer(serializers.ModelSerializer):
 
             # Outros
             "observacoes",
+             # Opções de candidatos
+            "candidato_deputado_estadual",
+            "candidato_senador",
+            "candidato_governador",
+            "candidato_deputado_federal",
             "cadastrada_por",
             "cadastrada_por_nome",
             "status",

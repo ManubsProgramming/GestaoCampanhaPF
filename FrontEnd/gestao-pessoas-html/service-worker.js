@@ -1,4 +1,4 @@
-const CACHE_NAME = "gestao-pf-v15";
+const CACHE_NAME = "gestao-pf-v16";
 
 const STATIC_FILES = [
   "./",
@@ -9,13 +9,13 @@ const STATIC_FILES = [
   "./css/global.css?v=13",
   "./css/login.css",
   "./css/painel.css?v=13",
-  "./css/novo-cadastro.css?v=13",
+  "./css/novo-cadastro.css?v=15",
   "./css/modal.css?v=13",
 
   "./js/api.js?v=14",
   "./js/auth.js?v=14",
   "./js/modal.js?v=14",
-  "./js/novo-cadastro.js?v=14",
+  "./js/novo-cadastro.js?v=15",
   "./js/pwa.js?v=14",
   "./js/offline.js?v=14",
 

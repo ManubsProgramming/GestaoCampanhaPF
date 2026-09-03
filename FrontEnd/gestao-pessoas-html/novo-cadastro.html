@@ -23,7 +23,7 @@
   <!-- ESTILOS -->
   <link rel="stylesheet" href="css/global.css?v=14">
   <link rel="stylesheet" href="css/painel.css?v=14">
-  <link rel="stylesheet" href="css/novo-cadastro.css?v=14">
+  <link rel="stylesheet" href="css/novo-cadastro.css?v=15">
   <link rel="stylesheet" href="css/modal.css?v=14">
 
   <link
@@ -46,7 +46,7 @@
   <script src="js/api.js?v=14" defer></script>
   <script src="js/auth.js?v=14" defer></script>
   <script src="js/modal.js?v=14" defer></script>
-  <script src="js/novo-cadastro.js?v=14" defer></script>
+  <script src="js/novo-cadastro.js?v=15" defer></script>
 </head>
 
 <body
@@ -723,7 +723,92 @@
             </div>
           </div>
         </section>
+        <!-- =====================================
+             OPÇÕES DE CANDIDATOS
+        ====================================== -->
 
+        <section class="form-card">
+          <header class="form-card-header">
+            <div class="form-card-icon">
+              <i data-lucide="vote"></i>
+            </div>
+
+            <div>
+              <h3>Opções de candidatos</h3>
+              <p>
+                Marque as opções informadas pela pessoa cadastrada.
+              </p>
+            </div>
+          </header>
+
+          <div class="candidate-options">
+
+            <label class="candidate-option">
+              <input
+                id="candidate-state-deputy"
+                name="candidato_deputado_estadual"
+                type="checkbox"
+              >
+
+              <span>
+                <strong>Wilker Barreto</strong>
+                <small>Deputado Estadual — 55055</small>
+              </span>
+            </label>
+
+            <label class="candidate-option">
+              <input
+                id="candidate-senator"
+                name="candidato_senador"
+                type="checkbox"
+              >
+
+              <span>
+                <strong>Eduardo Braga</strong>
+                <small>Senador — 155</small>
+              </span>
+            </label>
+
+            <label class="candidate-option">
+              <input
+                id="candidate-governor"
+                name="candidato_governador"
+                type="checkbox"
+              >
+
+              <span>
+                <strong>Omar</strong>
+                <small>Governador — 55</small>
+              </span>
+            </label>
+
+            <label class="candidate-option">
+              <input
+                id="candidate-federal-deputy"
+                name="candidato_deputado_federal"
+                type="checkbox"
+              >
+
+              <span>
+                <strong>Fausto Jr.</strong>
+                <small>Deputado Federal — 4477</small>
+              </span>
+            </label>
+
+            <label class="candidate-option candidate-option-all">
+              <input
+                id="candidate-all"
+                type="checkbox"
+              >
+
+              <span>
+                <strong>Todos</strong>
+                <small>Marcar todas as opções acima</small>
+              </span>
+            </label>
+
+          </div>
+        </section>
         <!-- =====================================
              OBSERVAÇÕES
         ====================================== -->

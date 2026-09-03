@@ -168,7 +168,25 @@ class Pessoa(models.Model):
     observacoes = models.TextField(
         blank=True,
     )
+    # -------------------------
+    # OPÇÕES DE CANDIDATOS
+    # -------------------------
 
+    candidato_deputado_estadual = models.BooleanField(
+        default=False,
+    )
+
+    candidato_senador = models.BooleanField(
+        default=False,
+    )
+
+    candidato_governador = models.BooleanField(
+        default=False,
+    )
+
+    candidato_deputado_federal = models.BooleanField(
+        default=False,
+    )
     # -------------------------
     # USUÁRIO QUE CADASTROU
     # -------------------------

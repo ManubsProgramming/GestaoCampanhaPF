@@ -111,6 +111,76 @@ const observationsInput =
   document.querySelector(
     "#observations"
   );
+  /* =========================
+   OPÇÕES DE CANDIDATOS
+========================= */
+
+const candidateStateDeputy =
+  document.querySelector(
+    "#candidate-state-deputy"
+  );
+
+const candidateSenator =
+  document.querySelector(
+    "#candidate-senator"
+  );
+
+const candidateGovernor =
+  document.querySelector(
+    "#candidate-governor"
+  );
+
+const candidateFederalDeputy =
+  document.querySelector(
+    "#candidate-federal-deputy"
+  );
+
+const candidateAll =
+  document.querySelector(
+    "#candidate-all"
+  );
+
+const candidateInputs = [
+  candidateStateDeputy,
+  candidateSenator,
+  candidateGovernor,
+  candidateFederalDeputy
+].filter(Boolean);
+function updateCandidateAll() {
+  if (!candidateAll) {
+    return;
+  }
+
+  candidateAll.checked =
+    candidateInputs.length > 0 &&
+    candidateInputs.every(
+      function (input) {
+        return input.checked;
+      }
+    );
+}
+
+candidateAll
+  ?.addEventListener(
+    "change",
+    function () {
+      candidateInputs.forEach(
+        function (input) {
+          input.checked =
+            candidateAll.checked;
+        }
+      );
+    }
+  );
+
+candidateInputs.forEach(
+  function (input) {
+    input.addEventListener(
+      "change",
+      updateCandidateAll
+    );
+  }
+);
 
 const characterTotal =
   document.querySelector(
@@ -1459,7 +1529,29 @@ function buildRegistrationData() {
       observationsInput
         ?.value
         .trim() || "",
+    candidato_deputado_estadual:
+      Boolean(
+        candidateStateDeputy
+          ?.checked
+      ),
 
+    candidato_senador:
+      Boolean(
+        candidateSenator
+          ?.checked
+      ),
+
+    candidato_governador:
+      Boolean(
+        candidateGovernor
+          ?.checked
+      ),
+
+    candidato_deputado_federal:
+      Boolean(
+        candidateFederalDeputy
+          ?.checked
+      ),
     status:
       "ATIVO",
 
@@ -2525,7 +2617,41 @@ async function loadPersonForEditing() {
             ?.value
             .length || 0
         );
+
     }
+        /*
+     * OPÇÕES DE CANDIDATOS
+     */
+
+    if (candidateStateDeputy) {
+      candidateStateDeputy.checked =
+        Boolean(
+          pessoa.candidato_deputado_estadual
+        );
+    }
+
+    if (candidateSenator) {
+      candidateSenator.checked =
+        Boolean(
+          pessoa.candidato_senador
+        );
+    }
+
+    if (candidateGovernor) {
+      candidateGovernor.checked =
+        Boolean(
+          pessoa.candidato_governador
+        );
+    }
+
+    if (candidateFederalDeputy) {
+      candidateFederalDeputy.checked =
+        Boolean(
+          pessoa.candidato_deputado_federal
+        );
+    }
+
+    updateCandidateAll();
 
     /*
      * RESPONSÁVEL
